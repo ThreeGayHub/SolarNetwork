@@ -7,15 +7,49 @@
 //
 
 import UIKit
+import Alamofire
+
+//TODO-Extention:自己收集
+//TODO-Network:自己写
+//TODO-Model:Codable
+//TODO-Cache:Cache
+//TODO-DB:WCDB
+//TODO-Web:自己写
+//TODO-Mediator:SLMediator
+//TODO-HUD:NVActivityIndicatorView
+//TODO-Timer:SwiftyTimer
+//TODO-Localization:自己写
+//TODO-Log:自己写
+//TODO-Security:代码混淆，字符串混淆，函数指针，防Hack
+//TODO-Animations:POP，Spring，lottie-ios
+//TODO-Reflesh:PullToBounce，RainyRefreshControl，SVPullToRefresh or 自己写
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
+    
+    let network: SLNetwork = SLNetwork(target: GitHub())
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        
+            
+        network.request(APIRequest()) { (response) in
+
+            if let error = response.error {
+                print(error)
+            }
+            else {
+                do {
+                    let model = try response.decode(to: APIModel.self)
+                    print(model)
+                }
+                catch {
+                    print(error)
+                }
+            }
+
+        }
+
         // Override point for customization after application launch.
         return true
     }
