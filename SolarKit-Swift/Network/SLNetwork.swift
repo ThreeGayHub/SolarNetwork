@@ -13,7 +13,7 @@ private let SolarKitResponseQueue: String = "com.SolarKit.ResponseQueue"
 
 public class SLNetwork {
     
-    public typealias Completion = (_ response: SLResponse) -> Void
+    public typealias Completion = (SLResponse) -> Void
     
     public init(target: SLTarget) {
         self.target = target
