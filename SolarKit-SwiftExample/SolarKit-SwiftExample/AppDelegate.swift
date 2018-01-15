@@ -35,17 +35,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         network.request(APIRequest()) { (response) in
 
-            if let model = response.decode(to: APIModel.self) {
-                print(model)
-            }
-            else {
-                if let error = response.error {
-                    print(error)
-                }
-            }
+//            if let dict = response.data as? Dictionary<String, Any> {
+//                print(dict)
+//            }
+//
+//            if let model = response.decode(to: APIModel.self) {
+//                print(model)
+//            }
+//
+//            if let error = response.error {
+//                print(error)
+//            }
 
         }
+        
+        let uploadReq = SLUploadRequest()
 
+        
         // Override point for customization after application launch.
         return true
     }
