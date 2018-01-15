@@ -32,18 +32,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let network: SLNetwork = SLNetwork(target: GitHub())
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-            
+        
         network.request(APIRequest()) { (response) in
 
-            if let error = response.error {
-                print(error)
+            if let model = response.decode(to: APIModel.self) {
+                print(model)
             }
             else {
-                do {
-                    let model = try response.decode(to: APIModel.self)
-                    print(model)
-                }
-                catch {
+                if let error = response.error {
                     print(error)
                 }
             }

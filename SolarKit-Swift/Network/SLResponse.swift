@@ -29,7 +29,7 @@ public class SLResponse {
         self.httpURLResponse = httpURLResponse
     }
     
-    public func decode<T: Decodable>(to Model: T.Type) throws -> T {
+    public func decode<T: Decodable>(to Model: T.Type) -> T? {
         var decodeData: Data = Data()
         do {
             if let data = self.data as? Data {
@@ -40,11 +40,32 @@ public class SLResponse {
                     decodeData = try JSONSerialization.data(withJSONObject: data)
                 }
             }
+            if let target = self.request.target {
+                let data: T = try target.decoder.decode(Model.self, from: decodeData)
+                return data
+            }
+        } catch {
+            self.error = error as NSError
         }
-        catch {
-            print(error)
-        }
-        return try self.request.target!.decoder.decode(Model.self, from: decodeData)
+        return nil
     }
+    
+//    public func decode<T: Decodable>(to Model: T.Type) throws -> T {
+//        var decodeData: Data = Data()
+//        do {
+//            if let data = self.data as? Data {
+//                decodeData = data;
+//            }
+//            else {
+//                if let data = self.data {
+//                    decodeData = try JSONSerialization.data(withJSONObject: data)
+//                }
+//            }
+//        }
+//        catch {
+//            print(error)
+//        }
+//        return try self.request.target!.decoder.decode(Model.self, from: decodeData)
+//    }
     
 }
