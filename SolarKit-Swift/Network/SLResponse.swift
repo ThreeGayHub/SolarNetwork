@@ -50,22 +50,18 @@ public class SLResponse {
         return nil
     }
     
-//    public func decode<T: Decodable>(to Model: T.Type) throws -> T {
-//        var decodeData: Data = Data()
-//        do {
-//            if let data = self.data as? Data {
-//                decodeData = data;
-//            }
-//            else {
-//                if let data = self.data {
-//                    decodeData = try JSONSerialization.data(withJSONObject: data)
-//                }
-//            }
-//        }
-//        catch {
-//            print(error)
-//        }
-//        return try self.request.target!.decoder.decode(Model.self, from: decodeData)
-//    }
+}
+
+extension SLResponse: CustomDebugStringConvertible {
+    
+    public var debugDescription: String {
+        return """
+        ------------------------ SLResponse ----------------------
+        URL:\(request.URLString)
+        data:\(data ?? "")
+        error:\(String(describing: error))
+        ------------------------ SLResponse ----------------------
+        """
+    }
     
 }

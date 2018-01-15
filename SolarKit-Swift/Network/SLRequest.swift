@@ -11,6 +11,14 @@ import Alamofire
 
 open class SLRequest: SLReflection {
     
+    public init(method: HTTPMethod? = .get, URLString: String? = nil, path: String? = "", parameters: Parameters? = nil, headers: [String: String]? = nil) {
+        self.storeMethod = method
+        self.storeURLString = URLString
+        self.path = path!
+        self.storeParameters = parameters
+        self.headers = headers
+    }
+    
     public var requestID: String {
         return URLString.data(using: .utf8)?.base64EncodedString() ?? ""
     }
@@ -92,4 +100,26 @@ open class SLRequest: SLReflection {
     private var storeParameters: Parameters?
 
     private var storeTarget: SLTarget?
+}
+
+extension SLRequest: CustomDebugStringConvertible {
+    
+    public var debugDescription: String {
+        return """
+        ------------------------ SLRequest -----------------------
+        URL:\(URLString)
+        headers:\(String(describing: headers))
+        parameters:\(String(describing: parameters))
+        ------------------------ SLRequest -----------------------
+        """
+    }
+    
+}
+
+class SLUploadRequest: SLRequest {
+    
+    override init(method: HTTPMethod? = .post, URLString: String? = nil, path: String? = "", parameters: Parameters? = nil, headers: [String: String]? = nil) {
+        super.init(method: method, URLString: URLString, path: path, parameters: parameters, headers: headers)
+    }
+    
 }

@@ -6,6 +6,11 @@
 //  Copyright © 2018年 SolarKit. All rights reserved.
 //
 
+//TODO-0:上传
+//TODO-1:断点续传
+//TODO-2:下载
+//TODO-3:断点下载
+
 import Foundation
 import Alamofire
 
@@ -51,6 +56,8 @@ extension SLNetwork {
     public func request(_ request: SLRequest, completion: @escaping Completion) -> DataRequest {
         request.target = target
         
+        debugPrint(request)
+        
         willSend(request: request)
         
         return sessionManager.request(request.URLString,
@@ -76,6 +83,8 @@ extension SLNetwork {
                                 
                 self?.decode(request: request, response: slResponse)
                 
+                debugPrint(slResponse)
+
                 DispatchQueue.main.async {
                     completion(slResponse)
                 }
