@@ -33,24 +33,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
-        network.request(APIRequest()) { (response) in
-
-//            if let dict = response.data as? Dictionary<String, Any> {
-//                print(dict)
-//            }
+//        network.request(APIRequest()) { (response) in
 //
-//            if let model = response.decode(to: APIModel.self) {
-//                print(model)
-//            }
+////            if let dict = response.data as? Dictionary<String, Any> {
+////                print(dict)
+////            }
+////
+////            if let model = response.decode(to: APIModel.self) {
+////                print(model)
+////            }
+////
+////            if let error = response.error {
+////                print(error)
+////            }
 //
-//            if let error = response.error {
-//                print(error)
-//            }
-
-        }
+//        }
         
-        let uploadReq = SLUploadRequest()
-
+//        let uploadReq = SLUploadRequest()        
         
         // Override point for customization after application launch.
         return true
