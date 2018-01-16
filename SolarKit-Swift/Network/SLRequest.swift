@@ -122,4 +122,10 @@ class SLUploadRequest: SLRequest {
         super.init(method: method, URLString: URLString, path: path, parameters: parameters, headers: headers)
     }
     
+    public var filePath: String?
+    
+    public var data: Data?
+    
+    public var inputStream: InputStream?
+    
 }
