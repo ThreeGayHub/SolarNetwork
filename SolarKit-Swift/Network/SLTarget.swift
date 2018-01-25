@@ -28,20 +28,24 @@ public protocol SLTarget {
     /// The target's serverTrustPolicies
     var policies: [String : ServerTrustPolicy]? { get }
     
+    /// The target's ResponseQueue
+    var responseQueue: DispatchQueue? { get }
     
-    //jsonReadingOption
-    
-    //Plugins
+    /// The target's Plugins
     var plugins: [SLPlugin]? { get }
     
+    /// The target's Reachability
     var reachability: NetworkReachabilityManager.Listener? { get }
     
-    /// The target's host.
+    /// The target's Host.
     var host: String { get }
     
+    /// The target's Response Status
     var status: (codeKey: String, successCode: Int, messageKey: String?, dataKeyPath: String?)? { get }
     
+    /// The target's Response JSONDecoder
     var decoder: JSONDecoder { get }
+        
 }
 
 extension SLTarget {
@@ -74,6 +78,8 @@ extension SLTarget {
      return serverTrustPolicies
      */
     var policies: [String : ServerTrustPolicy]? { return nil }
+    
+    var responseQueue: DispatchQueue? { return nil }
     
     var plugins: [SLPlugin]? { return nil }
 

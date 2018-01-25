@@ -13,6 +13,7 @@
 		F86945712008AC8700123862 /* GitHub.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86945702008AC8700123862 /* GitHub.swift */; };
 		F86945732008AD2700123862 /* APIRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86945722008AD2700123862 /* APIRequest.swift */; };
 		F86945752008AD4600123862 /* APIModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86945742008AD4600123862 /* APIModel.swift */; };
+		F86966922016E1F00098EC08 /* SLProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86966912016E1F00098EC08 /* SLProgress.swift */; };
 		F8751CF51FFC6A6B009CB58C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8751CF41FFC6A6B009CB58C /* AppDelegate.swift */; };
 		F8751CF71FFC6A6B009CB58C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8751CF61FFC6A6B009CB58C /* ViewController.swift */; };
 		F8751CFA1FFC6A6B009CB58C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F8751CF81FFC6A6B009CB58C /* Main.storyboard */; };
@@ -34,6 +35,7 @@
 		F86945702008AC8700123862 /* GitHub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHub.swift; sourceTree = "<group>"; };
 		F86945722008AD2700123862 /* APIRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIRequest.swift; sourceTree = "<group>"; };
 		F86945742008AD4600123862 /* APIModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIModel.swift; sourceTree = "<group>"; };
+		F86966912016E1F00098EC08 /* SLProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SLProgress.swift; sourceTree = "<group>"; };
 		F8751CF11FFC6A6B009CB58C /* SolarKit-SwiftExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SolarKit-SwiftExample.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F8751CF41FFC6A6B009CB58C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F8751CF61FFC6A6B009CB58C /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -185,6 +187,7 @@
 				F8B96E1420046E9800A07709 /* SLTarget.swift */,
 				F8B96E072000C5E100A07709 /* SLRequest.swift */,
 				F86945672006FB2700123862 /* SLResponse.swift */,
+				F86966912016E1F00098EC08 /* SLProgress.swift */,
 				F86945652006FA7100123862 /* SLPlugin.swift */,
 			);
 			path = Network;
@@ -347,6 +350,7 @@
 				F8B96E1520046E9800A07709 /* SLTarget.swift in Sources */,
 				F86945732008AD2700123862 /* APIRequest.swift in Sources */,
 				F8751CF51FFC6A6B009CB58C /* AppDelegate.swift in Sources */,
+				F86966922016E1F00098EC08 /* SLProgress.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -23,6 +23,8 @@ public class SLResponse {
     
     public var message: String?
     
+    public var destinationURL: URL?
+    
     init(request: SLRequest, urlRequest: URLRequest?, httpURLResponse: HTTPURLResponse?) {
         self.request = request
         self.urlRequest = urlRequest
@@ -55,12 +57,15 @@ public class SLResponse {
 extension SLResponse: CustomDebugStringConvertible {
     
     public var debugDescription: String {
+        let dataString = destinationURL == nil ? "data:\(data ?? "")" : "destinationURL:\(destinationURL?.absoluteString ?? "")"
+        
         return """
         ------------------------ SLResponse ----------------------
         URL:\(request.URLString)
-        data:\(data ?? "")
+        \(dataString)
         error:\(String(describing: error))
         ------------------------ SLResponse ----------------------
+        
         """
     }
     
