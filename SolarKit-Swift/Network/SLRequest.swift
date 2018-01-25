@@ -19,6 +19,8 @@ open class SLRequest: SLReflection {
         self.headers = headers
     }
     
+    public var originalRequest: Request?
+    
     public var requestID: String {
         return URLString.data(using: .utf8)?.base64EncodedString() ?? ""
     }
@@ -102,6 +104,30 @@ open class SLRequest: SLReflection {
     private var storeTarget: SLTarget?
 }
 
+extension SLRequest {
+    
+    public func blackList() -> [String]? {
+        return ["isResume", "hsaResume"]
+    }
+    
+}
+
+extension SLRequest {
+    
+    public func pause() {
+        originalRequest?.suspend()
+    }
+    
+    public func cancel() {
+        originalRequest?.cancel()
+    }
+    
+    public func resume() {
+        originalRequest?.resume()
+    }
+    
+}
+
 extension SLRequest: CustomDebugStringConvertible {
     
     public var debugDescription: String {
@@ -111,21 +137,36 @@ extension SLRequest: CustomDebugStringConvertible {
         headers:\(String(describing: headers))
         parameters:\(String(describing: parameters))
         ------------------------ SLRequest -----------------------
+        
         """
     }
     
 }
 
-class SLUploadRequest: SLRequest {
+open class SLUploadRequest: SLRequest {
     
-    override init(method: HTTPMethod? = .post, URLString: String? = nil, path: String? = "", parameters: Parameters? = nil, headers: [String: String]? = nil) {
-        super.init(method: method, URLString: URLString, path: path, parameters: parameters, headers: headers)
-    }
+    public typealias MultipartFormDataClosure = (MultipartFormData) -> Void
     
     public var filePath: String?
     
     public var data: Data?
     
     public var inputStream: InputStream?
+    
+    public var multipartFormDataClosure: MultipartFormDataClosure?
+    
+    public var encodingMemoryThreshold: UInt64 = SessionManager.multipartFormDataEncodingMemoryThreshold
+    
+}
+
+open class SLDownloadRequest: SLRequest {
+    
+    public var isResume: Bool = false
+    
+    var hsaResume: Bool = false
+    
+    public var destinationURL: URL?
+    
+    public var downloadOptions: DownloadRequest.DownloadOptions = [.removePreviousFile, .createIntermediateDirectories]
     
 }

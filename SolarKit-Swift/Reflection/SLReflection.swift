@@ -10,6 +10,12 @@ import Foundation
 
 public protocol SLReflection {
     func toJSONObject() -> Any?
+    
+    func blackList() -> [String]?
+}
+
+extension SLReflection {
+    public func blackList() -> [String]? { return nil }
 }
 
 extension SLReflection {
@@ -19,6 +25,9 @@ extension SLReflection {
             var dict: [String: Any] = [:]
             for (optionalKey, value) in mirror.children {
                 if let propertyNameString = optionalKey, let reflectionValue = value as? SLReflection {
+                    if let blackList = blackList(), blackList.contains(propertyNameString) {
+                        continue
+                    }
                     dict[propertyNameString] = reflectionValue.toJSONObject()
                 }
             }

@@ -6,19 +6,19 @@
 //  Copyright © 2018年 SolarKit. All rights reserved.
 //
 
-//TODO-0:上传
-//TODO-1:断点续传
-//TODO-2:下载
-//TODO-3:断点下载
-
 import Foundation
 import Alamofire
 
-private let SolarKitResponseQueue: String = "com.SolarKit.ResponseQueue"
+private let SLNetworkResponseQueue: String = "com.SLNetwork.ResponseQueue"
+private let SLNetworkCacheURL: URL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0].appendingPathComponent("SLNetwork")
+private let SLNetworkCacheDestinationURL = SLNetworkCacheURL.appendingPathComponent("destination")
+private let SLNetworkCacheResumeURL = SLNetworkCacheURL.appendingPathComponent("resume")
 
 public class SLNetwork {
     
-    public typealias Completion = (SLResponse) -> Void
+    public typealias CompletionClosure = (SLResponse) -> Void
+    
+    public typealias ProgressClosure = (SLProgress) -> Void
     
     //MARK: - Init
 
@@ -45,7 +45,7 @@ public class SLNetwork {
     //MARK: - Private
     private var target: SLTarget
     private let sessionManager: SessionManager
-    private lazy var responseQueue = DispatchQueue(label: SolarKitResponseQueue)
+    private lazy var responseQueue = DispatchQueue(label: SLNetworkResponseQueue)
     private lazy var reachabilityManager: NetworkReachabilityManager? = {
         let reachabilityManager = NetworkReachabilityManager(host: target.host)
         return reachabilityManager
@@ -55,127 +55,261 @@ public class SLNetwork {
 extension SLNetwork {
     
     //MARK: - Data Request
-    
-    @discardableResult
-    public func request(_ request: SLRequest, completion: @escaping Completion) -> DataRequest {
+    public func request(_ request: SLRequest, completionClosure: @escaping CompletionClosure) {
         request.target = target
         
         debugPrint(request)
         
         willSend(request: request)
         
-        return sessionManager.request(request.URLString,
-                                      method: request.method,
-                                      parameters: request.parameters,
-                                      encoding: target.requestEncoding,
-                                      headers: request.headers)
-            .responseData(queue: responseQueue) { [weak self] (originalResponse) in
+        let dataRequest = sessionManager.request(request.URLString,
+                                                 method: request.method,
+                                                 parameters: request.parameters,
+                                                 encoding: target.requestEncoding,
+                                                 headers: request.headers)
+            .responseData(queue: target.responseQueue ?? responseQueue) { [weak self] (originalResponse) in
                 
-                let response = SLResponse(request: request, urlRequest: originalResponse.request, httpURLResponse: originalResponse.response)
+                self?.dealResponseOfDataRequest(request: request, originalResponse: originalResponse, completionClosure: completionClosure)
 
-                switch originalResponse.result {
-                    case .failure(let error):
-                        response.error = error as NSError
-
-                    case .success(let data):
-                        response.data = data
-                }
-
-                self?.didReceive(response: response)
-                
-                self?.toDictionary(response: response)
-                                
-                self?.decode(request: request, response: response)
-                
-                debugPrint(response)
-
-                DispatchQueue.main.async {
-                    completion(response)
-                }
         }
+        
+        request.originalRequest = dataRequest
     }
     
 }
 
 extension SLNetwork {
     
-    func upload(_ request: SLUploadRequest, completion: @escaping Completion) -> UploadRequest {
+    //MARK: - Upload
+    public func upload(_ request: SLUploadRequest, progressClosure: ProgressClosure? = nil,  completionClosure: @escaping CompletionClosure) {
         request.target = target
 
         debugPrint(request)
 
         willSend(request: request)
         
-        var uploadRequest: UploadRequest?
+        var uploadRequest: UploadRequest
         
-        if let filePath = request.filePath, let fileURL = URL(string: filePath) {
-            uploadRequest = sessionManager.upload(fileURL, to: request.URLString, method: request.method, headers: request.headers)
+        if let multipartFormDataClosure = request.multipartFormDataClosure {
+            sessionManager.upload(multipartFormData: multipartFormDataClosure, usingThreshold: request.encodingMemoryThreshold, to: request.URLString, method: request.method, headers: request.headers, encodingCompletion: { [weak self] (encodingResult) in
+                switch encodingResult {
+                    
+                case .success(let uploadRequest, _, _):
+                    self?.uploadResponse(with: request, uploadRequest: uploadRequest, progressClosure:progressClosure, completionClosure: completionClosure)
+                    
+                case .failure(let error):
+                    let response = SLResponse(request: request, urlRequest: nil, httpURLResponse: nil)
+                    response.error = error as NSError
+                    completionClosure(response)
+                }
+            })
         }
-        else if let data = request.data {
-            uploadRequest = sessionManager.upload(data, to: request.URLString, method: request.method, headers: request.headers)
+        else {
+            if let filePath = request.filePath, let fileURL = URL(string: filePath) {
+                uploadRequest = sessionManager.upload(fileURL,
+                                                      to: request.URLString,
+                                                      method: request.method,
+                                                      headers: request.headers)
+            }
+            else if let data = request.data {
+                uploadRequest = sessionManager.upload(data,
+                                                      to: request.URLString,
+                                                      method: request.method,
+                                                      headers: request.headers)
+            }
+            else if let inputStream = request.inputStream {
+                uploadRequest = sessionManager.upload(inputStream,
+                                                      to: request.URLString,
+                                                      method: request.method,
+                                                      headers: request.headers)
+            }
+            else { return }
+            uploadResponse(with: request, uploadRequest: uploadRequest, progressClosure:progressClosure, completionClosure: completionClosure)
         }
-        else if let inputStream = request.inputStream {
-            uploadRequest = sessionManager.upload(inputStream, to: request.URLString, method: request.method, headers: request.headers)
-        }
+    }
+    
+    private func uploadResponse(with request:SLRequest, uploadRequest: UploadRequest, progressClosure: ProgressClosure? = nil,  completionClosure: @escaping CompletionClosure) {
         
-        uploadRequest = uploadRequest?.responseData(completionHandler: { [weak self] (originalResponse) in
+        var progress: SLProgress?
+        if let _ = progressClosure {
+            progress = SLProgress(request: request)
+        }
+        uploadRequest.uploadProgress(closure: { (originalProgress) in
+            if let progressClosure = progressClosure, let progress = progress {
+                progress.originalProgress = originalProgress
+                debugPrint(progress)
+                progressClosure(progress)
+            }
+        })
+        
+        uploadRequest.responseData(queue: target.responseQueue ?? responseQueue) { [weak self] (originalResponse) in
             
-            let response = SLResponse(request: request, urlRequest: originalResponse.request, httpURLResponse: originalResponse.response)
+            self?.dealResponseOfDataRequest(request: request, originalResponse: originalResponse, completionClosure: completionClosure)
+            
+        }
+        
+        request.originalRequest = uploadRequest
+    }
+    
+}
 
+extension SLNetwork {
+    
+    //MARK: - Download
+    func download(_ request: SLDownloadRequest, progressClosure: ProgressClosure? = nil,  completionClosure: @escaping CompletionClosure) {
+        request.target = target
+        
+        debugPrint(request)
+        
+        willSend(request: request)
+        
+        let destinationURL = request.destinationURL ?? SLNetworkCacheDestinationURL.appendingPathComponent(request.requestID)
+        let destination: DownloadRequest.DownloadFileDestination = { _, _ in
+            return (destinationURL, request.downloadOptions)
+        }
+
+        var downloadRequest: DownloadRequest
+        if request.isResume {
+            let resumeURL = SLNetworkCacheResumeURL.appendingPathComponent(request.requestID)
+            var resumeData: Data
+            do {
+                resumeData = try Data(contentsOf: resumeURL)
+                
+                downloadRequest = sessionManager.download(resumingWith: resumeData, to: destination)
+                downloadResponse(with: request, downloadRequest: downloadRequest, progressClosure: progressClosure, completionClosure: completionClosure)
+            }
+            catch {
+                debugPrint(error)
+                downloadRequest = sessionManager.download(request.URLString, method: request.method, parameters: request.parameters, encoding: target.requestEncoding, headers: request.headers, to: destination)
+                downloadResponse(with: request, downloadRequest: downloadRequest, progressClosure: progressClosure, completionClosure: completionClosure)
+            }
+        }
+        else {
+            downloadRequest = sessionManager.download(request.URLString, method: request.method, parameters: request.parameters, encoding: target.requestEncoding, headers: request.headers, to: destination)
+            downloadResponse(with: request, downloadRequest: downloadRequest, progressClosure: progressClosure, completionClosure: completionClosure)
+        }
+    }
+    
+    private func downloadResponse(with request:SLDownloadRequest, downloadRequest: DownloadRequest, progressClosure: ProgressClosure? = nil,  completionClosure: @escaping CompletionClosure) {
+        
+        var progress: SLProgress?
+        if let _ = progressClosure {
+            progress = SLProgress(request: request)
+        }
+        downloadRequest.downloadProgress { (originalProgress) in
+            if let progressClosure = progressClosure, let progress = progress {
+                progress.originalProgress = originalProgress
+                debugPrint(progress)
+                progressClosure(progress)
+            }
+        }
+        
+        downloadRequest.responseData(queue: target.responseQueue ?? responseQueue) { [weak self] (originalResponse) in
+            let response = SLResponse(request: request, urlRequest: originalResponse.request, httpURLResponse: originalResponse.response)
+            let resumeURL = SLNetworkCacheResumeURL.appendingPathComponent(request.requestID)
+            
             switch originalResponse.result {
             case .failure(let error):
                 response.error = error as NSError
                 
+                if request.isResume {
+                    if let errorCode = response.error?.code, errorCode == NSURLErrorCancelled {
+                        if !FileManager.default.fileExists(atPath: SLNetworkCacheResumeURL.absoluteString) {
+                            do {
+                                try FileManager.default.createDirectory(at: SLNetworkCacheResumeURL, withIntermediateDirectories: true, attributes: nil)
+                            }
+                            catch {
+                                debugPrint(error)
+                            }
+                        }
+                        do {
+                            try originalResponse.resumeData?.write(to: resumeURL)
+                            debugPrint("""
+                                ------------------------ SLResponse ----------------------
+                                URL:\(request.URLString)
+                                resumeData has been writed to:
+                                \(resumeURL.absoluteString)
+                                ------------------------ SLResponse ----------------------
+                                
+                                """)
+                        }
+                        catch {
+                            debugPrint(error)
+                        }
+                    }
+                    else {
+                        do {
+                            try FileManager.default.removeItem(at: resumeURL)
+                        }
+                        catch {
+                            debugPrint(error)
+                        }
+                        DispatchQueue.main.async {
+                            self?.download(request, progressClosure: progressClosure, completionClosure: completionClosure)
+                        }
+                        return
+                    }
+                }
+                
             case .success(let data):
+                do {
+                    try FileManager.default.removeItem(at: resumeURL)
+                }
+                catch {
+                    debugPrint(error)
+                }
                 response.data = data
+                response.destinationURL = originalResponse.destinationURL
             }
             
             self?.didReceive(response: response)
-            
-            self?.toDictionary(response: response)
-            
-            self?.decode(request: request, response: response)
-            
+
             debugPrint(response)
             
             DispatchQueue.main.async {
-                completion(response)
+                completionClosure(response)
+                
+                request.originalRequest = nil
             }
             
-        })
-        return uploadRequest!
-
+        }
+        
+        request.originalRequest = downloadRequest
+        
     }
     
 }
 
 extension SLNetwork {
     
-//    private func dealResponseOfDataRequest(request: SLRequest, originalResponse: DataResponse<Data>, completion: @escaping Completion) {
-//        
-//        let response = SLResponse(request: request, urlRequest: originalResponse.request, httpURLResponse: originalResponse.response)
-//        
-//        switch originalResponse.result {
-//        case .failure(let error):
-//            response.error = error as NSError
-//            
-//        case .success(let data):
-//            response.data = data
-//        }
-//        
-//        self.didReceive(response: response)
-//        
-//        self.toDictionary(response: response)
-//        
-//        self.decode(request: request, response: response)
-//        
-//        debugPrint(response)
-//        
-//        DispatchQueue.main.async {
-//            completion(response)
-//        }
-//        
-//    }
+    //MARK: - Response
+    private func dealResponseOfDataRequest(request: SLRequest, originalResponse: DataResponse<Data>, completionClosure: @escaping CompletionClosure) {
+        
+        let response = SLResponse(request: request, urlRequest: originalResponse.request, httpURLResponse: originalResponse.response)
+        
+        switch originalResponse.result {
+        case .failure(let error):
+            response.error = error as NSError
+            
+        case .success(let data):
+            response.data = data
+        }
+        
+        self.didReceive(response: response)
+        
+        self.toDictionary(response: response)
+        
+        self.decode(request: request, response: response)
+        
+        debugPrint(response)
+        
+        DispatchQueue.main.async {
+            completionClosure(response)
+            
+            request.originalRequest = nil
+        }
+        
+    }
     
     private func willSend(request: SLRequest) {
         if let plugins = self.target.plugins {
@@ -184,14 +318,21 @@ extension SLNetwork {
     }
     
     private func didReceive(response: SLResponse) {
-        DispatchQueue.main.sync {
+        if Thread.isMainThread {
             if let plugins = self.target.plugins {
                 plugins.forEach { $0.didReceive(response: response) }
             }
         }
+        else {
+            DispatchQueue.main.sync {
+                if let plugins = self.target.plugins {
+                    plugins.forEach { $0.didReceive(response: response) }
+                }
+            }
+        }
     }
     
-    func toDictionary(response: SLResponse) {
+    private func toDictionary(response: SLResponse) {
         var tempData: Data?
         if let string = response.data as? String {
             tempData = string.data(using: .utf8)
@@ -209,7 +350,7 @@ extension SLNetwork {
         }
     }
     
-    func decode(request:SLRequest, response: SLResponse) {
+    private func decode(request:SLRequest, response: SLResponse) {
         if let status = self.target.status, let dictionary = response.data as? Dictionary<String, Any> {
             let statusValue: Int = dictionary[status.codeKey] as! Int
             var message: String = ""
