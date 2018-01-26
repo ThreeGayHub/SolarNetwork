@@ -6,6 +6,9 @@
 //  Copyright © 2018年 SolarKit. All rights reserved.
 //
 
+//TODO-OAuth
+//TODO-iOS10一下的resumeDownload
+
 import Foundation
 import Alamofire
 

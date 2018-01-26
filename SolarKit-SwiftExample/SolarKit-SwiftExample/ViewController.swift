@@ -14,7 +14,7 @@ class ViewController: UIViewController {
 
     @IBOutlet weak var downloadButton: UIButton!
     
-    let downloadRequest = SLDownloadRequest(URLString: "https://neptune.xnph66.com/neptune.ipa")
+    let downloadRequest = SLDownloadRequest(URLString: "https://download.sublimetext.com/Sublime%20Text%20Build%203143.dmg")
     
     var isDownlonding: Bool = false
     
