@@ -214,14 +214,9 @@ extension SLNetwork {
                 
                 if request.isResume {
                     if let errorCode = response.error?.code, errorCode == NSURLErrorCancelled {
-                        if !FileManager.default.fileExists(atPath: SLNetworkCacheResumeURL.absoluteString) {
-                            do {
-                                try FileManager.default.createDirectory(at: SLNetworkCacheResumeURL, withIntermediateDirectories: true, attributes: nil)
-                            }
-                            catch {
-                                debugPrint(error)
-                            }
-                        }
+                        
+                        FileManager.createDirectory(at: SLNetworkCacheResumeURL, withIntermediateDirectories: true)
+                        
                         do {
                             try originalResponse.resumeData?.write(to: resumeURL)
                             debugPrint("""
@@ -238,26 +233,22 @@ extension SLNetwork {
                         }
                     }
                     else {
-                        do {
-                            try FileManager.default.removeItem(at: resumeURL)
+                        FileManager.removeItem(at: resumeURL)
+                        
+                        if !request.hsaResume {
+                            DispatchQueue.main.async {
+                                self?.download(request, progressClosure: progressClosure, completionClosure: completionClosure)
+                            }
+                            request.hsaResume = true
+                            return
                         }
-                        catch {
-                            debugPrint(error)
-                        }
-                        DispatchQueue.main.async {
-                            self?.download(request, progressClosure: progressClosure, completionClosure: completionClosure)
-                        }
-                        return
                     }
                 }
                 
             case .success(let data):
-                do {
-                    try FileManager.default.removeItem(at: resumeURL)
-                }
-                catch {
-                    debugPrint(error)
-                }
+                
+                FileManager.removeItem(at: resumeURL)
+
                 response.data = data
                 response.destinationURL = originalResponse.destinationURL
             }
@@ -372,4 +363,32 @@ extension SLNetwork {
         }
     }
 
+}
+
+extension FileManager {
+    
+    static func createDirectory(at URL: URL, withIntermediateDirectories createIntermediates: Bool, attributes: [FileAttributeKey : Any]? = nil) {
+        let path = URL.absoluteString.replacingOccurrences(of: "file://", with: "")
+        if !FileManager.default.fileExists(atPath: path) {
+            do {
+                try FileManager.default.createDirectory(at: URL, withIntermediateDirectories: createIntermediates, attributes: attributes)
+            }
+            catch {
+                debugPrint(error)
+            }
+        }
+    }
+    
+    static func removeItem(at URL: URL) {
+        let path = URL.absoluteString.replacingOccurrences(of: "file://", with: "")
+        if FileManager.default.fileExists(atPath: path) {
+            do {
+                try FileManager.default.removeItem(at: URL)
+            }
+            catch {
+                debugPrint(error)
+            }
+        }
+    }
+    
 }
