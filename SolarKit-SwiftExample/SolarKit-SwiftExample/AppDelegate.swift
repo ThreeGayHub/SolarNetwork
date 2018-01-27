@@ -51,31 +51,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //        }
         
 //        let uploadReq = SLUploadRequest()
-
-//        let destinationURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0].appendingPathComponent("SLNetwork/abc134asdfwqef")
-//        let resumeURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0].appendingPathComponent("SLNetwork/resume/abc134asdfwqef")
-//        let destination: DownloadRequest.DownloadFileDestination = { _, _ in
-//            return (destinationURL, [.removePreviousFile, .createIntermediateDirectories])
-//        }
-//        Alamofire.download("http://f.hiphotos.baidu.com/image/pic/item/503d269759ee3d6db032f61b48166d224e4ade6e.jpg", to: destination).responseData { (response) in
-//            print(response.destinationURL)
-//            
-//            do {
-//                try response.result.value?.write(to: resumeURL)
-//            }
-//            catch {
-//                print(error)
-//            }
-//            
-//            
-//        }
-        
-//        let downReq = SLDownloadRequest(URLString: "http://f.hiphotos.baidu.com/image/pic/item/503d269759ee3d6db032f61b48166d224e4ade6e.jpg")
-//        network.download(downReq, progressClosure: { (progress) in
-//
-//        }) { (response) in
-//            
-//        }
         
         // Override point for customization after application launch.
         return true

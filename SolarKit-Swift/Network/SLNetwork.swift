@@ -174,23 +174,22 @@ extension SLNetwork {
         var downloadRequest: DownloadRequest
         if request.isResume {
             let resumeURL = SLNetworkCacheResumeURL.appendingPathComponent(request.requestID)
-            var resumeData: Data
-            do {
-                resumeData = try Data(contentsOf: resumeURL)
-                
-                downloadRequest = sessionManager.download(resumingWith: resumeData, to: destination)
-                downloadResponse(with: request, downloadRequest: downloadRequest, progressClosure: progressClosure, completionClosure: completionClosure)
-            }
-            catch {
-                debugPrint(error)
-                downloadRequest = sessionManager.download(request.URLString, method: request.method, parameters: request.parameters, encoding: target.requestEncoding, headers: request.headers, to: destination)
-                downloadResponse(with: request, downloadRequest: downloadRequest, progressClosure: progressClosure, completionClosure: completionClosure)
+            let resumePath = resumeURL.absoluteString.replacingOccurrences(of: "file://", with: "")
+            if FileManager.default.fileExists(atPath: resumePath) {
+                do {
+                    let resumeData = try Data(contentsOf: resumeURL)
+                    
+                    downloadRequest = sessionManager.download(resumingWith: resumeData, to: destination)
+                    downloadResponse(with: request, downloadRequest: downloadRequest, progressClosure: progressClosure, completionClosure: completionClosure)
+                    return
+                }
+                catch {
+                    debugPrint(error)
+                }
             }
         }
-        else {
-            downloadRequest = sessionManager.download(request.URLString, method: request.method, parameters: request.parameters, encoding: target.requestEncoding, headers: request.headers, to: destination)
-            downloadResponse(with: request, downloadRequest: downloadRequest, progressClosure: progressClosure, completionClosure: completionClosure)
-        }
+        downloadRequest = sessionManager.download(request.URLString, method: request.method, parameters: request.parameters, encoding: target.requestEncoding, headers: request.headers, to: destination)
+        downloadResponse(with: request, downloadRequest: downloadRequest, progressClosure: progressClosure, completionClosure: completionClosure)
     }
     
     private func downloadResponse(with request:SLDownloadRequest, downloadRequest: DownloadRequest, progressClosure: ProgressClosure? = nil,  completionClosure: @escaping CompletionClosure) {
