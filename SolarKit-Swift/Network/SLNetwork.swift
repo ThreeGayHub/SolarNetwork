@@ -17,6 +17,10 @@ private let SLNetworkCacheURL: URL = FileManager.default.urls(for: .cachesDirect
 private let SLNetworkCacheDestinationURL = SLNetworkCacheURL.appendingPathComponent("destination")
 private let SLNetworkCacheResumeURL = SLNetworkCacheURL.appendingPathComponent("resume")
 
+private let SLNetworkTempPath: String = NSTemporaryDirectory()
+private let SLNetworkTempFileNameKey: String = "NSURLSessionResumeInfoTempFileName"
+private let SLNetworkTempFileCountKey: String = "NSURLSessionResumeBytesReceived"
+
 public class SLNetwork {
     
     public typealias CompletionClosure = (SLResponse) -> Void
@@ -178,13 +182,14 @@ extension SLNetwork {
             if FileManager.default.fileExists(atPath: resumePath) {
                 do {
                     let resumeData = try Data(contentsOf: resumeURL)
-                    
-                    downloadRequest = sessionManager.download(resumingWith: resumeData, to: destination)
-                    downloadResponse(with: request, downloadRequest: downloadRequest, progressClosure: progressClosure, completionClosure: completionClosure)
-                    return
+                    if checkValid(of: resumeData) {
+                        downloadRequest = sessionManager.download(resumingWith: resumeData, to: destination)
+                        downloadResponse(with: request, downloadRequest: downloadRequest, progressClosure: progressClosure, completionClosure: completionClosure)
+                        return
+                    }
                 }
                 catch {
-                    debugPrint(error)
+                    debugPrint("ResumeDataInitError:\(error)")
                 }
             }
         }
@@ -231,11 +236,15 @@ extension SLNetwork {
                                 """)
                         }
                         catch {
-                            debugPrint(error)
+                            debugPrint("ResumeDataWriteError:\(error)")
                         }
                     }
                     else {
                         FileManager.removeItem(at: resumeURL)
+
+                        if let resumeData = originalResponse.resumeData, let tempFileURL = self?.tempFileURL(of: resumeData) {
+                            FileManager.removeItem(at: tempFileURL)
+                        }
                         
                         if !request.hsaResume {
                             DispatchQueue.main.async {
@@ -269,6 +278,56 @@ extension SLNetwork {
         
         request.originalRequest = downloadRequest
         
+    }
+    
+    private func checkValid(of resumeData: Data) -> Bool {
+        let count = tempFileCount(of: resumeData)
+        
+        if let URL = tempFileURL(of: resumeData) {
+            do {
+                let tempFileData = try Data(contentsOf: URL)
+                if tempFileData.count == count {
+                    return true
+                }
+            } catch {
+                debugPrint("TempFileDataInitError:\(error)")
+            }
+            FileManager.removeItem(at: URL)
+        }
+        
+        return false
+    }
+    
+    private func tempFileURL(of resumeData: Data) -> URL? {
+        if let resumeDict = resumeDict(of: resumeData) {
+            let tempFileName = resumeDict[SLNetworkTempFileNameKey] as! String
+            let tempFilePath = SLNetworkTempPath + tempFileName
+            if FileManager.default.fileExists(atPath: tempFilePath) {
+                let tempFileURL = URL(fileURLWithPath: tempFilePath)
+                return tempFileURL
+            }
+        }
+        return nil
+    }
+    
+    private func tempFileCount(of resumeData: Data) -> Int {
+        if let resumeDict = resumeDict(of: resumeData) {
+            let tempFileCount = resumeDict[SLNetworkTempFileCountKey] as! Int
+            return tempFileCount
+        }
+        return 0
+    }
+    
+    private func resumeDict(of resumeData: Data) -> [String: Any]? {
+        do {
+            var propertyListForamt =  PropertyListSerialization.PropertyListFormat.xml
+            let resumeDict = try PropertyListSerialization.propertyList(from: resumeData, options: .mutableContainersAndLeaves, format: &propertyListForamt) as? [String: Any]
+            return resumeDict
+            
+        } catch {
+            debugPrint("ResumeDictSerializationError:\(error)")
+        }
+        return nil
     }
     
 }
@@ -376,7 +435,7 @@ extension FileManager {
                 try FileManager.default.createDirectory(at: URL, withIntermediateDirectories: createIntermediates, attributes: attributes)
             }
             catch {
-                debugPrint(error)
+                debugPrint("FileManager.createDirectoryError:\(error)")
             }
         }
     }
@@ -388,7 +447,7 @@ extension FileManager {
                 try FileManager.default.removeItem(at: URL)
             }
             catch {
-                debugPrint(error)
+                debugPrint("FileManager.removeItemError:\(error)")
             }
         }
     }
