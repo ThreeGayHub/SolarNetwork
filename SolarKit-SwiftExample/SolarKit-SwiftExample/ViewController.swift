@@ -14,7 +14,10 @@ class ViewController: UIViewController {
 
     @IBOutlet weak var downloadButton: UIButton!
     
+    //the md5 of sublimeText.dmp is 2426906d22302cd8742162d3b0e154e9
     let downloadRequest = SLDownloadRequest(URLString: "https://download.sublimetext.com/Sublime%20Text%20Build%203143.dmg")
+    
+    //http://cdnvue.com/video/rzGHzRA19L/64tBZo
     
     var isDownlonding: Bool = false
     
@@ -38,7 +41,7 @@ class ViewController: UIViewController {
             network.download(downloadRequest, progressClosure: { (progress) in
                 sender.setTitle(progress.currentProgressString, for: .normal)
             }, completionClosure: { (response) in
-
+                
             })
         }
     }

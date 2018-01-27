@@ -7,7 +7,6 @@
 //
 
 //TODO-OAuth
-//TODO-iOS10一下的resumeDownload
 
 import Foundation
 import Alamofire
@@ -19,7 +18,8 @@ private let SLNetworkCacheResumeURL = SLNetworkCacheURL.appendingPathComponent("
 
 private let SLNetworkTempPath: String = NSTemporaryDirectory()
 private let SLNetworkTempFileNameKey: String = "NSURLSessionResumeInfoTempFileName"
-private let SLNetworkTempFileCountKey: String = "NSURLSessionResumeBytesReceived"
+private let SLNetworkTempFileDataCountKey: String = "NSURLSessionResumeBytesReceived"
+private let SLNetworkTempFilePathKey: String = "NSURLSessionResumeInfoLocalPath"//iOS8 resumeTempFilePath
 
 public class SLNetwork {
     
@@ -177,20 +177,11 @@ extension SLNetwork {
 
         var downloadRequest: DownloadRequest
         if request.isResume {
-            let resumeURL = SLNetworkCacheResumeURL.appendingPathComponent(request.requestID)
-            let resumePath = resumeURL.absoluteString.replacingOccurrences(of: "file://", with: "")
-            if FileManager.default.fileExists(atPath: resumePath) {
-                do {
-                    let resumeData = try Data(contentsOf: resumeURL)
-                    if checkValid(of: resumeData) {
-                        downloadRequest = sessionManager.download(resumingWith: resumeData, to: destination)
-                        downloadResponse(with: request, downloadRequest: downloadRequest, progressClosure: progressClosure, completionClosure: completionClosure)
-                        return
-                    }
-                }
-                catch {
-                    debugPrint("ResumeDataInitError:\(error)")
-                }
+            let resumeDataURL = SLNetworkCacheResumeURL.appendingPathComponent(request.requestID)
+            if let resumeData = resumeData(of: resumeDataURL) {
+                downloadRequest = sessionManager.download(resumingWith: resumeData, to: destination)
+                downloadResponse(with: request, downloadRequest: downloadRequest, progressClosure: progressClosure, completionClosure: completionClosure)
+                return
             }
         }
         downloadRequest = sessionManager.download(request.URLString, method: request.method, parameters: request.parameters, encoding: target.requestEncoding, headers: request.headers, to: destination)
@@ -280,40 +271,101 @@ extension SLNetwork {
         
     }
     
-    private func checkValid(of resumeData: Data) -> Bool {
-        let count = tempFileCount(of: resumeData)
-        
-        if let URL = tempFileURL(of: resumeData) {
+    private func resumeData(of resumeDataURL: URL) -> Data? {
+        let resumeDataPath = resumeDataURL.absoluteString.replacingOccurrences(of: "file://", with: "")
+        if FileManager.default.fileExists(atPath: resumeDataPath) {
             do {
-                let tempFileData = try Data(contentsOf: URL)
-                if tempFileData.count == count {
-                    return true
+                var resumeData = try Data(contentsOf: resumeDataURL)
+                
+                //The path of the iOS8 emulator changes every time it is run.
+                if Platform.isSimulator, var resumeDict = resumeDict(of: resumeData), resumeDict.keys.contains(SLNetworkTempFilePathKey) {
+                    let path = resumeDict[SLNetworkTempFilePathKey] as! NSString
+                    let tempFilePath = SLNetworkTempPath + path.lastPathComponent
+                    resumeDict[SLNetworkTempFilePathKey] = tempFilePath
+                    
+                    do {
+                        let propertyListForamt =  PropertyListSerialization.PropertyListFormat.binary
+                        resumeData = try PropertyListSerialization.data(fromPropertyList: resumeDict, format: propertyListForamt, options: 0)
+                    }
+                    catch {
+                        debugPrint("PropertyListSerialization.dataError:\(error)")
+                    }
                 }
+                
+                if checkValid(of: resumeData) {
+                    return resumeData
+                }
+                else {
+                    // fix the resumeData after App crash or App close
+                    if var resumeDict = resumeDict(of: resumeData), let tempFileURL = tempFileURL(of: resumeData), let tempFileData = tempFileData(of: tempFileURL) {
+                        resumeDict[SLNetworkTempFileDataCountKey] = tempFileData.count
+                        
+                        do {
+                            let propertyListForamt =  PropertyListSerialization.PropertyListFormat.binary
+                            resumeData = try PropertyListSerialization.data(fromPropertyList: resumeDict, format: propertyListForamt, options: 0)
+                            return resumeData
+                        }
+                        catch {
+                            debugPrint("PropertyListSerialization.dataError:\(error)")
+                        }
+                    }
+                }
+                
             } catch {
-                debugPrint("TempFileDataInitError:\(error)")
-            }
-            FileManager.removeItem(at: URL)
-        }
-        
-        return false
-    }
-    
-    private func tempFileURL(of resumeData: Data) -> URL? {
-        if let resumeDict = resumeDict(of: resumeData) {
-            let tempFileName = resumeDict[SLNetworkTempFileNameKey] as! String
-            let tempFilePath = SLNetworkTempPath + tempFileName
-            if FileManager.default.fileExists(atPath: tempFilePath) {
-                let tempFileURL = URL(fileURLWithPath: tempFilePath)
-                return tempFileURL
+                debugPrint("ResumeDataInitError:\(error)")
             }
         }
         return nil
     }
     
-    private func tempFileCount(of resumeData: Data) -> Int {
+    private func checkValid(of resumeData: Data) -> Bool {
+        let dataCount = tempFileDataCount(of: resumeData)
+        
+        if let tempFileURL = tempFileURL(of: resumeData), let tempFileData = tempFileData(of: tempFileURL) {
+            return tempFileData.count == dataCount
+        }
+        
+        return false
+    }
+    
+    func tempFileData(of tempFileURL: URL) -> Data? {
+        do {
+            let tempFileData = try Data(contentsOf: tempFileURL)
+            return tempFileData
+        } catch {
+            debugPrint("TempFileDataInitError:\(error)")
+        }
+        return nil
+    }
+    
+    private func tempFileURL(of resumeData: Data) -> URL? {
         if let resumeDict = resumeDict(of: resumeData) {
-            let tempFileCount = resumeDict[SLNetworkTempFileCountKey] as! Int
-            return tempFileCount
+            var tempFileName: String?
+            var tempFilePath: String?
+            if resumeDict.keys.contains(SLNetworkTempFileNameKey) {
+                tempFileName = resumeDict[SLNetworkTempFileNameKey] as? String
+            }
+            else if resumeDict.keys.contains(SLNetworkTempFilePathKey) {
+                let path = resumeDict[SLNetworkTempFilePathKey] as! NSString
+                tempFileName = path.lastPathComponent
+            }
+            if let name = tempFileName {
+                tempFilePath = SLNetworkTempPath + name
+            }
+            if let path = tempFilePath {
+                if FileManager.default.fileExists(atPath: path) {
+                    let tempFileURL = URL(fileURLWithPath: path)
+                    return tempFileURL
+                }
+            }
+        }
+        return nil
+    }
+    
+    private func tempFileDataCount(of resumeData: Data) -> Int {
+        if let resumeDict = resumeDict(of: resumeData) {
+            let tempFileDataCount = resumeDict[SLNetworkTempFileDataCountKey] as! Int
+            return tempFileDataCount
         }
         return 0
     }
@@ -330,6 +382,16 @@ extension SLNetwork {
         return nil
     }
     
+    struct Platform {
+        static let isSimulator: Bool = {
+            var isSim = false
+            #if arch(i386) || arch(x86_64)
+                isSim = true
+            #endif
+            return isSim
+        }()
+    }
+
 }
 
 extension SLNetwork {
