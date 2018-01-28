@@ -19,7 +19,7 @@ private let SLNetworkCacheResumeURL = SLNetworkCacheURL.appendingPathComponent("
 private let SLNetworkTempPath: String = NSTemporaryDirectory()
 private let SLNetworkTempFileNameKey: String = "NSURLSessionResumeInfoTempFileName"
 private let SLNetworkTempFileDataCountKey: String = "NSURLSessionResumeBytesReceived"
-private let SLNetworkTempFilePathKey: String = "NSURLSessionResumeInfoLocalPath"//iOS8 resumeTempFilePath
+private let SLNetworkTempFilePathKey: String = "NSURLSessionResumeInfoLocalPath"//iOS8 emulator resumeTempFilePath
 
 public class SLNetwork {
     
@@ -71,7 +71,7 @@ extension SLNetwork {
         let dataRequest = sessionManager.request(request.URLString,
                                                  method: request.method,
                                                  parameters: request.parameters,
-                                                 encoding: target.requestEncoding,
+                                                 encoding: request.parameterEncoding,
                                                  headers: request.headers)
         
         if let credential = target.credential {
@@ -113,7 +113,7 @@ extension SLNetwork {
                 return
             }
         }
-        downloadRequest = sessionManager.download(request.URLString, method: request.method, parameters: request.parameters, encoding: target.requestEncoding, headers: request.headers, to: destination)
+        downloadRequest = sessionManager.download(request.URLString, method: request.method, parameters: request.parameters, encoding: request.parameterEncoding, headers: request.headers, to: destination)
         downloadResponse(with: request, downloadRequest: downloadRequest, progressClosure: progressClosure, completionClosure: completionClosure)
     }
     
