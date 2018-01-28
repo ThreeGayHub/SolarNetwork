@@ -11,10 +11,15 @@ import Alamofire
 
 open class SLRequest: SLReflection {
     
-    public init(method: HTTPMethod? = .get, URLString: String? = nil, path: String? = "", parameters: Parameters? = nil, headers: [String: String]? = nil) {
+    public init(method: HTTPMethod = .get,
+                URLString: String? = nil,
+                path: String = "",
+                parameters: Parameters? = nil,
+                parameterEncoding: ParameterEncoding = URLEncoding.default,
+                headers: [String: String]? = nil) {
         self.storeMethod = method
         self.storeURLString = URLString
-        self.path = path!
+        self.path = path
         self.storeParameters = parameters
         self.headers = headers
     }
@@ -59,6 +64,15 @@ open class SLRequest: SLReflection {
             storeParameters = newValue
         }
     }
+    
+    public var parameterEncoding: ParameterEncoding {
+        get {
+            return storeParameterEncoding ?? URLEncoding.default
+        }
+        set {
+            storeParameterEncoding = newValue
+        }
+    }
         
     public var target: SLTarget? {
         get {
@@ -70,6 +84,9 @@ open class SLRequest: SLReflection {
             }
             if storeURLString == nil {
                 storeURLString = (newValue?.baseURLString)! + path
+            }
+            if storeParameterEncoding == nil {
+                storeParameterEncoding = newValue?.parameterEncoding
             }
             if let targetHeaders = newValue?.headers, targetHeaders.count > 0 {
                 if headers == nil {
@@ -100,6 +117,8 @@ open class SLRequest: SLReflection {
     private var storeURLString: String?
     
     private var storeParameters: Parameters?
+    
+    private var storeParameterEncoding: ParameterEncoding?
 
     private var storeTarget: SLTarget?
 }

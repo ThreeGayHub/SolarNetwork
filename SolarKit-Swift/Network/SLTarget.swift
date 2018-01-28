@@ -20,7 +20,7 @@ public protocol SLTarget {
     var headers: [String: String]? { get set }
     
     /// The target's ParameterEncoding.
-    var requestEncoding: ParameterEncoding { get }
+    var parameterEncoding: ParameterEncoding { get }
  
     /// The target's URLSessionConfiguration.
     var configuration: URLSessionConfiguration { get }
@@ -63,7 +63,7 @@ extension SLTarget {
         }
     }
     
-    var requestEncoding: ParameterEncoding { return URLEncoding.default }
+    var parameterEncoding: ParameterEncoding { return URLEncoding.default }
     
     var configuration: URLSessionConfiguration { return URLSessionConfiguration.default }
     
