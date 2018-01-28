@@ -26,9 +26,17 @@ public class SLNetwork {
     public typealias CompletionClosure = (SLResponse) -> Void
     
     public typealias ProgressClosure = (SLProgress) -> Void
+        
+    //MARK: - Property
+    private var target: SLTarget
+    private let sessionManager: SessionManager
+    private lazy var responseQueue = DispatchQueue(label: SLNetworkResponseQueue)
+    private lazy var reachabilityManager: NetworkReachabilityManager? = {
+        let reachabilityManager = NetworkReachabilityManager(host: target.host)
+        return reachabilityManager
+    }()
     
     //MARK: - Init
-
     public init(target: SLTarget) {
         self.target = target
         
@@ -48,15 +56,6 @@ public class SLNetwork {
         }
         
     }
-        
-    //MARK: - Private
-    private var target: SLTarget
-    private let sessionManager: SessionManager
-    private lazy var responseQueue = DispatchQueue(label: SLNetworkResponseQueue)
-    private lazy var reachabilityManager: NetworkReachabilityManager? = {
-        let reachabilityManager = NetworkReachabilityManager(host: target.host)
-        return reachabilityManager
-    }()
 }
 
 extension SLNetwork {
@@ -86,85 +85,6 @@ extension SLNetwork {
         }
         
         request.originalRequest = dataRequest
-    }
-    
-}
-
-extension SLNetwork {
-    
-    //MARK: - Upload
-    public func upload(_ request: SLUploadRequest, progressClosure: ProgressClosure? = nil,  completionClosure: @escaping CompletionClosure) {
-        request.target = target
-
-        debugPrint(request)
-
-        willSend(request: request)
-        
-        var uploadRequest: UploadRequest
-        
-        if let multipartFormDataClosure = request.multipartFormDataClosure {
-            sessionManager.upload(multipartFormData: multipartFormDataClosure, usingThreshold: request.encodingMemoryThreshold, to: request.URLString, method: request.method, headers: request.headers, encodingCompletion: { [weak self] (encodingResult) in
-                switch encodingResult {
-                    
-                case .success(let uploadRequest, _, _):
-                    self?.uploadResponse(with: request, uploadRequest: uploadRequest, progressClosure:progressClosure, completionClosure: completionClosure)
-                    
-                case .failure(let error):
-                    let response = SLResponse(request: request, urlRequest: nil, httpURLResponse: nil)
-                    response.error = error as NSError
-                    completionClosure(response)
-                }
-            })
-        }
-        else {
-            if let filePath = request.filePath, let fileURL = URL(string: filePath) {
-                uploadRequest = sessionManager.upload(fileURL,
-                                                      to: request.URLString,
-                                                      method: request.method,
-                                                      headers: request.headers)
-            }
-            else if let data = request.data {
-                uploadRequest = sessionManager.upload(data,
-                                                      to: request.URLString,
-                                                      method: request.method,
-                                                      headers: request.headers)
-            }
-            else if let inputStream = request.inputStream {
-                uploadRequest = sessionManager.upload(inputStream,
-                                                      to: request.URLString,
-                                                      method: request.method,
-                                                      headers: request.headers)
-            }
-            else { return }
-            uploadResponse(with: request, uploadRequest: uploadRequest, progressClosure:progressClosure, completionClosure: completionClosure)
-        }
-    }
-    
-    private func uploadResponse(with request:SLRequest, uploadRequest: UploadRequest, progressClosure: ProgressClosure? = nil,  completionClosure: @escaping CompletionClosure) {
-        
-        if let credential = target.credential {
-            uploadRequest.authenticate(usingCredential: credential)
-        }
-        
-        var progress: SLProgress?
-        if let _ = progressClosure {
-            progress = SLProgress(request: request)
-        }
-        uploadRequest.uploadProgress(closure: { (originalProgress) in
-            if let progressClosure = progressClosure, let progress = progress {
-                progress.originalProgress = originalProgress
-                debugPrint(progress)
-                progressClosure(progress)
-            }
-        })
-        
-        uploadRequest.responseData(queue: target.responseQueue ?? responseQueue) { [weak self] (originalResponse) in
-            
-            self?.dealResponseOfDataRequest(request: request, originalResponse: originalResponse, completionClosure: completionClosure)
-            
-        }
-        
-        request.originalRequest = uploadRequest
     }
     
 }
@@ -405,6 +325,85 @@ extension SLNetwork {
         }()
     }
 
+}
+
+extension SLNetwork {
+    
+    //MARK: - Upload
+    public func upload(_ request: SLUploadRequest, progressClosure: ProgressClosure? = nil,  completionClosure: @escaping CompletionClosure) {
+        request.target = target
+        
+        debugPrint(request)
+        
+        willSend(request: request)
+        
+        var uploadRequest: UploadRequest
+        
+        if let multipartFormDataClosure = request.multipartFormDataClosure {
+            sessionManager.upload(multipartFormData: multipartFormDataClosure, usingThreshold: request.encodingMemoryThreshold, to: request.URLString, method: request.method, headers: request.headers, encodingCompletion: { [weak self] (encodingResult) in
+                switch encodingResult {
+                    
+                case .success(let uploadRequest, _, _):
+                    self?.uploadResponse(with: request, uploadRequest: uploadRequest, progressClosure:progressClosure, completionClosure: completionClosure)
+                    
+                case .failure(let error):
+                    let response = SLResponse(request: request, urlRequest: nil, httpURLResponse: nil)
+                    response.error = error as NSError
+                    completionClosure(response)
+                }
+            })
+        }
+        else {
+            if let filePath = request.filePath, let fileURL = URL(string: filePath) {
+                uploadRequest = sessionManager.upload(fileURL,
+                                                      to: request.URLString,
+                                                      method: request.method,
+                                                      headers: request.headers)
+            }
+            else if let data = request.data {
+                uploadRequest = sessionManager.upload(data,
+                                                      to: request.URLString,
+                                                      method: request.method,
+                                                      headers: request.headers)
+            }
+            else if let inputStream = request.inputStream {
+                uploadRequest = sessionManager.upload(inputStream,
+                                                      to: request.URLString,
+                                                      method: request.method,
+                                                      headers: request.headers)
+            }
+            else { return }
+            uploadResponse(with: request, uploadRequest: uploadRequest, progressClosure:progressClosure, completionClosure: completionClosure)
+        }
+    }
+    
+    private func uploadResponse(with request:SLRequest, uploadRequest: UploadRequest, progressClosure: ProgressClosure? = nil,  completionClosure: @escaping CompletionClosure) {
+        
+        if let credential = target.credential {
+            uploadRequest.authenticate(usingCredential: credential)
+        }
+        
+        var progress: SLProgress?
+        if let _ = progressClosure {
+            progress = SLProgress(request: request)
+        }
+        uploadRequest.uploadProgress(closure: { (originalProgress) in
+            if let progressClosure = progressClosure, let progress = progress {
+                progress.originalProgress = originalProgress
+                debugPrint(progress)
+                progressClosure(progress)
+            }
+        })
+        
+        uploadRequest.responseData(queue: target.responseQueue ?? responseQueue) { [weak self] (originalResponse) in
+            
+            self?.dealResponseOfDataRequest(request: request, originalResponse: originalResponse, completionClosure: completionClosure)
+            
+        }
+        
+        request.originalRequest = uploadRequest
+    }
+    
 }
 
 extension SLNetwork {
