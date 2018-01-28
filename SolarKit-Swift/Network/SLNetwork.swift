@@ -74,10 +74,15 @@ extension SLNetwork {
                                                  parameters: request.parameters,
                                                  encoding: target.requestEncoding,
                                                  headers: request.headers)
-            .responseData(queue: target.responseQueue ?? responseQueue) { [weak self] (originalResponse) in
-                
-                self?.dealResponseOfDataRequest(request: request, originalResponse: originalResponse, completionClosure: completionClosure)
-
+        
+        if let credential = target.credential {
+            dataRequest.authenticate(usingCredential: credential)
+        }
+            
+        dataRequest.responseData(queue: target.responseQueue ?? responseQueue) { [weak self] (originalResponse) in
+            
+            self?.dealResponseOfDataRequest(request: request, originalResponse: originalResponse, completionClosure: completionClosure)
+            
         }
         
         request.originalRequest = dataRequest
@@ -137,6 +142,10 @@ extension SLNetwork {
     
     private func uploadResponse(with request:SLRequest, uploadRequest: UploadRequest, progressClosure: ProgressClosure? = nil,  completionClosure: @escaping CompletionClosure) {
         
+        if let credential = target.credential {
+            uploadRequest.authenticate(usingCredential: credential)
+        }
+        
         var progress: SLProgress?
         if let _ = progressClosure {
             progress = SLProgress(request: request)
@@ -189,6 +198,10 @@ extension SLNetwork {
     }
     
     private func downloadResponse(with request:SLDownloadRequest, downloadRequest: DownloadRequest, progressClosure: ProgressClosure? = nil,  completionClosure: @escaping CompletionClosure) {
+        
+        if let credential = target.credential {
+            downloadRequest.authenticate(usingCredential: credential)
+        }
         
         var progress: SLProgress?
         if let _ = progressClosure {
