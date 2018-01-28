@@ -27,16 +27,17 @@ public class SLNetwork {
     
     public typealias ProgressClosure = (SLProgress) -> Void
         
-    //MARK: - Property
+    // MARK: - Properties
+    public let sessionManager: SessionManager
+
     private var target: SLTarget
-    private let sessionManager: SessionManager
     private lazy var responseQueue = DispatchQueue(label: SLNetworkResponseQueue)
     private lazy var reachabilityManager: NetworkReachabilityManager? = {
         let reachabilityManager = NetworkReachabilityManager(host: target.host)
         return reachabilityManager
     }()
     
-    //MARK: - Init
+    // MARK: - Lifecycle
     public init(target: SLTarget) {
         self.target = target
         
@@ -60,7 +61,7 @@ public class SLNetwork {
 
 extension SLNetwork {
     
-    //MARK: - Data Request
+    // MARK: - Data Request
     public func request(_ request: SLRequest, completionClosure: @escaping CompletionClosure) {
         request.target = target
         
@@ -79,8 +80,9 @@ extension SLNetwork {
         }
             
         dataRequest.responseData(queue: target.responseQueue ?? responseQueue) { [weak self] (originalResponse) in
-            
-            self?.dealResponseOfDataRequest(request: request, originalResponse: originalResponse, completionClosure: completionClosure)
+            guard let strongSelf = self else { return }
+
+            strongSelf.dealResponseOfDataRequest(request: request, originalResponse: originalResponse, completionClosure: completionClosure)
             
         }
         
@@ -91,7 +93,7 @@ extension SLNetwork {
 
 extension SLNetwork {
     
-    //MARK: - Download
+    // MARK: - Download
     func download(_ request: SLDownloadRequest, progressClosure: ProgressClosure? = nil,  completionClosure: @escaping CompletionClosure) {
         request.target = target
         
@@ -136,6 +138,8 @@ extension SLNetwork {
         }
         
         downloadRequest.responseData(queue: target.responseQueue ?? responseQueue) { [weak self] (originalResponse) in
+            guard let strongSelf = self else { return }
+            
             let response = SLResponse(request: request, urlRequest: originalResponse.request, httpURLResponse: originalResponse.response)
             let resumeURL = SLNetworkCacheResumeURL.appendingPathComponent(request.requestID)
             
@@ -166,13 +170,13 @@ extension SLNetwork {
                     else {
                         FileManager.removeItem(at: resumeURL)
 
-                        if let resumeData = originalResponse.resumeData, let tempFileURL = self?.tempFileURL(of: resumeData) {
+                        if let resumeData = originalResponse.resumeData, let tempFileURL = strongSelf.tempFileURL(of: resumeData) {
                             FileManager.removeItem(at: tempFileURL)
                         }
                         
                         if !request.hsaResume {
                             DispatchQueue.main.async {
-                                self?.download(request, progressClosure: progressClosure, completionClosure: completionClosure)
+                                strongSelf.download(request, progressClosure: progressClosure, completionClosure: completionClosure)
                             }
                             request.hsaResume = true
                             return
@@ -188,7 +192,7 @@ extension SLNetwork {
                 response.destinationURL = originalResponse.destinationURL
             }
             
-            self?.didReceive(response: response)
+            strongSelf.didReceive(response: response)
 
             debugPrint(response)
             
@@ -329,7 +333,7 @@ extension SLNetwork {
 
 extension SLNetwork {
     
-    //MARK: - Upload
+    // MARK: - Upload
     public func upload(_ request: SLUploadRequest, progressClosure: ProgressClosure? = nil,  completionClosure: @escaping CompletionClosure) {
         request.target = target
         
@@ -341,10 +345,11 @@ extension SLNetwork {
         
         if let multipartFormDataClosure = request.multipartFormDataClosure {
             sessionManager.upload(multipartFormData: multipartFormDataClosure, usingThreshold: request.encodingMemoryThreshold, to: request.URLString, method: request.method, headers: request.headers, encodingCompletion: { [weak self] (encodingResult) in
+                guard let strongSelf = self else { return }
+                
                 switch encodingResult {
-                    
                 case .success(let uploadRequest, _, _):
-                    self?.uploadResponse(with: request, uploadRequest: uploadRequest, progressClosure:progressClosure, completionClosure: completionClosure)
+                    strongSelf.uploadResponse(with: request, uploadRequest: uploadRequest, progressClosure:progressClosure, completionClosure: completionClosure)
                     
                 case .failure(let error):
                     let response = SLResponse(request: request, urlRequest: nil, httpURLResponse: nil)
@@ -396,8 +401,9 @@ extension SLNetwork {
         })
         
         uploadRequest.responseData(queue: target.responseQueue ?? responseQueue) { [weak self] (originalResponse) in
+            guard let strongSelf = self else { return }
             
-            self?.dealResponseOfDataRequest(request: request, originalResponse: originalResponse, completionClosure: completionClosure)
+            strongSelf.dealResponseOfDataRequest(request: request, originalResponse: originalResponse, completionClosure: completionClosure)
             
         }
         
@@ -408,7 +414,7 @@ extension SLNetwork {
 
 extension SLNetwork {
     
-    //MARK: - Response
+    // MARK: - Response
     private func dealResponseOfDataRequest(request: SLRequest, originalResponse: DataResponse<Data>, completionClosure: @escaping CompletionClosure) {
         
         let response = SLResponse(request: request, urlRequest: originalResponse.request, httpURLResponse: originalResponse.response)
