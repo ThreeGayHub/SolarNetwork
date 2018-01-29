@@ -10,7 +10,7 @@ import Foundation
 
 public class SLProgress {
     
-    public let request: SLRequest
+    public weak var request: SLRequest?
 
     public var originalProgress: Progress?
     
@@ -36,7 +36,7 @@ extension SLProgress: CustomDebugStringConvertible {
     public var debugDescription: String {
         return """
         ------------------------ SLProgress ----------------------
-        URL:\(request.URLString)
+        URL:\(request?.URLString ?? "")
         Progress:\(currentProgressString)
         ------------------------ SLProgress ----------------------
         
