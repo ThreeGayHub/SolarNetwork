@@ -10,11 +10,11 @@ import Foundation
 import Alamofire
 
 private let SLNetworkResponseQueue: String = "com.SLNetwork.ResponseQueue"
-private let SLNetworkCacheURL: URL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0].appendingPathComponent("SLNetwork")
-private let SLNetworkCacheDestinationURL = SLNetworkCacheURL.appendingPathComponent("destination")
-private let SLNetworkCacheResumeURL = SLNetworkCacheURL.appendingPathComponent("resume")
 
-private let SLNetworkTempPath: String = NSTemporaryDirectory()
+private let SLNetworkFolderPath: String = "SLNetwork"
+private let SLNetworkDestinationFolderPath: String = "Destination"
+private let SLNetworkResumeFolderPath: String = "Resume"
+
 private let SLNetworkTempFileNameKey: String = "NSURLSessionResumeInfoTempFileName"
 private let SLNetworkTempFileDataCountKey: String = "NSURLSessionResumeBytesReceived"
 private let SLNetworkTempFilePathKey: String = "NSURLSessionResumeInfoLocalPath"//iOS8 emulator resumeTempFilePath
@@ -34,6 +34,12 @@ public class SLNetwork {
         let reachabilityManager = NetworkReachabilityManager(host: target.host)
         return reachabilityManager
     }()
+    
+    private var SLNetworkFolderURL: URL { return FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0].appendingPathComponent(SLNetworkFolderPath) }
+    private var SLNetworkDestinationFolderURL: URL { return SLNetworkFolderURL.appendingPathComponent(SLNetworkDestinationFolderPath) }
+    private var SLNetworkResumeFolderURL: URL { return SLNetworkFolderURL.appendingPathComponent(SLNetworkResumeFolderPath) }
+    private var SLNetworkTempFolderPath: String { return NSTemporaryDirectory() }
+    
     
     // MARK: - Lifecycle
     public init(target: SLTarget) {
@@ -99,14 +105,14 @@ extension SLNetwork {
         
         willSend(request: request)
         
-        let destinationURL = request.destinationURL ?? SLNetworkCacheDestinationURL.appendingPathComponent(request.requestID)
+        let destinationURL = request.destinationURL ?? SLNetworkDestinationFolderURL.appendingPathComponent(request.requestID)
         let destination: DownloadRequest.DownloadFileDestination = { _, _ in
             return (destinationURL, request.downloadOptions)
         }
 
         var downloadRequest: DownloadRequest
         if request.isResume {
-            let resumeDataURL = SLNetworkCacheResumeURL.appendingPathComponent(request.requestID)
+            let resumeDataURL = SLNetworkResumeFolderURL.appendingPathComponent(request.requestID)
             if let resumeData = resumeData(of: resumeDataURL) {
                 downloadRequest = sessionManager.download(resumingWith: resumeData, to: destination)
                 downloadResponse(with: request, downloadRequest: downloadRequest, progressClosure: progressClosure, completionClosure: completionClosure)
@@ -139,7 +145,7 @@ extension SLNetwork {
             guard let strongSelf = self else { return }
             
             let response = SLResponse(request: request, urlRequest: originalResponse.request, httpURLResponse: originalResponse.response)
-            let resumeURL = SLNetworkCacheResumeURL.appendingPathComponent(request.requestID)
+            let resumeURL = strongSelf.SLNetworkResumeFolderURL.appendingPathComponent(request.requestID)
             
             switch originalResponse.result {
             case .failure(let error):
@@ -148,7 +154,7 @@ extension SLNetwork {
                 if request.isResume {
                     if let errorCode = response.error?.code, errorCode == NSURLErrorCancelled {
                         
-                        FileManager.createDirectory(at: SLNetworkCacheResumeURL, withIntermediateDirectories: true)
+                        FileManager.createDirectory(at: strongSelf.SLNetworkResumeFolderURL, withIntermediateDirectories: true)
                         
                         do {
                             try originalResponse.resumeData?.write(to: resumeURL)
@@ -405,15 +411,14 @@ extension SLNetwork {
     // MARK: - ResumeData
 
     private func resumeData(of resumeDataURL: URL) -> Data? {
-        let resumeDataPath = resumeDataURL.absoluteString.replacingOccurrences(of: "file://", with: "")
-        if FileManager.default.fileExists(atPath: resumeDataPath) {
+        if FileManager.fileExists(at: resumeDataURL) {
             do {
                 var resumeData = try Data(contentsOf: resumeDataURL)
                 
                 //The path of the iOS8 emulator changes every time it is run.
                 if Platform.isSimulator, var resumeDict = resumeDict(of: resumeData), resumeDict.keys.contains(SLNetworkTempFilePathKey) {
                     let path = resumeDict[SLNetworkTempFilePathKey] as! NSString
-                    let tempFilePath = SLNetworkTempPath + path.lastPathComponent
+                    let tempFilePath = SLNetworkTempFolderPath + path.lastPathComponent
                     resumeDict[SLNetworkTempFilePathKey] = tempFilePath
                     
                     do {
@@ -483,7 +488,7 @@ extension SLNetwork {
                 tempFileName = path.lastPathComponent
             }
             if let name = tempFileName {
-                tempFilePath = SLNetworkTempPath + name
+                tempFilePath = SLNetworkTempFolderPath + name
             }
             if let path = tempFilePath {
                 if FileManager.default.fileExists(atPath: path) {
@@ -530,8 +535,7 @@ extension SLNetwork {
 extension FileManager {
     
     static func createDirectory(at URL: URL, withIntermediateDirectories createIntermediates: Bool, attributes: [FileAttributeKey : Any]? = nil) {
-        let path = URL.absoluteString.replacingOccurrences(of: "file://", with: "")
-        if !FileManager.default.fileExists(atPath: path) {
+        if FileManager.fileExists(at: URL) {
             do {
                 try FileManager.default.createDirectory(at: URL, withIntermediateDirectories: createIntermediates, attributes: attributes)
             }
@@ -542,8 +546,7 @@ extension FileManager {
     }
     
     static func removeItem(at URL: URL) {
-        let path = URL.absoluteString.replacingOccurrences(of: "file://", with: "")
-        if FileManager.default.fileExists(atPath: path) {
+        if FileManager.fileExists(at: URL) {
             do {
                 try FileManager.default.removeItem(at: URL)
             }
@@ -551,6 +554,11 @@ extension FileManager {
                 debugPrint("FileManager.removeItemError:\(error)")
             }
         }
+    }
+    
+    static func fileExists(at URL: URL) -> Bool {
+        let path = URL.absoluteString.replacingOccurrences(of: "file://", with: "")
+        return FileManager.default.fileExists(atPath: path)
     }
     
 }
