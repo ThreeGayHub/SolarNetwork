@@ -6,8 +6,6 @@
 //  Copyright © 2018年 SolarKit. All rights reserved.
 //
 
-//TODO-OAuth
-
 import Foundation
 import Alamofire
 
@@ -185,11 +183,26 @@ extension SLNetwork {
                 }
                 
             case .success(let data):
-                
-                FileManager.removeItem(at: resumeURL)
+                if let totalUnitCount = progress?.originalProgress?.totalUnitCount {
+                    if Int64(data.count) == totalUnitCount {
+                        response.data = data
 
-                response.data = data
+                        response.destinationURL = originalResponse.destinationURL
+                    }
+                }
+                progress = nil
+
+                if response.data == nil {
+                    let error = NSError(domain: strongSelf.target.host, code: NSURLErrorCannotOpenFile, userInfo: [NSLocalizedDescriptionKey : "File is damaged."])
+                    response.error = error
+
+                    if let destinationURL = originalResponse.destinationURL {
+                        FileManager.removeItem(at: destinationURL)
+                    }
+                }
+                
                 response.destinationURL = originalResponse.destinationURL
+                
             }
             
             strongSelf.didReceive(response: response)
@@ -206,127 +219,6 @@ extension SLNetwork {
         
         request.originalRequest = downloadRequest
         
-    }
-    
-    private func resumeData(of resumeDataURL: URL) -> Data? {
-        let resumeDataPath = resumeDataURL.absoluteString.replacingOccurrences(of: "file://", with: "")
-        if FileManager.default.fileExists(atPath: resumeDataPath) {
-            do {
-                var resumeData = try Data(contentsOf: resumeDataURL)
-                
-                //The path of the iOS8 emulator changes every time it is run.
-                if Platform.isSimulator, var resumeDict = resumeDict(of: resumeData), resumeDict.keys.contains(SLNetworkTempFilePathKey) {
-                    let path = resumeDict[SLNetworkTempFilePathKey] as! NSString
-                    let tempFilePath = SLNetworkTempPath + path.lastPathComponent
-                    resumeDict[SLNetworkTempFilePathKey] = tempFilePath
-                    
-                    do {
-                        let propertyListForamt =  PropertyListSerialization.PropertyListFormat.binary
-                        resumeData = try PropertyListSerialization.data(fromPropertyList: resumeDict, format: propertyListForamt, options: 0)
-                    }
-                    catch {
-                        debugPrint("PropertyListSerialization.dataError:\(error)")
-                    }
-                }
-                
-                if checkValid(of: resumeData) {
-                    return resumeData
-                }
-                else {
-                    // fix the resumeData after App crash or App close
-                    if var resumeDict = resumeDict(of: resumeData), let tempFileURL = tempFileURL(of: resumeData), let tempFileData = tempFileData(of: tempFileURL) {
-                        resumeDict[SLNetworkTempFileDataCountKey] = tempFileData.count
-                        
-                        do {
-                            let propertyListForamt =  PropertyListSerialization.PropertyListFormat.binary
-                            resumeData = try PropertyListSerialization.data(fromPropertyList: resumeDict, format: propertyListForamt, options: 0)
-                            return resumeData
-                        }
-                        catch {
-                            debugPrint("PropertyListSerialization.dataError:\(error)")
-                        }
-                    }
-                }
-                
-            } catch {
-                debugPrint("ResumeDataInitError:\(error)")
-            }
-        }
-        return nil
-    }
-    
-    private func checkValid(of resumeData: Data) -> Bool {
-        let dataCount = tempFileDataCount(of: resumeData)
-        
-        if let tempFileURL = tempFileURL(of: resumeData), let tempFileData = tempFileData(of: tempFileURL) {
-            return tempFileData.count == dataCount
-        }
-        
-        return false
-    }
-    
-    func tempFileData(of tempFileURL: URL) -> Data? {
-        do {
-            let tempFileData = try Data(contentsOf: tempFileURL)
-            return tempFileData
-        } catch {
-            debugPrint("TempFileDataInitError:\(error)")
-        }
-        return nil
-    }
-    
-    private func tempFileURL(of resumeData: Data) -> URL? {
-        if let resumeDict = resumeDict(of: resumeData) {
-            var tempFileName: String?
-            var tempFilePath: String?
-            if resumeDict.keys.contains(SLNetworkTempFileNameKey) {
-                tempFileName = resumeDict[SLNetworkTempFileNameKey] as? String
-            }
-            else if resumeDict.keys.contains(SLNetworkTempFilePathKey) {
-                let path = resumeDict[SLNetworkTempFilePathKey] as! NSString
-                tempFileName = path.lastPathComponent
-            }
-            if let name = tempFileName {
-                tempFilePath = SLNetworkTempPath + name
-            }
-            if let path = tempFilePath {
-                if FileManager.default.fileExists(atPath: path) {
-                    let tempFileURL = URL(fileURLWithPath: path)
-                    return tempFileURL
-                }
-            }
-        }
-        return nil
-    }
-    
-    private func tempFileDataCount(of resumeData: Data) -> Int {
-        if let resumeDict = resumeDict(of: resumeData) {
-            let tempFileDataCount = resumeDict[SLNetworkTempFileDataCountKey] as! Int
-            return tempFileDataCount
-        }
-        return 0
-    }
-    
-    private func resumeDict(of resumeData: Data) -> [String: Any]? {
-        do {
-            var propertyListForamt =  PropertyListSerialization.PropertyListFormat.xml
-            let resumeDict = try PropertyListSerialization.propertyList(from: resumeData, options: .mutableContainersAndLeaves, format: &propertyListForamt) as? [String: Any]
-            return resumeDict
-            
-        } catch {
-            debugPrint("ResumeDictSerializationError:\(error)")
-        }
-        return nil
-    }
-    
-    struct Platform {
-        static let isSimulator: Bool = {
-            var isSim = false
-            #if arch(i386) || arch(x86_64)
-                isSim = true
-            #endif
-            return isSim
-        }()
     }
 
 }
@@ -427,11 +319,13 @@ extension SLNetwork {
             response.data = data
         }
         
-        self.didReceive(response: response)
+        didReceive(response: response)
         
-        self.toDictionary(response: response)
-        
-        self.decode(request: request, response: response)
+        if let _ = response.data {
+            toDictionary(response: response)
+            
+            decode(request: request, response: response)
+        }
         
         debugPrint(response)
         
@@ -444,20 +338,20 @@ extension SLNetwork {
     }
     
     private func willSend(request: SLRequest) {
-        if let plugins = self.target.plugins {
+        if let plugins = target.plugins {
             plugins.forEach { $0.willSend(request: request) }
         }
     }
     
     private func didReceive(response: SLResponse) {
         if Thread.isMainThread {
-            if let plugins = self.target.plugins {
+            if let plugins = target.plugins {
                 plugins.forEach { $0.didReceive(response: response) }
             }
         }
         else {
             DispatchQueue.main.sync {
-                if let plugins = self.target.plugins {
+                if let plugins = target.plugins {
                     plugins.forEach { $0.didReceive(response: response) }
                 }
             }
@@ -483,7 +377,7 @@ extension SLNetwork {
     }
     
     private func decode(request:SLRequest, response: SLResponse) {
-        if let status = self.target.status, let dictionary = response.data as? Dictionary<String, Any> {
+        if let status = target.status, let dictionary = response.data as? Dictionary<String, Any> {
             let statusValue: Int = dictionary[status.codeKey] as! Int
             var message: String = ""
             if let messageKey = status.messageKey {
@@ -498,12 +392,139 @@ extension SLNetwork {
                 }
             }
             else {
-                let error = NSError(domain: self.target.host, code: statusValue, userInfo: [NSLocalizedDescriptionKey : message])
+                let error = NSError(domain: target.host, code: statusValue, userInfo: [NSLocalizedDescriptionKey : message])
                 response.error = error
             }
         }
     }
 
+}
+
+extension SLNetwork {
+    
+    // MARK: - ResumeData
+
+    private func resumeData(of resumeDataURL: URL) -> Data? {
+        let resumeDataPath = resumeDataURL.absoluteString.replacingOccurrences(of: "file://", with: "")
+        if FileManager.default.fileExists(atPath: resumeDataPath) {
+            do {
+                var resumeData = try Data(contentsOf: resumeDataURL)
+                
+                //The path of the iOS8 emulator changes every time it is run.
+                if Platform.isSimulator, var resumeDict = resumeDict(of: resumeData), resumeDict.keys.contains(SLNetworkTempFilePathKey) {
+                    let path = resumeDict[SLNetworkTempFilePathKey] as! NSString
+                    let tempFilePath = SLNetworkTempPath + path.lastPathComponent
+                    resumeDict[SLNetworkTempFilePathKey] = tempFilePath
+                    
+                    do {
+                        let propertyListForamt =  PropertyListSerialization.PropertyListFormat.binary
+                        resumeData = try PropertyListSerialization.data(fromPropertyList: resumeDict, format: propertyListForamt, options: 0)
+                    }
+                    catch {
+                        debugPrint("PropertyListSerialization.dataError:\(error)")
+                    }
+                }
+                
+                if checkValid(of: resumeData) {
+                    return resumeData
+                }
+                else {
+                    // fix the resumeData after App crash or App close
+                    if var resumeDict = resumeDict(of: resumeData), let tempFileURL = tempFileURL(of: resumeData), let tempFileData = tempFileData(of: tempFileURL) {
+                        resumeDict[SLNetworkTempFileDataCountKey] = tempFileData.count
+                        
+                        do {
+                            let propertyListForamt =  PropertyListSerialization.PropertyListFormat.binary
+                            resumeData = try PropertyListSerialization.data(fromPropertyList: resumeDict, format: propertyListForamt, options: 0)
+                            return resumeData
+                        }
+                        catch {
+                            debugPrint("PropertyListSerialization.dataError:\(error)")
+                        }
+                    }
+                }
+                
+            } catch {
+                debugPrint("ResumeDataInitError:\(error)")
+            }
+        }
+        return nil
+    }
+    
+    private func checkValid(of resumeData: Data) -> Bool {
+        let dataCount = tempFileDataCount(of: resumeData)
+        
+        if let tempFileURL = tempFileURL(of: resumeData), let tempFileData = tempFileData(of: tempFileURL) {
+            return tempFileData.count == dataCount
+        }
+        
+        return false
+    }
+    
+    private func tempFileData(of tempFileURL: URL) -> Data? {
+        do {
+            let tempFileData = try Data(contentsOf: tempFileURL)
+            return tempFileData
+        } catch {
+            debugPrint("TempFileDataInitError:\(error)")
+        }
+        return nil
+    }
+    
+    private func tempFileURL(of resumeData: Data) -> URL? {
+        if let resumeDict = resumeDict(of: resumeData) {
+            var tempFileName: String?
+            var tempFilePath: String?
+            if resumeDict.keys.contains(SLNetworkTempFileNameKey) {
+                tempFileName = resumeDict[SLNetworkTempFileNameKey] as? String
+            }
+            else if resumeDict.keys.contains(SLNetworkTempFilePathKey) {
+                let path = resumeDict[SLNetworkTempFilePathKey] as! NSString
+                tempFileName = path.lastPathComponent
+            }
+            if let name = tempFileName {
+                tempFilePath = SLNetworkTempPath + name
+            }
+            if let path = tempFilePath {
+                if FileManager.default.fileExists(atPath: path) {
+                    let tempFileURL = URL(fileURLWithPath: path)
+                    return tempFileURL
+                }
+            }
+        }
+        return nil
+    }
+    
+    private func tempFileDataCount(of resumeData: Data) -> Int {
+        if let resumeDict = resumeDict(of: resumeData) {
+            let tempFileDataCount = resumeDict[SLNetworkTempFileDataCountKey] as! Int
+            return tempFileDataCount
+        }
+        return 0
+    }
+    
+    private func resumeDict(of resumeData: Data) -> [String: Any]? {
+        do {
+            var propertyListForamt =  PropertyListSerialization.PropertyListFormat.xml
+            let resumeDict = try PropertyListSerialization.propertyList(from: resumeData, options: .mutableContainersAndLeaves, format: &propertyListForamt) as? [String: Any]
+            return resumeDict
+            
+        } catch {
+            debugPrint("ResumeDictSerializationError:\(error)")
+        }
+        return nil
+    }
+    
+    struct Platform {
+        static let isSimulator: Bool = {
+            var isSim = false
+            #if arch(i386) || arch(x86_64)
+                isSim = true
+            #endif
+            return isSim
+        }()
+    }
+    
 }
 
 extension FileManager {

@@ -10,14 +10,17 @@ import UIKit
 
 let network: SLNetwork = SLNetwork(target: GitHub())
 
+let TestFiles: [String] = ["https://video.cdnvue.com/uploads/1746405174696532785/video/asBF81t",
+                           "https://video.cdnvue.com/uploads/812734077666566393/video/ar9RkFL",
+                           "http://cdnvue.com/video/rzGHzRA19L/64tBZo",
+                           "https://video.cdnvue.com/uploads/-3518274263869595162/video/asBqjiJ",
+                           "https://video.cdnvue.com/uploads/6921208716048356378/video/asCjvhf"]
+
 class ViewController: UIViewController {
 
     @IBOutlet weak var downloadButton: UIButton!
-    
-    //the md5 of sublimeText.dmp is 2426906d22302cd8742162d3b0e154e9
-    let downloadRequest = SLDownloadRequest(URLString: "https://download.sublimetext.com/Sublime%20Text%20Build%203143.dmg")
-    
-    //http://cdnvue.com/video/rzGHzRA19L/64tBZo
+        
+    let downloadRequest = SLDownloadRequest(URLString: TestFiles[0])
     
     var isDownlonding: Bool = false
     

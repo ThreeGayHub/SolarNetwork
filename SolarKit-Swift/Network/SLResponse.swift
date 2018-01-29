@@ -11,7 +11,7 @@ import Alamofire
 
 public class SLResponse {
     
-    public let request: SLRequest
+    public weak var request: SLRequest?
     
     public let urlRequest: URLRequest?
     
@@ -42,7 +42,7 @@ public class SLResponse {
                     decodeData = try JSONSerialization.data(withJSONObject: data)
                 }
             }
-            if let target = self.request.target {
+            if let target = self.request?.target {
                 let data: T = try target.decoder.decode(Model.self, from: decodeData)
                 return data
             }
@@ -61,7 +61,7 @@ extension SLResponse: CustomDebugStringConvertible {
         
         return """
         ------------------------ SLResponse ----------------------
-        URL:\(request.URLString)
+        URL:\(request?.URLString ?? "")
         \(dataString)
         error:\(String(describing: error))
         ------------------------ SLResponse ----------------------
