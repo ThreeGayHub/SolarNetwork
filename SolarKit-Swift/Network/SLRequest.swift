@@ -108,6 +108,8 @@ open class SLRequest: SLReflection {
     }
     
     public var headers: [String: String]?
+    
+    public var credential: URLCredential?
         
     public var dataKeyPath: String?
 

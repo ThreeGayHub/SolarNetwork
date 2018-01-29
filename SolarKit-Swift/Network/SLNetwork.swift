@@ -9,15 +9,15 @@
 import Foundation
 import Alamofire
 
-private let SLNetworkResponseQueue: String = "com.SLNetwork.ResponseQueue"
+private let SLNetworkResponseQueue: String          = "com.SLNetwork.ResponseQueue"
 
-private let SLNetworkFolderPath: String = "SLNetwork"
-private let SLNetworkDestinationFolderPath: String = "Destination"
-private let SLNetworkResumeFolderPath: String = "Resume"
+private let SLNetworkFolderPath: String             = "SLNetwork"
+private let SLNetworkDestinationFolderPath: String  = "Destination"
+private let SLNetworkResumeFolderPath: String       = "Resume"
 
-private let SLNetworkTempFileNameKey: String = "NSURLSessionResumeInfoTempFileName"
-private let SLNetworkTempFileDataCountKey: String = "NSURLSessionResumeBytesReceived"
-private let SLNetworkTempFilePathKey: String = "NSURLSessionResumeInfoLocalPath"//iOS8 emulator resumeTempFilePath
+private let SLNetworkTempFileNameKey: String        = "NSURLSessionResumeInfoTempFileName"
+private let SLNetworkTempFileDataCountKey: String   = "NSURLSessionResumeBytesReceived"
+private let SLNetworkTempFilePathKey: String        = "NSURLSessionResumeInfoLocalPath"//iOS8 emulator resumeTempFilePath
 
 public class SLNetwork {
     
@@ -79,7 +79,7 @@ extension SLNetwork {
                                                  encoding: request.parameterEncoding,
                                                  headers: request.headers)
         
-        if let credential = target.credential {
+        if let credential = request.credential {
             dataRequest.authenticate(usingCredential: credential)
         }
             
@@ -125,15 +125,19 @@ extension SLNetwork {
     
     private func downloadResponse(with request:SLDownloadRequest, downloadRequest: DownloadRequest, progressClosure: ProgressClosure? = nil,  completionClosure: @escaping CompletionClosure) {
         
-        if let credential = target.credential {
+        if let credential = request.credential {
             downloadRequest.authenticate(usingCredential: credential)
         }
         
+        var totalUnitCount: Int64 = 0
         var progress: SLProgress?
         if let _ = progressClosure {
             progress = SLProgress(request: request)
         }
         downloadRequest.downloadProgress { (originalProgress) in
+            if totalUnitCount == 0 {
+                totalUnitCount = originalProgress.totalUnitCount
+            }
             if let progressClosure = progressClosure, let progress = progress {
                 progress.originalProgress = originalProgress
                 debugPrint(progress)
@@ -189,26 +193,18 @@ extension SLNetwork {
                 }
                 
             case .success(let data):
-                if let totalUnitCount = progress?.originalProgress?.totalUnitCount {
-                    if Int64(data.count) == totalUnitCount {
-                        response.data = data
-
-                        response.destinationURL = originalResponse.destinationURL
-                    }
+                if Int64(data.count) == totalUnitCount {
+                    response.data = data
+                    response.destinationURL = originalResponse.destinationURL
                 }
-                progress = nil
-
-                if response.data == nil {
+                else {
                     let error = NSError(domain: strongSelf.target.host, code: NSURLErrorCannotOpenFile, userInfo: [NSLocalizedDescriptionKey : "File is damaged."])
                     response.error = error
-
+                    
                     if let destinationURL = originalResponse.destinationURL {
                         FileManager.removeItem(at: destinationURL)
                     }
-                }
-                
-                response.destinationURL = originalResponse.destinationURL
-                
+                }                
             }
             
             strongSelf.didReceive(response: response)
@@ -282,7 +278,7 @@ extension SLNetwork {
     
     private func uploadResponse(with request:SLRequest, uploadRequest: UploadRequest, progressClosure: ProgressClosure? = nil,  completionClosure: @escaping CompletionClosure) {
         
-        if let credential = target.credential {
+        if let credential = request.credential {
             uploadRequest.authenticate(usingCredential: credential)
         }
         

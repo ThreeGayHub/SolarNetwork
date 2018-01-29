@@ -28,9 +28,6 @@ public protocol SLTarget {
     /// The target's serverTrustPolicies
     var policies: [String : ServerTrustPolicy]? { get }
     
-    /// The target's credential
-    var credential: URLCredential? { get }
-    
     /// The target's ResponseQueue
     var responseQueue: DispatchQueue? { get }
     
@@ -86,9 +83,7 @@ extension SLTarget {
      return serverTrustPolicies
      */
     var policies: [String : ServerTrustPolicy]? { return nil }
-    
-    var credential: URLCredential? { return nil }
-    
+        
     var responseQueue: DispatchQueue? { return nil }
     
     var plugins: [SLPlugin]? { return nil }
