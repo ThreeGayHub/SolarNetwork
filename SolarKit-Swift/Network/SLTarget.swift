@@ -46,11 +46,6 @@ public protocol SLTarget {
     /// The target's Response JSONDecoder
     var decoder: JSONDecoder { get }
     
-    /// The target's RequestAdapter
-    var adapter: RequestAdapter? { get }
-    
-    /// The target's RequestRetrier
-    var retrier: RequestRetrier? { get }
 }
 
 extension SLTarget {
@@ -109,11 +104,4 @@ extension SLTarget {
         return decoder
     }
     
-    /**
-     how to use?
-     https://github.com/Alamofire/Alamofire/blob/master/Documentation/AdvancedUsage.md#adapting-and-retrying-requests
-     */
-    var adapter: RequestAdapter? { return nil }
-    
-    var retrier: RequestRetrier? { return nil }
 }

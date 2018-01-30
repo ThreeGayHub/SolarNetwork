@@ -135,7 +135,7 @@ extension SLNetwork {
             progress = SLProgress(request: request)
         }
         downloadRequest.downloadProgress { (originalProgress) in
-            if totalUnitCount == 0 {
+            if totalUnitCount != originalProgress.totalUnitCount {
                 totalUnitCount = originalProgress.totalUnitCount
             }
             if let progressClosure = progressClosure, let progress = progress {
@@ -193,18 +193,25 @@ extension SLNetwork {
                 }
                 
             case .success(let data):
-                if Int64(data.count) == totalUnitCount {
+                if request.isResume {
+                    if Int64(data.count) == totalUnitCount || totalUnitCount == 0 {
+                        response.data = data
+                        response.destinationURL = originalResponse.destinationURL
+                    }
+                    else {
+                        let error = NSError(domain: strongSelf.target.host, code: NSURLErrorCannotOpenFile, userInfo: [NSLocalizedDescriptionKey : "File is damaged."])
+                        response.error = error
+                        
+                        if let destinationURL = originalResponse.destinationURL {
+                            FileManager.removeItem(at: destinationURL)
+                        }
+                    }
+                }
+                else {
                     response.data = data
                     response.destinationURL = originalResponse.destinationURL
                 }
-                else {
-                    let error = NSError(domain: strongSelf.target.host, code: NSURLErrorCannotOpenFile, userInfo: [NSLocalizedDescriptionKey : "File is damaged."])
-                    response.error = error
-                    
-                    if let destinationURL = originalResponse.destinationURL {
-                        FileManager.removeItem(at: destinationURL)
-                    }
-                }                
+                
             }
             
             strongSelf.didReceive(response: response)

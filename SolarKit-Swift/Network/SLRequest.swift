@@ -22,7 +22,11 @@ open class SLRequest: SLReflection {
         self.path = path
         self.storeParameters = parameters
         self.headers = headers
+        
+        loadRequest()
     }
+    
+    public func loadRequest() {}
     
     public var originalRequest: Request?
     
