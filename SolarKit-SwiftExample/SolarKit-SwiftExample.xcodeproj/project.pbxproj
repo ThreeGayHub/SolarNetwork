@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4A3D0424261DBE3EC3620495 /* Pods_SolarKit_SwiftExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAD2148ACF410D913B6020BD /* Pods_SolarKit_SwiftExample.framework */; };
+		F8658DBB20207E87008B5B7B /* HTTPBinPATCHRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8658DBA20207E87008B5B7B /* HTTPBinPATCHRequest.swift */; };
 		F86945712008AC8700123862 /* GitHub.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86945702008AC8700123862 /* GitHub.swift */; };
 		F86945732008AD2700123862 /* APIRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86945722008AD2700123862 /* APIRequest.swift */; };
 		F86945752008AD4600123862 /* APIModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86945742008AD4600123862 /* APIModel.swift */; };
@@ -40,6 +41,7 @@
 		847AE5423D0AC18514EB6E64 /* Pods-SolarKit-SwiftExample.sit.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SolarKit-SwiftExample.sit.xcconfig"; path = "Pods/Target Support Files/Pods-SolarKit-SwiftExample/Pods-SolarKit-SwiftExample.sit.xcconfig"; sourceTree = "<group>"; };
 		9DEA2FB203FF8262C7FB8FD7 /* Pods-SolarKit-SwiftExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SolarKit-SwiftExample.release.xcconfig"; path = "Pods/Target Support Files/Pods-SolarKit-SwiftExample/Pods-SolarKit-SwiftExample.release.xcconfig"; sourceTree = "<group>"; };
 		DAD2148ACF410D913B6020BD /* Pods_SolarKit_SwiftExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SolarKit_SwiftExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F8658DBA20207E87008B5B7B /* HTTPBinPATCHRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPBinPATCHRequest.swift; sourceTree = "<group>"; };
 		F86945702008AC8700123862 /* GitHub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHub.swift; sourceTree = "<group>"; };
 		F86945722008AD2700123862 /* APIRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIRequest.swift; sourceTree = "<group>"; };
 		F86945742008AD4600123862 /* APIModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIModel.swift; sourceTree = "<group>"; };
@@ -164,6 +166,7 @@
 				F86966F7202067C00098EC08 /* HTTPBinPOSTRequest.swift */,
 				F86966F9202068EA0098EC08 /* HTTPBinPUTRequest.swift */,
 				F86966FB2020696B0098EC08 /* HTTPBinDELETERequest.swift */,
+				F8658DBA20207E87008B5B7B /* HTTPBinPATCHRequest.swift */,
 				F86966FD20206CA40098EC08 /* HTTPBinDownLoadRequest.swift */,
 				F8696703202078F40098EC08 /* HTTPBinUploadRequest.swift */,
 			);
@@ -354,6 +357,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F8658DBB20207E87008B5B7B /* HTTPBinPATCHRequest.swift in Sources */,
 				F8751CF71FFC6A6B009CB58C /* ViewController.swift in Sources */,
 				F86966FC2020696B0098EC08 /* HTTPBinDELETERequest.swift in Sources */,
 				F86966F620205F610098EC08 /* HTTPBin.swift in Sources */,

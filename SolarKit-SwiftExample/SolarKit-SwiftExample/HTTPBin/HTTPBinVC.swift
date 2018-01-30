@@ -46,6 +46,11 @@ class HTTPBinVC: UITableViewController {
                 
             }
             
+        case (0, 4):
+            HTTPBinNetwork.request(HTTPBinPATCHRequest()) { (response) in
+                
+            }
+            
         case (1, 0):
             HTTPBinNetwork.download(HTTPBinDownLoadRequest(), progressClosure: { (progress) in
                 
