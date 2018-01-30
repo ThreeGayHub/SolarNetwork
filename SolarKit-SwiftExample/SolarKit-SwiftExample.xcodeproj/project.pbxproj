@@ -8,21 +8,31 @@
 
 /* Begin PBXBuildFile section */
 		4A3D0424261DBE3EC3620495 /* Pods_SolarKit_SwiftExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAD2148ACF410D913B6020BD /* Pods_SolarKit_SwiftExample.framework */; };
-		F86945662006FA7100123862 /* SLPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86945652006FA7100123862 /* SLPlugin.swift */; };
-		F86945682006FB2700123862 /* SLResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86945672006FB2700123862 /* SLResponse.swift */; };
 		F86945712008AC8700123862 /* GitHub.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86945702008AC8700123862 /* GitHub.swift */; };
 		F86945732008AD2700123862 /* APIRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86945722008AD2700123862 /* APIRequest.swift */; };
 		F86945752008AD4600123862 /* APIModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86945742008AD4600123862 /* APIModel.swift */; };
-		F86966922016E1F00098EC08 /* SLProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86966912016E1F00098EC08 /* SLProgress.swift */; };
+		F86966E320205A330098EC08 /* SLReflection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86966DB20205A330098EC08 /* SLReflection.swift */; };
+		F86966E420205A330098EC08 /* SLTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86966DD20205A330098EC08 /* SLTarget.swift */; };
+		F86966E520205A330098EC08 /* SLResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86966DE20205A330098EC08 /* SLResponse.swift */; };
+		F86966E620205A330098EC08 /* SLRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86966DF20205A330098EC08 /* SLRequest.swift */; };
+		F86966E720205A330098EC08 /* SLNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86966E020205A330098EC08 /* SLNetwork.swift */; };
+		F86966E820205A330098EC08 /* SLPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86966E120205A330098EC08 /* SLPlugin.swift */; };
+		F86966E920205A330098EC08 /* SLProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86966E220205A330098EC08 /* SLProgress.swift */; };
+		F86966F020205CDC0098EC08 /* HTTPBinVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86966EF20205CDC0098EC08 /* HTTPBinVC.swift */; };
+		F86966F220205D720098EC08 /* HTTPBinTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86966F120205D720098EC08 /* HTTPBinTarget.swift */; };
+		F86966F420205E320098EC08 /* HTTPBinGETRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86966F320205E310098EC08 /* HTTPBinGETRequest.swift */; };
+		F86966F620205F610098EC08 /* HTTPBin.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86966F520205F610098EC08 /* HTTPBin.swift */; };
+		F86966F8202067C10098EC08 /* HTTPBinPOSTRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86966F7202067C00098EC08 /* HTTPBinPOSTRequest.swift */; };
+		F86966FA202068EA0098EC08 /* HTTPBinPUTRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86966F9202068EA0098EC08 /* HTTPBinPUTRequest.swift */; };
+		F86966FC2020696B0098EC08 /* HTTPBinDELETERequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86966FB2020696B0098EC08 /* HTTPBinDELETERequest.swift */; };
+		F86966FE20206CA40098EC08 /* HTTPBinDownLoadRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86966FD20206CA40098EC08 /* HTTPBinDownLoadRequest.swift */; };
+		F8696702202078770098EC08 /* SLNetwork.png in Resources */ = {isa = PBXBuildFile; fileRef = F8696701202078770098EC08 /* SLNetwork.png */; };
+		F8696704202078F40098EC08 /* HTTPBinUploadRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8696703202078F40098EC08 /* HTTPBinUploadRequest.swift */; };
 		F8751CF51FFC6A6B009CB58C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8751CF41FFC6A6B009CB58C /* AppDelegate.swift */; };
 		F8751CF71FFC6A6B009CB58C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8751CF61FFC6A6B009CB58C /* ViewController.swift */; };
 		F8751CFA1FFC6A6B009CB58C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F8751CF81FFC6A6B009CB58C /* Main.storyboard */; };
 		F8751CFC1FFC6A6B009CB58C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F8751CFB1FFC6A6B009CB58C /* Assets.xcassets */; };
 		F8751CFF1FFC6A6B009CB58C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F8751CFD1FFC6A6B009CB58C /* LaunchScreen.storyboard */; };
-		F8B96E082000C5E100A07709 /* SLRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B96E072000C5E100A07709 /* SLRequest.swift */; };
-		F8B96E11200375D800A07709 /* SLReflection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B96E10200375D800A07709 /* SLReflection.swift */; };
-		F8B96E1320046D3E00A07709 /* SLNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B96E1220046D3E00A07709 /* SLNetwork.swift */; };
-		F8B96E1520046E9800A07709 /* SLTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B96E1420046E9800A07709 /* SLTarget.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,12 +40,26 @@
 		847AE5423D0AC18514EB6E64 /* Pods-SolarKit-SwiftExample.sit.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SolarKit-SwiftExample.sit.xcconfig"; path = "Pods/Target Support Files/Pods-SolarKit-SwiftExample/Pods-SolarKit-SwiftExample.sit.xcconfig"; sourceTree = "<group>"; };
 		9DEA2FB203FF8262C7FB8FD7 /* Pods-SolarKit-SwiftExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SolarKit-SwiftExample.release.xcconfig"; path = "Pods/Target Support Files/Pods-SolarKit-SwiftExample/Pods-SolarKit-SwiftExample.release.xcconfig"; sourceTree = "<group>"; };
 		DAD2148ACF410D913B6020BD /* Pods_SolarKit_SwiftExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SolarKit_SwiftExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		F86945652006FA7100123862 /* SLPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SLPlugin.swift; sourceTree = "<group>"; };
-		F86945672006FB2700123862 /* SLResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SLResponse.swift; sourceTree = "<group>"; };
 		F86945702008AC8700123862 /* GitHub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHub.swift; sourceTree = "<group>"; };
 		F86945722008AD2700123862 /* APIRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIRequest.swift; sourceTree = "<group>"; };
 		F86945742008AD4600123862 /* APIModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIModel.swift; sourceTree = "<group>"; };
-		F86966912016E1F00098EC08 /* SLProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SLProgress.swift; sourceTree = "<group>"; };
+		F86966DB20205A330098EC08 /* SLReflection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SLReflection.swift; sourceTree = "<group>"; };
+		F86966DD20205A330098EC08 /* SLTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SLTarget.swift; sourceTree = "<group>"; };
+		F86966DE20205A330098EC08 /* SLResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SLResponse.swift; sourceTree = "<group>"; };
+		F86966DF20205A330098EC08 /* SLRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SLRequest.swift; sourceTree = "<group>"; };
+		F86966E020205A330098EC08 /* SLNetwork.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SLNetwork.swift; sourceTree = "<group>"; };
+		F86966E120205A330098EC08 /* SLPlugin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SLPlugin.swift; sourceTree = "<group>"; };
+		F86966E220205A330098EC08 /* SLProgress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SLProgress.swift; sourceTree = "<group>"; };
+		F86966EF20205CDC0098EC08 /* HTTPBinVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPBinVC.swift; sourceTree = "<group>"; };
+		F86966F120205D720098EC08 /* HTTPBinTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPBinTarget.swift; sourceTree = "<group>"; };
+		F86966F320205E310098EC08 /* HTTPBinGETRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPBinGETRequest.swift; sourceTree = "<group>"; };
+		F86966F520205F610098EC08 /* HTTPBin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPBin.swift; sourceTree = "<group>"; };
+		F86966F7202067C00098EC08 /* HTTPBinPOSTRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPBinPOSTRequest.swift; sourceTree = "<group>"; };
+		F86966F9202068EA0098EC08 /* HTTPBinPUTRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPBinPUTRequest.swift; sourceTree = "<group>"; };
+		F86966FB2020696B0098EC08 /* HTTPBinDELETERequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPBinDELETERequest.swift; sourceTree = "<group>"; };
+		F86966FD20206CA40098EC08 /* HTTPBinDownLoadRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPBinDownLoadRequest.swift; sourceTree = "<group>"; };
+		F8696701202078770098EC08 /* SLNetwork.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SLNetwork.png; sourceTree = SOURCE_ROOT; };
+		F8696703202078F40098EC08 /* HTTPBinUploadRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPBinUploadRequest.swift; sourceTree = "<group>"; };
 		F8751CF11FFC6A6B009CB58C /* SolarKit-SwiftExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SolarKit-SwiftExample.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F8751CF41FFC6A6B009CB58C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F8751CF61FFC6A6B009CB58C /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -43,10 +67,6 @@
 		F8751CFB1FFC6A6B009CB58C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F8751CFE1FFC6A6B009CB58C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F8751D001FFC6A6B009CB58C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		F8B96E072000C5E100A07709 /* SLRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SLRequest.swift; sourceTree = "<group>"; };
-		F8B96E10200375D800A07709 /* SLReflection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SLReflection.swift; sourceTree = "<group>"; };
-		F8B96E1220046D3E00A07709 /* SLNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SLNetwork.swift; sourceTree = "<group>"; };
-		F8B96E1420046E9800A07709 /* SLTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SLTarget.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -113,6 +133,43 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		F86966DA20205A330098EC08 /* Reflection */ = {
+			isa = PBXGroup;
+			children = (
+				F86966DB20205A330098EC08 /* SLReflection.swift */,
+			);
+			path = Reflection;
+			sourceTree = "<group>";
+		};
+		F86966DC20205A330098EC08 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				F86966DD20205A330098EC08 /* SLTarget.swift */,
+				F86966DE20205A330098EC08 /* SLResponse.swift */,
+				F86966DF20205A330098EC08 /* SLRequest.swift */,
+				F86966E020205A330098EC08 /* SLNetwork.swift */,
+				F86966E120205A330098EC08 /* SLPlugin.swift */,
+				F86966E220205A330098EC08 /* SLProgress.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		F86966EE20205CDC0098EC08 /* HTTPBin */ = {
+			isa = PBXGroup;
+			children = (
+				F86966EF20205CDC0098EC08 /* HTTPBinVC.swift */,
+				F86966F520205F610098EC08 /* HTTPBin.swift */,
+				F86966F120205D720098EC08 /* HTTPBinTarget.swift */,
+				F86966F320205E310098EC08 /* HTTPBinGETRequest.swift */,
+				F86966F7202067C00098EC08 /* HTTPBinPOSTRequest.swift */,
+				F86966F9202068EA0098EC08 /* HTTPBinPUTRequest.swift */,
+				F86966FB2020696B0098EC08 /* HTTPBinDELETERequest.swift */,
+				F86966FD20206CA40098EC08 /* HTTPBinDownLoadRequest.swift */,
+				F8696703202078F40098EC08 /* HTTPBinUploadRequest.swift */,
+			);
+			path = HTTPBin;
+			sourceTree = "<group>";
+		};
 		F8751CE81FFC6A6B009CB58C = {
 			isa = PBXGroup;
 			children = (
@@ -135,6 +192,8 @@
 		F8751CF31FFC6A6B009CB58C /* SolarKit-SwiftExample */ = {
 			isa = PBXGroup;
 			children = (
+				F8696701202078770098EC08 /* SLNetwork.png */,
+				F86966EE20205CDC0098EC08 /* HTTPBin */,
 				F869456C2008AC2A00123862 /* NetworkExample */,
 				F8751CF41FFC6A6B009CB58C /* AppDelegate.swift */,
 				F8751CF61FFC6A6B009CB58C /* ViewController.swift */,
@@ -149,56 +208,11 @@
 		F8751D071FFC6B15009CB58C /* SolarKit-Swift */ = {
 			isa = PBXGroup;
 			children = (
-				F8B96E0F200375C900A07709 /* Reflection */,
-				F8B96E062000C26900A07709 /* Network */,
-				F8751D081FFC7255009CB58C /* Extention */,
+				F86966DC20205A330098EC08 /* Network */,
+				F86966DA20205A330098EC08 /* Reflection */,
 			);
 			name = "SolarKit-Swift";
 			path = "../SolarKit-Swift";
-			sourceTree = "<group>";
-		};
-		F8751D081FFC7255009CB58C /* Extention */ = {
-			isa = PBXGroup;
-			children = (
-				F8751D091FFC7255009CB58C /* UIKit */,
-				F8751D0A1FFC7255009CB58C /* Foundation */,
-			);
-			path = Extention;
-			sourceTree = "<group>";
-		};
-		F8751D091FFC7255009CB58C /* UIKit */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = UIKit;
-			sourceTree = "<group>";
-		};
-		F8751D0A1FFC7255009CB58C /* Foundation */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Foundation;
-			sourceTree = "<group>";
-		};
-		F8B96E062000C26900A07709 /* Network */ = {
-			isa = PBXGroup;
-			children = (
-				F8B96E1220046D3E00A07709 /* SLNetwork.swift */,
-				F8B96E1420046E9800A07709 /* SLTarget.swift */,
-				F8B96E072000C5E100A07709 /* SLRequest.swift */,
-				F86945672006FB2700123862 /* SLResponse.swift */,
-				F86966912016E1F00098EC08 /* SLProgress.swift */,
-				F86945652006FA7100123862 /* SLPlugin.swift */,
-			);
-			path = Network;
-			sourceTree = "<group>";
-		};
-		F8B96E0F200375C900A07709 /* Reflection */ = {
-			isa = PBXGroup;
-			children = (
-				F8B96E10200375D800A07709 /* SLReflection.swift */,
-			);
-			path = Reflection;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -265,6 +279,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F8751CFF1FFC6A6B009CB58C /* LaunchScreen.storyboard in Resources */,
+				F8696702202078770098EC08 /* SLNetwork.png in Resources */,
 				F8751CFC1FFC6A6B009CB58C /* Assets.xcassets in Resources */,
 				F8751CFA1FFC6A6B009CB58C /* Main.storyboard in Resources */,
 			);
@@ -339,18 +354,27 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F86945662006FA7100123862 /* SLPlugin.swift in Sources */,
-				F8B96E11200375D800A07709 /* SLReflection.swift in Sources */,
 				F8751CF71FFC6A6B009CB58C /* ViewController.swift in Sources */,
-				F8B96E082000C5E100A07709 /* SLRequest.swift in Sources */,
+				F86966FC2020696B0098EC08 /* HTTPBinDELETERequest.swift in Sources */,
+				F86966F620205F610098EC08 /* HTTPBin.swift in Sources */,
+				F86966E720205A330098EC08 /* SLNetwork.swift in Sources */,
+				F86966F220205D720098EC08 /* HTTPBinTarget.swift in Sources */,
+				F86966F020205CDC0098EC08 /* HTTPBinVC.swift in Sources */,
+				F86966FA202068EA0098EC08 /* HTTPBinPUTRequest.swift in Sources */,
+				F86966E520205A330098EC08 /* SLResponse.swift in Sources */,
+				F86966E320205A330098EC08 /* SLReflection.swift in Sources */,
+				F86966FE20206CA40098EC08 /* HTTPBinDownLoadRequest.swift in Sources */,
 				F86945752008AD4600123862 /* APIModel.swift in Sources */,
-				F8B96E1320046D3E00A07709 /* SLNetwork.swift in Sources */,
-				F86945682006FB2700123862 /* SLResponse.swift in Sources */,
+				F86966F420205E320098EC08 /* HTTPBinGETRequest.swift in Sources */,
+				F86966E820205A330098EC08 /* SLPlugin.swift in Sources */,
+				F86966E620205A330098EC08 /* SLRequest.swift in Sources */,
+				F86966E420205A330098EC08 /* SLTarget.swift in Sources */,
 				F86945712008AC8700123862 /* GitHub.swift in Sources */,
-				F8B96E1520046E9800A07709 /* SLTarget.swift in Sources */,
+				F86966F8202067C10098EC08 /* HTTPBinPOSTRequest.swift in Sources */,
 				F86945732008AD2700123862 /* APIRequest.swift in Sources */,
 				F8751CF51FFC6A6B009CB58C /* AppDelegate.swift in Sources */,
-				F86966922016E1F00098EC08 /* SLProgress.swift in Sources */,
+				F86966E920205A330098EC08 /* SLProgress.swift in Sources */,
+				F8696704202078F40098EC08 /* HTTPBinUploadRequest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
