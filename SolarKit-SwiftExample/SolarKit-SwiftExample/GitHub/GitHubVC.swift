@@ -63,9 +63,9 @@ class GitHubVC: UITableViewController {
                         if let model = response.decode(to: GitHubAuthenticationModel.self) {
                             
                             if model.token.count > 0 {
-                                //You shouldn't actually do that.
                                 strongSelf.token = model.token
-                                UserDefaults.standard.set(model.token, forKey: GitHubTokenKey)
+                                UserDefaults.standard.set(model.token, forKey: GitHubTokenKey) //You shouldn't actually do that.
+
                                 UserDefaults.standard.synchronize()
                                 debugPrint("Sign in succeed.")
                             }

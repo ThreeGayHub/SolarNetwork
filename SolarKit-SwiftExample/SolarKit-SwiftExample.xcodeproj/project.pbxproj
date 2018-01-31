@@ -32,15 +32,16 @@
 		F86966FA202068EA0098EC08 /* HTTPBinPUTRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86966F9202068EA0098EC08 /* HTTPBinPUTRequest.swift */; };
 		F86966FC2020696B0098EC08 /* HTTPBinDELETERequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86966FB2020696B0098EC08 /* HTTPBinDELETERequest.swift */; };
 		F86966FE20206CA40098EC08 /* HTTPBinDownLoadRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86966FD20206CA40098EC08 /* HTTPBinDownLoadRequest.swift */; };
-		F8696702202078770098EC08 /* SLNetwork.png in Resources */ = {isa = PBXBuildFile; fileRef = F8696701202078770098EC08 /* SLNetwork.png */; };
 		F8696704202078F40098EC08 /* HTTPBinUploadRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8696703202078F40098EC08 /* HTTPBinUploadRequest.swift */; };
 		F8751CF51FFC6A6B009CB58C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8751CF41FFC6A6B009CB58C /* AppDelegate.swift */; };
-		F8751CF71FFC6A6B009CB58C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8751CF61FFC6A6B009CB58C /* ViewController.swift */; };
 		F8751CFA1FFC6A6B009CB58C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F8751CF81FFC6A6B009CB58C /* Main.storyboard */; };
 		F8751CFC1FFC6A6B009CB58C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F8751CFB1FFC6A6B009CB58C /* Assets.xcassets */; };
 		F8751CFF1FFC6A6B009CB58C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F8751CFD1FFC6A6B009CB58C /* LaunchScreen.storyboard */; };
 		F88A741420217BCF005EA344 /* GitHubUserInfoRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88A741320217BCF005EA344 /* GitHubUserInfoRequest.swift */; };
 		F88A74172021B90A005EA344 /* GitHubDownloadRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88A74162021B90A005EA344 /* GitHubDownloadRequest.swift */; };
+		F88A741E2021CD58005EA344 /* GitHubPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88A741D2021CD58005EA344 /* GitHubPlugin.swift */; };
+		F88A74222021EEFD005EA344 /* SLNetwork.png in Resources */ = {isa = PBXBuildFile; fileRef = F88A74202021EEFD005EA344 /* SLNetwork.png */; };
+		F88A74232021EEFD005EA344 /* github.cer in Resources */ = {isa = PBXBuildFile; fileRef = F88A74212021EEFD005EA344 /* github.cer */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -72,17 +73,18 @@
 		F86966F9202068EA0098EC08 /* HTTPBinPUTRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPBinPUTRequest.swift; sourceTree = "<group>"; };
 		F86966FB2020696B0098EC08 /* HTTPBinDELETERequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPBinDELETERequest.swift; sourceTree = "<group>"; };
 		F86966FD20206CA40098EC08 /* HTTPBinDownLoadRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPBinDownLoadRequest.swift; sourceTree = "<group>"; };
-		F8696701202078770098EC08 /* SLNetwork.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SLNetwork.png; sourceTree = SOURCE_ROOT; };
 		F8696703202078F40098EC08 /* HTTPBinUploadRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPBinUploadRequest.swift; sourceTree = "<group>"; };
 		F8751CF11FFC6A6B009CB58C /* SolarKit-SwiftExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SolarKit-SwiftExample.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F8751CF41FFC6A6B009CB58C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		F8751CF61FFC6A6B009CB58C /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		F8751CF91FFC6A6B009CB58C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		F8751CFB1FFC6A6B009CB58C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F8751CFE1FFC6A6B009CB58C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F8751D001FFC6A6B009CB58C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F88A741320217BCF005EA344 /* GitHubUserInfoRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubUserInfoRequest.swift; sourceTree = "<group>"; };
 		F88A74162021B90A005EA344 /* GitHubDownloadRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubDownloadRequest.swift; sourceTree = "<group>"; };
+		F88A741D2021CD58005EA344 /* GitHubPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubPlugin.swift; sourceTree = "<group>"; };
+		F88A74202021EEFD005EA344 /* SLNetwork.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = SLNetwork.png; path = ../SLNetwork.png; sourceTree = "<group>"; };
+		F88A74212021EEFD005EA344 /* github.cer */ = {isa = PBXFileReference; lastKnownFileType = file; name = github.cer; path = ../github.cer; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -128,6 +130,7 @@
 				F8658DCB20217B53008B5B7B /* GitHubAPIRequest.swift */,
 				F88A741320217BCF005EA344 /* GitHubUserInfoRequest.swift */,
 				F88A74162021B90A005EA344 /* GitHubDownloadRequest.swift */,
+				F88A741D2021CD58005EA344 /* GitHubPlugin.swift */,
 			);
 			path = GitHub;
 			sourceTree = "<group>";
@@ -173,6 +176,8 @@
 		F8751CE81FFC6A6B009CB58C = {
 			isa = PBXGroup;
 			children = (
+				F88A74212021EEFD005EA344 /* github.cer */,
+				F88A74202021EEFD005EA344 /* SLNetwork.png */,
 				F8751D071FFC6B15009CB58C /* SolarKit-Swift */,
 				F8751CF31FFC6A6B009CB58C /* SolarKit-SwiftExample */,
 				F8751CF21FFC6A6B009CB58C /* Products */,
@@ -192,11 +197,9 @@
 		F8751CF31FFC6A6B009CB58C /* SolarKit-SwiftExample */ = {
 			isa = PBXGroup;
 			children = (
-				F8696701202078770098EC08 /* SLNetwork.png */,
 				F8658DBC2020A772008B5B7B /* GitHub */,
 				F86966EE20205CDC0098EC08 /* HTTPBin */,
 				F8751CF41FFC6A6B009CB58C /* AppDelegate.swift */,
-				F8751CF61FFC6A6B009CB58C /* ViewController.swift */,
 				F8751CF81FFC6A6B009CB58C /* Main.storyboard */,
 				F8751CFB1FFC6A6B009CB58C /* Assets.xcassets */,
 				F8751CFD1FFC6A6B009CB58C /* LaunchScreen.storyboard */,
@@ -279,7 +282,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				F8751CFF1FFC6A6B009CB58C /* LaunchScreen.storyboard in Resources */,
-				F8696702202078770098EC08 /* SLNetwork.png in Resources */,
+				F88A74232021EEFD005EA344 /* github.cer in Resources */,
+				F88A74222021EEFD005EA344 /* SLNetwork.png in Resources */,
 				F8751CFC1FFC6A6B009CB58C /* Assets.xcassets in Resources */,
 				F8751CFA1FFC6A6B009CB58C /* Main.storyboard in Resources */,
 			);
@@ -356,11 +360,11 @@
 			files = (
 				F8658DBB20207E87008B5B7B /* HTTPBinPATCHRequest.swift in Sources */,
 				F8658DC8202152A8008B5B7B /* GitHubMyInfoRequest.swift in Sources */,
-				F8751CF71FFC6A6B009CB58C /* ViewController.swift in Sources */,
 				F86966FC2020696B0098EC08 /* HTTPBinDELETERequest.swift in Sources */,
 				F86966F620205F610098EC08 /* HTTPBin.swift in Sources */,
 				F88A741420217BCF005EA344 /* GitHubUserInfoRequest.swift in Sources */,
 				F86966E720205A330098EC08 /* SLNetwork.swift in Sources */,
+				F88A741E2021CD58005EA344 /* GitHubPlugin.swift in Sources */,
 				F86966F220205D720098EC08 /* HTTPBinTarget.swift in Sources */,
 				F86966F020205CDC0098EC08 /* HTTPBinVC.swift in Sources */,
 				F8658DC22020A871008B5B7B /* GitHubTarget.swift in Sources */,
