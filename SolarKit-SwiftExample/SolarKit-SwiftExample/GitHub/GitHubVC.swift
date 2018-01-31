@@ -120,6 +120,22 @@ class GitHubVC: UITableViewController {
                 
             }
             
+        case (2, 0):
+            GitHubNetwork.download(GitHubDownloadRequest(), progressClosure: { (progress) in
+                
+            }) { (response) in
+                
+            }
+            
+        case (2, 1):
+            let downloadRequest = GitHubDownloadRequest()
+            downloadRequest.isResume = true
+            GitHubNetwork.download(downloadRequest, progressClosure: { (progress) in
+                
+            }) { (response) in
+                
+            }
+            
         default: break
             
         }

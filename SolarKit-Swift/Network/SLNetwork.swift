@@ -125,6 +125,8 @@ extension SLNetwork {
     
     private func downloadResponse(with request:SLDownloadRequest, downloadRequest: DownloadRequest, progressClosure: ProgressClosure? = nil,  completionClosure: @escaping CompletionClosure) {
         
+        let resumeDataURL = SLNetworkResumeFolderURL.appendingPathComponent(request.requestID)
+        
         if let credential = request.credential {
             downloadRequest.authenticate(usingCredential: credential)
         }
@@ -135,6 +137,10 @@ extension SLNetwork {
             progress = SLProgress(request: request)
         }
         downloadRequest.downloadProgress { (originalProgress) in
+            if request.isResume && !FileManager.fileExists(at: resumeDataURL) {
+                request.cancel()
+            }
+            
             if totalUnitCount != originalProgress.totalUnitCount {
                 totalUnitCount = originalProgress.totalUnitCount
             }
@@ -149,7 +155,6 @@ extension SLNetwork {
             guard let strongSelf = self else { return }
             
             let response = SLResponse(request: request, urlRequest: originalResponse.request, httpURLResponse: originalResponse.response)
-            let resumeURL = strongSelf.SLNetworkResumeFolderURL.appendingPathComponent(request.requestID)
             
             switch originalResponse.result {
             case .failure(let error):
@@ -161,12 +166,20 @@ extension SLNetwork {
                         FileManager.createDirectory(at: strongSelf.SLNetworkResumeFolderURL, withIntermediateDirectories: true)
                         
                         do {
-                            try originalResponse.resumeData?.write(to: resumeURL)
+                            if !FileManager.fileExists(at: resumeDataURL) {
+                                try originalResponse.resumeData?.write(to: resumeDataURL)
+                                DispatchQueue.main.async {
+                                    strongSelf.download(request, progressClosure: progressClosure, completionClosure: completionClosure)
+                                }
+                                return
+                            }
+                            
+                            try originalResponse.resumeData?.write(to: resumeDataURL)
                             debugPrint("""
                                 ------------------------ SLResponse ----------------------
                                 URL:\(request.URLString)
                                 resumeData has been writed to:
-                                \(resumeURL.absoluteString)
+                                \(resumeDataURL.absoluteString)
                                 ------------------------ SLResponse ----------------------
                                 
                                 """)
@@ -176,17 +189,17 @@ extension SLNetwork {
                         }
                     }
                     else {
-                        FileManager.removeItem(at: resumeURL)
+                        FileManager.removeItem(at: resumeDataURL)
 
                         if let resumeData = originalResponse.resumeData, let tempFileURL = strongSelf.tempFileURL(of: resumeData) {
                             FileManager.removeItem(at: tempFileURL)
                         }
                         
-                        if !request.hsaResume {
+                        if !request.hasResume {
                             DispatchQueue.main.async {
                                 strongSelf.download(request, progressClosure: progressClosure, completionClosure: completionClosure)
                             }
-                            request.hsaResume = true
+                            request.hasResume = true
                             return
                         }
                     }
@@ -273,7 +286,15 @@ extension SLNetwork {
                                                       headers: request.headers)
             }
             else if let inputStream = request.inputStream {
-                uploadRequest = sessionManager.upload(inputStream,
+                
+                if request.headers == nil {
+                    request.headers = ["Content-Length" : "\(inputStream.length)"]
+                }
+                else {
+                    request.headers!["Content-Length"] = "\(inputStream.length)"
+                }
+                
+                uploadRequest = sessionManager.upload(inputStream.intputStream,
                                                       to: request.URLString,
                                                       method: request.method,
                                                       headers: request.headers)
@@ -538,7 +559,7 @@ extension SLNetwork {
 extension FileManager {
     
     static func createDirectory(at URL: URL, withIntermediateDirectories createIntermediates: Bool, attributes: [FileAttributeKey : Any]? = nil) {
-        if FileManager.fileExists(at: URL) {
+        if !FileManager.fileExists(at: URL) {
             do {
                 try FileManager.default.createDirectory(at: URL, withIntermediateDirectories: createIntermediates, attributes: attributes)
             }

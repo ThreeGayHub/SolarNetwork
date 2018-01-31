@@ -172,7 +172,7 @@ open class SLRequest: SLReflection {
 extension SLRequest {
     
     public func blackList() -> [String]? {
-        return ["isResume", "hsaResume"]
+        return ["isResume", "hasResume", "hasSaveResumeData"]
     }
     
 }
@@ -208,35 +208,35 @@ extension SLRequest: CustomDebugStringConvertible {
     
 }
 
+open class SLDownloadRequest: SLRequest {
+    
+    public var isResume: Bool = false
+    
+    var hasResume: Bool = false
+    
+    public var destinationURL: URL?
+    
+    public var downloadOptions: DownloadRequest.DownloadOptions = [.removePreviousFile, .createIntermediateDirectories]
+    
+}
+
 open class SLUploadRequest: SLRequest {
+    
+    public typealias MultipartFormDataClosure = (MultipartFormData) -> Void
     
     public override func loadRequest() {
         super.loadRequest()
         self.method = .post
     }
     
-    public typealias MultipartFormDataClosure = (MultipartFormData) -> Void
+    public var data: Data?
     
     public var filePath: String?
     
-    public var data: Data?
-    
-    public var inputStream: InputStream?
+    public var inputStream: (intputStream: InputStream, length: Int)?
     
     public var multipartFormDataClosure: MultipartFormDataClosure?
     
     public var encodingMemoryThreshold: UInt64 = SessionManager.multipartFormDataEncodingMemoryThreshold
-    
-}
-
-open class SLDownloadRequest: SLRequest {
-    
-    public var isResume: Bool = false
-    
-    var hsaResume: Bool = false
-    
-    public var destinationURL: URL?
-    
-    public var downloadOptions: DownloadRequest.DownloadOptions = [.removePreviousFile, .createIntermediateDirectories]
     
 }
