@@ -27,8 +27,8 @@ public class SLNetwork {
         
     // MARK: - Properties
     public let sessionManager: SessionManager
-
-    private var target: SLTarget
+    public var target: SLTarget
+    
     private lazy var responseQueue = DispatchQueue(label: SLNetworkResponseQueue)
     private lazy var reachabilityManager: NetworkReachabilityManager? = {
         let reachabilityManager = NetworkReachabilityManager(host: target.host)
@@ -375,7 +375,7 @@ extension SLNetwork {
         else if let data = response.data as? Data {
             tempData = data
         }
-        if let data = tempData {
+        if let data = tempData, data.count > 0 {
             do {
                 response.data = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
             }

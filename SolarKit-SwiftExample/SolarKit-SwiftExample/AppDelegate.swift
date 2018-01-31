@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import Alamofire
 
 //TODO-Extention:自己收集
 //TODO-Network:自己写
@@ -29,28 +28,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
     
-    let network: SLNetwork = SLNetwork(target: GitHub())
+    let network: SLNetwork = SLNetwork(target: GitHubTarget())
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        
-        
-//        network.request(APIRequest()) { (response) in
-//
-////            if let dict = response.data as? Dictionary<String, Any> {
-////                print(dict)
-////            }
-////
-////            if let model = response.decode(to: APIModel.self) {
-////                print(model)
-////            }
-////
-////            if let error = response.error {
-////                print(error)
-////            }
-//
-//        }
-        
-//        let uploadReq = SLUploadRequest()
         
         // Override point for customization after application launch.
         return true

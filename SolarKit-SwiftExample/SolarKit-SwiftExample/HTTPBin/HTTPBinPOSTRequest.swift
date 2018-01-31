@@ -11,8 +11,10 @@ import Foundation
 class HTTPBinPOSTRequest: SLRequest {
     
     override func loadRequest() {
-        self.path = "/post"
+        super.loadRequest()
+        
         self.method = .post
+        self.path = "/post"
     }
     
     let testPOSTProperty = "testPOSTProperty"

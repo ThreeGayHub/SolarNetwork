@@ -1,5 +1,5 @@
 //
-//  GitHub.swift
+//  GitHubTarget.swift
 //  SolarKit-SwiftExample
 //
 //  Created by wyh on 2018/1/12.
@@ -7,9 +7,10 @@
 //
 
 import Foundation
+import Alamofire
 
-struct GitHub: SLTarget {
+struct GitHubTarget: SLTarget {
     var baseURLString: String { return "https://api.github.com" }
     
-
+    var parameterEncoding: ParameterEncoding { return JSONEncoding.default }
 }

@@ -11,8 +11,10 @@ import Foundation
 class HTTPBinDELETERequest: SLRequest {
     
     override func loadRequest() {
-        self.path = "/delete"
+        super.loadRequest()
+        
         self.method = .delete
+        self.path = "/delete"
     }
     
     let testDELETEProperty = "testDELETEProperty"

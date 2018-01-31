@@ -11,6 +11,8 @@ import Foundation
 class HTTPBinGETRequest: SLRequest {
     
     override func loadRequest() {
+        super.loadRequest()
+        
         self.path = "/get"
     }
     
