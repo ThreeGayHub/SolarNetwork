@@ -13,4 +13,17 @@ struct GitHubTarget: SLTarget {
     var baseURLString: String { return "https://api.github.com" }
     
     var parameterEncoding: ParameterEncoding { return JSONEncoding.default }
+    
+    var policies: [String : ServerTrustPolicy]? {
+        
+        let serverTrustPolicies: [String: ServerTrustPolicy] = [
+            "api.github.com": .pinCertificates(
+                certificates: ServerTrustPolicy.certificates(),
+                validateCertificateChain: true,
+                validateHost: true
+            )
+        ]
+        return serverTrustPolicies
+        
+    }
 }
