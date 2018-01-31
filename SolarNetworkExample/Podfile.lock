@@ -1,0 +1,19 @@
+PODS:
+  - Alamofire (4.6.0)
+  - SolarNetwork (0.0.1):
+    - Alamofire
+
+DEPENDENCIES:
+  - SolarNetwork (from `../`)
+
+EXTERNAL SOURCES:
+  SolarNetwork:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  Alamofire: f41a599bd63041760b26d393ec1069d9d7b917f4
+  SolarNetwork: 2f58e772b1dd309091bdf02c622a3a9bea37bbf1
+
+PODFILE CHECKSUM: 6654e6e2f969e7637ec02d3250628b7292327129
+
+COCOAPODS: 1.2.0
