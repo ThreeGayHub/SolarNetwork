@@ -40,6 +40,7 @@
 		F8751CFC1FFC6A6B009CB58C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F8751CFB1FFC6A6B009CB58C /* Assets.xcassets */; };
 		F8751CFF1FFC6A6B009CB58C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F8751CFD1FFC6A6B009CB58C /* LaunchScreen.storyboard */; };
 		F88A741420217BCF005EA344 /* GitHubUserInfoRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88A741320217BCF005EA344 /* GitHubUserInfoRequest.swift */; };
+		F88A74172021B90A005EA344 /* GitHubDownloadRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88A74162021B90A005EA344 /* GitHubDownloadRequest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -81,6 +82,7 @@
 		F8751CFE1FFC6A6B009CB58C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F8751D001FFC6A6B009CB58C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F88A741320217BCF005EA344 /* GitHubUserInfoRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubUserInfoRequest.swift; sourceTree = "<group>"; };
+		F88A74162021B90A005EA344 /* GitHubDownloadRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubDownloadRequest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,6 +127,7 @@
 				F8658DC92021658D008B5B7B /* GitHubSignoutRequest.swift */,
 				F8658DCB20217B53008B5B7B /* GitHubAPIRequest.swift */,
 				F88A741320217BCF005EA344 /* GitHubUserInfoRequest.swift */,
+				F88A74162021B90A005EA344 /* GitHubDownloadRequest.swift */,
 			);
 			path = GitHub;
 			sourceTree = "<group>";
@@ -370,6 +373,7 @@
 				F86966F420205E320098EC08 /* HTTPBinGETRequest.swift in Sources */,
 				F86966E820205A330098EC08 /* SLPlugin.swift in Sources */,
 				F86966E620205A330098EC08 /* SLRequest.swift in Sources */,
+				F88A74172021B90A005EA344 /* GitHubDownloadRequest.swift in Sources */,
 				F86966E420205A330098EC08 /* SLTarget.swift in Sources */,
 				F86966F8202067C10098EC08 /* HTTPBinPOSTRequest.swift in Sources */,
 				F8658DBE2020A784008B5B7B /* GitHub.swift in Sources */,
