@@ -60,6 +60,7 @@ open class SLRequest: SLReflection {
                 return parameters
             }
             else if let parameters = toJSONObject() as? Parameters {
+                storeParameters = parameters
                 return parameters
             }
             return nil
@@ -71,6 +72,27 @@ open class SLRequest: SLReflection {
     
     public var parameterEncoding: ParameterEncoding {
         get {
+//            if let parameterEncoding = storeParameterEncoding {
+//                switch method {
+//                case .get, .head:
+//                    return URLEncoding.default
+//
+//                case .delete:
+//
+//                    if let parameters = parameters, parameters.count > 0 {
+//                        return parameterEncoding
+//                    }
+//                    else {
+//                        return URLEncoding.default
+//                    }
+//
+//                default:
+//                    return parameterEncoding
+//                }
+//            }
+//            else {
+//                return URLEncoding.default
+//            }
             return storeParameterEncoding ?? URLEncoding.default
         }
         set {
@@ -114,6 +136,24 @@ open class SLRequest: SLReflection {
     public var headers: [String: String]?
     
     public var credential: URLCredential?
+    
+    public var basicAuthentication: (user: String, password: String)? {
+        get {
+            return nil
+        }
+        set {
+            if let user = newValue?.user, let password = newValue?.password {
+                if let authorizationHeader = Request.authorizationHeader(user: user, password: password) {
+                    if headers == nil {
+                        headers = [authorizationHeader.key : authorizationHeader.value]
+                    }
+                    else {
+                        headers![authorizationHeader.key] = authorizationHeader.value
+                    }
+                }
+            }
+        }
+    }
         
     public var dataKeyPath: String?
 
@@ -169,6 +209,11 @@ extension SLRequest: CustomDebugStringConvertible {
 }
 
 open class SLUploadRequest: SLRequest {
+    
+    public override func loadRequest() {
+        super.loadRequest()
+        self.method = .post
+    }
     
     public typealias MultipartFormDataClosure = (MultipartFormData) -> Void
     

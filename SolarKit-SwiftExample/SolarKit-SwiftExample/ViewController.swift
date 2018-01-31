@@ -8,7 +8,7 @@
 
 import UIKit
 
-let network: SLNetwork = SLNetwork(target: GitHub())
+let network: SLNetwork = SLNetwork(target: GitHubTarget())
 
 let TestFiles: [String] = ["https://video.cdnvue.com/uploads/1746405174696532785/video/asBF81t",
                            "https://video.cdnvue.com/uploads/812734077666566393/video/ar9RkFL",

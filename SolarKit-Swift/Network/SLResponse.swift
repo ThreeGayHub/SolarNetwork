@@ -48,6 +48,7 @@ public class SLResponse {
             }
         } catch {
             self.error = error as NSError
+            debugPrint(error)
         }
         return nil
     }

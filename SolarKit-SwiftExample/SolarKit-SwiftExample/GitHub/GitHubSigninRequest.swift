@@ -1,5 +1,5 @@
 //
-//  HTTPBinPUTRequest.swift
+//  GitHubSigninRequest.swift
 //  SolarKit-SwiftExample
 //
 //  Created by wyh on 2018/1/30.
@@ -8,15 +8,16 @@
 
 import Foundation
 
-class HTTPBinPUTRequest: SLRequest {
+class GitHubSigninRequest: SLRequest {
     
     override func loadRequest() {
         super.loadRequest()
         
         self.method = .put
-        self.path = "/put"
+        self.path = "/authorizations/clients/\(GitHubAppClientID)"
     }
     
-    let testPUTProperty = "testPUTProperty"
-
+    var client_secret = GitHubAppClientSecret
+        
+    var scopes = ["repo", "user"]
 }

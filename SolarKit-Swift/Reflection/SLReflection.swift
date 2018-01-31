@@ -21,7 +21,7 @@ extension SLReflection {
 extension SLReflection {
     public func toJSONObject() -> Any? {
         let mirror = Mirror(reflecting: self)
-        if let _ = mirror.displayStyle {
+        if mirror.children.count > 0, let _ = mirror.displayStyle {
             var dict: [String: Any] = [:]
             for (optionalKey, value) in mirror.children {
                 if let propertyNameString = optionalKey, let reflectionValue = value as? SLReflection {
@@ -31,7 +31,7 @@ extension SLReflection {
                     dict[propertyNameString] = reflectionValue.toJSONObject()
                 }
             }
-            return dict
+            return dict.count > 0 ? dict : nil
         }
         return self
     }
@@ -51,25 +51,31 @@ extension Optional: SLReflection {
 extension Array: SLReflection {
     public func toJSONObject() -> Any? {
         let mirror = Mirror(reflecting: self)
-        var array: [Any] = []
-        for (_, value) in mirror.children {
-            if let reflectionValue = value as? SLReflection, let obj = reflectionValue.toJSONObject() {
-                array.append(obj)
+        if mirror.children.count > 0 {
+            var array: [Any] = []
+            for (_, value) in mirror.children {
+                if let reflectionValue = value as? SLReflection, let obj = reflectionValue.toJSONObject() {
+                    array.append(obj)
+                }
             }
+            return array.count > 0 ? array : nil
         }
-        return array
+        return self
     }
 }
 
 extension Dictionary: SLReflection {
     public func toJSONObject() -> Any? {
-        var dict: [String: Any] = [:]
-        for (key, obj) in self {
-            if let keyString = key as? String, let reflectionValue = obj as? SLReflection {
-                dict[keyString] = reflectionValue.toJSONObject()
+        if self.count > 0 {
+            var dict: [String: Any] = [:]
+            for (key, obj) in self {
+                if let keyString = key as? String, let reflectionValue = obj as? SLReflection {
+                    dict[keyString] = reflectionValue.toJSONObject()
+                }
             }
+            return dict.count > 0 ? dict : nil
         }
-        return dict
+        return self
     }
 }
 
