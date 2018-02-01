@@ -1,9 +1,26 @@
 //
 //  SLNetwork.swift
-//  SolarKit-SwiftExample
 //
 //  Created by wyh on 2018/1/9.
 //  Copyright © 2018年 SolarKit. All rights reserved.
+//
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
 //
 
 import Foundation
@@ -21,24 +38,27 @@ private let SLNetworkTempFilePathKey: String        = "NSURLSessionResumeInfoLoc
 
 public class SLNetwork {
     
+    public typealias ProgressClosure = (SLProgress) -> Void
     public typealias CompletionClosure = (SLResponse) -> Void
     
-    public typealias ProgressClosure = (SLProgress) -> Void
-        
     // MARK: - Properties
+    
+    /// The target's SessionManager
     public let sessionManager: SessionManager
+    
+    /// The target of a host
     public var target: SLTarget
     
-    private lazy var responseQueue = DispatchQueue(label: SLNetworkResponseQueue)
+    private lazy var responseQueue = { return DispatchQueue(label: SLNetworkResponseQueue) }()
     private lazy var reachabilityManager: NetworkReachabilityManager? = {
         let reachabilityManager = NetworkReachabilityManager(host: target.host)
         return reachabilityManager
     }()
     
-    private var SLNetworkFolderURL: URL { return FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0].appendingPathComponent(SLNetworkFolderPath) }
-    private var SLNetworkDestinationFolderURL: URL { return SLNetworkFolderURL.appendingPathComponent(SLNetworkDestinationFolderPath) }
-    private var SLNetworkResumeFolderURL: URL { return SLNetworkFolderURL.appendingPathComponent(SLNetworkResumeFolderPath) }
-    private var SLNetworkTempFolderPath: String { return NSTemporaryDirectory() }
+    private lazy var SLNetworkFolderURL: URL = { return FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0].appendingPathComponent(SLNetworkFolderPath) }()
+    private lazy var SLNetworkDestinationFolderURL: URL = { return SLNetworkFolderURL.appendingPathComponent(SLNetworkDestinationFolderPath) }()
+    private lazy var SLNetworkResumeFolderURL: URL = { return SLNetworkFolderURL.appendingPathComponent(SLNetworkResumeFolderPath) }()
+    private lazy var SLNetworkTempFolderPath: String = { return NSTemporaryDirectory() }()
     
     
     // MARK: - Lifecycle
@@ -66,6 +86,12 @@ public class SLNetwork {
 extension SLNetwork {
     
     // MARK: - Data Request
+    
+    /// Creates a `DataRequest` using the default `SessionManager` to retrieve the contents of a URL based on the specified SLRequest.
+    ///
+    /// - Parameters:
+    ///   - request: SLRequest
+    ///   - completionClosure: CompletionClosure
     public func request(_ request: SLRequest, completionClosure: @escaping CompletionClosure) {
         request.target = target
         
@@ -98,6 +124,13 @@ extension SLNetwork {
 extension SLNetwork {
     
     // MARK: - Download
+    
+    /// Creates a `DownloadRequest` using the `SessionManager` to retrieve the contents of a URL based on the specified `urlRequest` and save them to the `destination`.
+    ///
+    /// - Parameters:
+    ///   - request: SLDownloadRequest
+    ///   - progressClosure: ProgressClosure
+    ///   - completionClosure: CompletionClosure
     public func download(_ request: SLDownloadRequest, progressClosure: ProgressClosure? = nil,  completionClosure: @escaping CompletionClosure) {
         request.target = target
         
@@ -119,6 +152,7 @@ extension SLNetwork {
                 return
             }
         }
+                
         downloadRequest = sessionManager.download(request.URLString, method: request.method, parameters: request.parameters, encoding: request.parameterEncoding, headers: request.headers, to: destination)
         downloadResponse(with: request, downloadRequest: downloadRequest, progressClosure: progressClosure, completionClosure: completionClosure)
     }
@@ -248,6 +282,13 @@ extension SLNetwork {
 extension SLNetwork {
     
     // MARK: - Upload
+    
+    /// Creates an `UploadRequest` using the `SessionManager` from the specified SLUploadRequest.
+    ///
+    /// - Parameters:
+    ///   - request: SLUploadRequest
+    ///   - progressClosure: ProgressClosure
+    ///   - completionClosure: CompletionClosure
     public func upload(_ request: SLUploadRequest, progressClosure: ProgressClosure? = nil,  completionClosure: @escaping CompletionClosure) {
         request.target = target
         

@@ -165,7 +165,7 @@ class GitHubVC: UITableViewController {
                 }) { (response) in
                     
                 }
-            
+                
             case .Resume:
                 
                 if isDownloading {
