@@ -31,13 +31,16 @@ public class SLProgress {
 
     public var originalProgress: Progress?
     
+    
+    /// The Request's progress: 0-1
     public var currentProgress: Double {
         return originalProgress?.fractionCompleted ?? 0
     }
     
+    /// The Request's progress: 0% - 100%
     public var currentProgressString: String {
         if let fractionCompleted = originalProgress?.fractionCompleted {
-            return String(format: "%.2lf%%", fractionCompleted * 100)
+            return String(format: "%.0lf%%", fractionCompleted * 100)
         }
         return ""
     }

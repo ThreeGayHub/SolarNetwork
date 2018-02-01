@@ -47,6 +47,11 @@ public class SLResponse {
         self.httpURLResponse = httpURLResponse
     }
     
+    
+    /// JsonObject to Model
+    ///
+    /// - Parameter Model: Model: Decodable
+    /// - Returns: Model
     public func decode<T: Decodable>(to Model: T.Type) -> T? {
         var decodeData: Data = Data()
         do {
