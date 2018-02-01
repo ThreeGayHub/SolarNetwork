@@ -26,8 +26,16 @@
 import Foundation
 
 public protocol SLReflection {
+    
+    /// Model to JsonObject
+    ///
+    /// - Returns: JsonObject
     func toJSONObject() -> Any?
     
+    
+    /// properties of Model which don't encode to JsonObject
+    ///
+    /// - Returns: Array of blackList
     func blackList() -> [String]?
 }
 

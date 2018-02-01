@@ -25,8 +25,16 @@
 
 public protocol SLPlugin {
     
+    
+    /// Modify the SLRequest before sending
+    ///
+    /// - Parameter request: SLRequest
     func willSend(request: SLRequest)
     
+    
+    /// Modify the SLResponse after response
+    ///
+    /// - Parameter response: SLResponse
     func didReceive(response: SLResponse)
     
 }

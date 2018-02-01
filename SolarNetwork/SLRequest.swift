@@ -25,6 +25,7 @@
 
 import Alamofire
 
+/// A type that can inspect and optionally adapt a `URLRequest` in some manner if necessary.
 open class SLRequest: SLReflection {
     
     public init(method: HTTPMethod = .get,
@@ -46,6 +47,7 @@ open class SLRequest: SLReflection {
     
     public var originalRequest: Request?
     
+    /// Base64 string of the request's URLString
     public var requestID: String {
         return URLString.data(using: .utf8)?.base64EncodedString() ?? ""
     }
@@ -88,27 +90,6 @@ open class SLRequest: SLReflection {
     
     public var parameterEncoding: ParameterEncoding {
         get {
-//            if let parameterEncoding = storeParameterEncoding {
-//                switch method {
-//                case .get, .head:
-//                    return URLEncoding.default
-//
-//                case .delete:
-//
-//                    if let parameters = parameters, parameters.count > 0 {
-//                        return parameterEncoding
-//                    }
-//                    else {
-//                        return URLEncoding.default
-//                    }
-//
-//                default:
-//                    return parameterEncoding
-//                }
-//            }
-//            else {
-//                return URLEncoding.default
-//            }
             return storeParameterEncoding ?? URLEncoding.default
         }
         set {
@@ -170,7 +151,9 @@ open class SLRequest: SLReflection {
             }
         }
     }
-        
+    
+    
+    /// The response's dataKey of the request
     public var dataKeyPath: String?
 
     //MARK: - Private
@@ -195,14 +178,17 @@ extension SLRequest {
 
 extension SLRequest {
     
+    /// Pause the request.
     public func pause() {
         originalRequest?.suspend()
     }
     
+    /// Cancel the request.
     public func cancel() {
         originalRequest?.cancel()
     }
     
+    /// Resumes the request.
     public func resume() {
         originalRequest?.resume()
     }
@@ -226,10 +212,12 @@ extension SLRequest: CustomDebugStringConvertible {
 
 open class SLDownloadRequest: SLRequest {
     
+    /// Specifies whether the download request is resume or not.
     public var isResume: Bool = false
     
     var hasResume: Bool = false
     
+    /// Specifies the destination URL to receive the file. default: "/Library/Caches/SLNetwork/Destination/\(requestID)"
     public var destinationURL: URL?
     
     public var downloadOptions: DownloadRequest.DownloadOptions = [.removePreviousFile, .createIntermediateDirectories]
@@ -245,12 +233,18 @@ open class SLUploadRequest: SLRequest {
         self.method = .post
     }
     
+    
+    /// uploading the `data`.
     public var data: Data?
     
+    /// uploading the `file`.
     public var filePath: String?
     
+    /// uploading the `inputStream`.
     public var inputStream: (intputStream: InputStream, length: Int)?
     
+    
+    /// uploading the `formData`.
     public var multipartFormDataClosure: MultipartFormDataClosure?
     
     public var encodingMemoryThreshold: UInt64 = SessionManager.multipartFormDataEncodingMemoryThreshold

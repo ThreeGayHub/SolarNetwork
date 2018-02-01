@@ -88,6 +88,9 @@ public extension SLTarget {
      
      then put the Certificates of Host in Bundle.
      
+     Example:
+     ---------------------------------------------------------
+     var policies: [String : ServerTrustPolicy]? {
      let serverTrustPolicies: [String: ServerTrustPolicy] = [
      "test.example.com": .pinCertificates(
      certificates: ServerTrustPolicy.certificates(),
@@ -96,6 +99,12 @@ public extension SLTarget {
      )
      ]
      return serverTrustPolicies
+     }
+     ---------------------------------------------------------
+     
+     if Debug, advice set
+     validateCertificateChain: false
+     validateHost: false
      */
     var policies: [String : ServerTrustPolicy]? { return nil }
         
