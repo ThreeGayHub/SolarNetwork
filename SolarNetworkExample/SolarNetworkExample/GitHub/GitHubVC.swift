@@ -14,10 +14,35 @@ private let GitHubTokenKey: String = "GitHubTokenKey"
 
 class GitHubVC: UITableViewController {
     
+    enum Section: Int {
+        case Authorizations
+        case Public
+        case Download
+    }
+    
+    enum AuthorizationsRow: Int {
+        case Signin = 2
+        case MyInfo
+        case Signout
+    }
+    
+    enum PublicRow: Int {
+        case API
+        case UserInfo
+    }
+    
+    enum DownloadRow: Int {
+        case Normal
+        case Resume
+    }
+    
     var userName: String?
     var password: String?
     
     var token: String?
+    
+    lazy var resumeDownloadRequest = GitHubDownloadRequest()
+    var isDownloading: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,100 +69,124 @@ class GitHubVC: UITableViewController {
         tableView.deselectRow(at: indexPath, animated: false)
         view.endEditing(true)
         
-        let index = (indexPath.section, indexPath.row)
-        switch index {
-        case (0, 2):
-            
-            if let token = token, token.count > 0 {
-                debugPrint("You have been sign in.")
-            }
-            else {
-                if let userName = userName, let password = password {
-                    
-                    let signinRequest = GitHubSigninRequest()
-                    signinRequest.basicAuthentication = (userName, password)
-                    
-                    GitHubNetwork.request(signinRequest) { [weak self] (response) in
-                        guard let strongSelf = self else { return }
-                        
-                        if let model = response.decode(to: GitHubAuthenticationModel.self) {
-                            
-                            if model.token.count > 0 {
-                                strongSelf.token = model.token
-                                UserDefaults.standard.set(model.token, forKey: GitHubTokenKey) //You shouldn't actually do that.
+        guard let section = Section(rawValue: indexPath.section) else { return }
+        
+        switch section {
+        case .Authorizations:
+            guard let row = AuthorizationsRow(rawValue: indexPath.row) else { return }
 
-                                UserDefaults.standard.synchronize()
-                                debugPrint("Sign in succeed.")
+            switch row {
+            case .Signin:
+                if let token = token, token.count > 0 {
+                    debugPrint("You have been sign in.")
+                }
+                else {
+                    if let userName = userName, let password = password {
+                        
+                        let signinRequest = GitHubSigninRequest()
+                        signinRequest.basicAuthentication = (userName, password)
+                        
+                        GitHubNetwork.request(signinRequest) { [weak self] (response) in
+                            guard let strongSelf = self else { return }
+                            
+                            if let model = response.decode(to: GitHubAuthenticationModel.self) {
+                                
+                                if model.token.count > 0 {
+                                    strongSelf.token = model.token
+                                    UserDefaults.standard.set(model.token, forKey: GitHubTokenKey) //You shouldn't actually do that.
+                                    
+                                    UserDefaults.standard.synchronize()
+                                    debugPrint("Sign in succeed.")
+                                }
+                                
                             }
                             
                         }
+                    }
+                }
+                
+            case .MyInfo:
+                if let token = token, token.count > 0 {
+                    let myInfoRequest = GitHubMyInfoRequest()
+                    myInfoRequest.basicAuthentication = (token, "x-oauth-basic")
+                    
+                    GitHubNetwork.request(myInfoRequest) { (response) in
                         
                     }
+                    
+                }
+                else {
+                    debugPrint("Please sign in.")
+                }
+
+            case .Signout:
+                if let token = token, token.count > 0 {
+                    let signoutRequest = GitHubSignoutRequest()
+                    signoutRequest.path = signoutRequest.path + token
+                    GitHubNetwork.request(signoutRequest) { [weak self] (response) in
+                        guard let strongSelf = self else { return }
+                        
+                        if response.httpURLResponse?.statusCode == 204 {
+                            strongSelf.token = nil
+                            UserDefaults.standard.removeObject(forKey: GitHubTokenKey)
+                            UserDefaults.standard.synchronize()
+                            debugPrint("Sign out succeed.")
+                        }
+                    }
+                    
+                }
+                else {
+                    debugPrint("Please sign in.")
                 }
             }
             
-        case (0, 3):
-            if let token = token, token.count > 0 {
-                let myInfoRequest = GitHubMyInfoRequest()
-                myInfoRequest.basicAuthentication = (token, "x-oauth-basic")
-                
-                GitHubNetwork.request(myInfoRequest) { (response) in
+        case .Public:
+            guard let row = PublicRow(rawValue: indexPath.row) else { return }
+            
+            switch row {
+            case .API:
+                GitHubNetwork.request(GitHubAPIRequest()) { (response) in
                     
                 }
                 
-            }
-            else {
-                debugPrint("Please sign in.")
+            case .UserInfo:
+                GitHubNetwork.request(GitHubUserInfoRequest()) { (response) in
+                    
+                }
             }
             
-        case (0, 4):
-            if let token = token, token.count > 0 {
-                let signoutRequest = GitHubSignoutRequest()
-                signoutRequest.path = signoutRequest.path + token
-                GitHubNetwork.request(signoutRequest) { [weak self] (response) in
-                    guard let strongSelf = self else { return }
+        case .Download:
+            guard let row = DownloadRow(rawValue: indexPath.row) else { return }
 
-                    if response.httpURLResponse?.statusCode == 204 {
-                        strongSelf.token = nil
-                        UserDefaults.standard.removeObject(forKey: GitHubTokenKey)
-                        UserDefaults.standard.synchronize()
-                        debugPrint("Sign out succeed.")
+            switch row {
+            case .Normal:
+                GitHubNetwork.download(GitHubDownloadRequest(), progressClosure: { (progress) in
+                    
+                }) { (response) in
+                    
+                }
+            
+            case .Resume:
+                
+                if isDownloading {
+                    resumeDownloadRequest.cancel()
+                    isDownloading = false
+                }
+                else {
+                    
+                    resumeDownloadRequest.isResume = true
+                    
+                    GitHubNetwork.download(resumeDownloadRequest, progressClosure: { (progress) in
+                        
+                    }) { (response) in
+                        
                     }
+                    
+                    isDownloading = true
                 }
                 
-            }
-            else {
-                debugPrint("Please sign in.")
-            }
-            
-        case (1, 0):
-            GitHubNetwork.request(GitHubAPIRequest()) { (response) in
                 
             }
-            
-        case (1, 1):
-            GitHubNetwork.request(GitHubUserInfoRequest()) { (response) in
-                
-            }
-            
-        case (2, 0):
-            GitHubNetwork.download(GitHubDownloadRequest(), progressClosure: { (progress) in
-                
-            }) { (response) in
-                
-            }
-            
-        case (2, 1):
-            let downloadRequest = GitHubDownloadRequest()
-            downloadRequest.isResume = true
-            GitHubNetwork.download(downloadRequest, progressClosure: { (progress) in
-                
-            }) { (response) in
-                
-            }
-            
-        default: break
-            
         }
         
     }

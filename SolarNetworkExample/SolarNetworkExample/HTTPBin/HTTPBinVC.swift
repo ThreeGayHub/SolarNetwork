@@ -9,6 +9,32 @@
 import UIKit
 
 class HTTPBinVC: UITableViewController {
+    
+    enum Section: Int {
+        case Data
+        case Download
+        case Upload
+    }
+    
+    enum DataRow: Int {
+        case GET
+        case POST
+        case PUT
+        case DELETE
+        case PATCH
+    }
+    
+    enum DownloadRow: Int {
+        case Normal
+        case Resume
+    }
+    
+    enum UploadRow: Int {
+        case Data
+        case File
+        case InputStrame
+        case FormData
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,123 +49,139 @@ class HTTPBinVC: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
         
-        let index = (indexPath.section, indexPath.row)
+        guard let section = Section(rawValue: indexPath.section) else { return }
         
-        switch index {
-        case (0, 0):
-            HTTPBinNetwork.request(HTTPBinGETRequest()) { (response) in
+
+        switch section {
+        case .Data:
+            guard let row = DataRow(rawValue: indexPath.row) else { return }
+            
+            switch row {
+            case .GET:
+                HTTPBinNetwork.request(HTTPBinGETRequest()) { (response) in
+                    
+                }
+                
+            case .POST:
+                HTTPBinNetwork.request(HTTPBinPOSTRequest()) { (response) in
+                    
+                }
+                
+            case .PUT:
+                HTTPBinNetwork.request(HTTPBinPUTRequest()) { (response) in
+                    
+                }
+                
+            case .DELETE:
+                HTTPBinNetwork.request(HTTPBinDELETERequest()) { (response) in
+                    
+                }
+                
+            case .PATCH:
+                HTTPBinNetwork.request(HTTPBinPATCHRequest()) { (response) in
+                    
+                }
                 
             }
             
-        case (0, 1):
-            HTTPBinNetwork.request(HTTPBinPOSTRequest()) { (response) in
+        case .Download:
+            guard let row = DownloadRow(rawValue: indexPath.row) else { return }
+
+            switch row {
+            case .Normal:
+                HTTPBinNetwork.download(HTTPBinDownLoadRequest(), progressClosure: { (progress) in
+                    
+                }) { (resposne) in
+                    
+                }
+                
+            case .Resume:
+                let downloadRequest = HTTPBinDownLoadRequest()
+                downloadRequest.isResume = true
+                
+                HTTPBinNetwork.download(downloadRequest, progressClosure: { (progress) in
+                    
+                }) { (resposne) in
+                    
+                }
                 
             }
             
-        case (0, 2):
-            HTTPBinNetwork.request(HTTPBinPUTRequest()) { (response) in
+        case .Upload:
+            guard let row = UploadRow(rawValue: indexPath.row) else { return }
+
+            switch row {
+            case .Data:
+                let bundle = Bundle.main
+                let resourcePath = bundle.path(forResource: "SLNetwork", ofType: "png")
+                do {
+                    if let path = resourcePath {
+                        let data = try Data(contentsOf: URL(fileURLWithPath: path))
+                        let uploadRequest = HTTPBinUploadRequest()
+                        uploadRequest.data = data
+                        HTTPBinNetwork.upload(uploadRequest, progressClosure: { (progress) in
+                            
+                        }) { (response) in
+                            
+                        }
+                    }
+                }
+                catch {
+                    debugPrint(error)
+                }
                 
-            }
-            
-        case (0, 3):
-            HTTPBinNetwork.request(HTTPBinDELETERequest()) { (response) in
-                
-            }
-            
-        case (0, 4):
-            HTTPBinNetwork.request(HTTPBinPATCHRequest()) { (response) in
-                
-            }
-            
-        case (1, 0):
-            HTTPBinNetwork.download(HTTPBinDownLoadRequest(), progressClosure: { (progress) in
-                
-            }) { (resposne) in
-                
-            }
-            
-        case (1, 1):
-            let downloadRequest = HTTPBinDownLoadRequest()
-            downloadRequest.isResume = true
-            
-            HTTPBinNetwork.download(downloadRequest, progressClosure: { (progress) in
-                
-            }) { (resposne) in
-                
-            }
-            
-        case (2, 0):
-            let bundle = Bundle.main
-            let resourcePath = bundle.path(forResource: "SLNetwork", ofType: "png")
-            do {
+            case .File:
+                let bundle = Bundle.main
+                let resourcePath = bundle.path(forResource: "SLNetwork", ofType: "png")
                 if let path = resourcePath {
-                    let data = try Data(contentsOf: URL(fileURLWithPath: path))
                     let uploadRequest = HTTPBinUploadRequest()
-                    uploadRequest.data = data
+                    uploadRequest.filePath = path
                     HTTPBinNetwork.upload(uploadRequest, progressClosure: { (progress) in
                         
                     }) { (response) in
                         
                     }
                 }
-            }
-            catch {
-                debugPrint(error)
-            }
-            
-        case (2, 1):
-            let bundle = Bundle.main
-            let resourcePath = bundle.path(forResource: "SLNetwork", ofType: "png")
-            let uploadRequest = HTTPBinUploadRequest()
-            uploadRequest.filePath = resourcePath
-            HTTPBinNetwork.upload(uploadRequest, progressClosure: { (progress) in
                 
-            }) { (response) in
+            case .InputStrame:
+                let bundle = Bundle.main
+                let resourcePath = bundle.path(forResource: "SLNetwork", ofType: "png")
+                do {
+                    if let path = resourcePath {
+                        let data = try Data(contentsOf: URL(fileURLWithPath: path))
+                        let inputStream = InputStream(data: data)
+                        
+                        let uploadRequest = HTTPBinUploadRequest()
+                        uploadRequest.inputStream = (inputStream, data.count)
+                        HTTPBinNetwork.upload(uploadRequest, progressClosure: { (progress) in
+                            
+                        }) { (response) in
+                            
+                        }
+                    }
+                }
+                catch {
+                    debugPrint(error)
+                }
                 
-            }
-            
-        case (2, 2):
-            let bundle = Bundle.main
-            let resourcePath = bundle.path(forResource: "SLNetwork", ofType: "png")
-            do {
+            case .FormData:
+                let bundle = Bundle.main
+                let resourcePath = bundle.path(forResource: "SLNetwork", ofType: "png")
                 if let path = resourcePath {
-                    let data = try Data(contentsOf: URL(fileURLWithPath: path))
-                    let inputStream = InputStream(data: data)
-                    
                     let uploadRequest = HTTPBinUploadRequest()
-                    uploadRequest.inputStream = (inputStream, data.count)
+                    uploadRequest.multipartFormDataClosure = { (multipartFormData) in
+                        let url = URL(fileURLWithPath: path)
+                        multipartFormData.append(url, withName: "SLNetwork")
+                    }
                     HTTPBinNetwork.upload(uploadRequest, progressClosure: { (progress) in
                         
                     }) { (response) in
                         
                     }
                 }
+                
             }
-            catch {
-                debugPrint(error)
-            }
-            
-        case (2, 3):
-            let bundle = Bundle.main
-            let resourcePath = bundle.path(forResource: "SLNetwork", ofType: "png")
-            if let path = resourcePath {
-                let uploadRequest = HTTPBinUploadRequest()
-                uploadRequest.multipartFormDataClosure = { (multipartFormData) in
-                    let url = URL(fileURLWithPath: path)
-                    multipartFormData.append(url, withName: "SLNetwork")
-                }
-                HTTPBinNetwork.upload(uploadRequest, progressClosure: { (progress) in
-                    
-                }) { (response) in
-                    
-                }
-            }
-            
-        default: break
-            
         }
-        
-        
         
     }
 

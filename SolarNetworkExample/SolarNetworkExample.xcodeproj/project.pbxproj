@@ -25,12 +25,12 @@
 		F892DA0720220433007536ED /* HTTPBinPATCHRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F892D9FF20220433007536ED /* HTTPBinPATCHRequest.swift */; };
 		F892DA0820220433007536ED /* HTTPBinPOSTRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F892DA0020220433007536ED /* HTTPBinPOSTRequest.swift */; };
 		F892DA0920220433007536ED /* HTTPBinDELETERequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F892DA0120220433007536ED /* HTTPBinDELETERequest.swift */; };
+		F892DA0E2022A616007536ED /* github.cer in Resources */ = {isa = PBXBuildFile; fileRef = F892DA0D2022A616007536ED /* github.cer */; };
+		F892DA102022A622007536ED /* SLNetwork.png in Resources */ = {isa = PBXBuildFile; fileRef = F892DA0F2022A622007536ED /* SLNetwork.png */; };
 		F8AFC60D2021F5EA00A3F595 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8AFC60C2021F5EA00A3F595 /* AppDelegate.swift */; };
 		F8AFC6122021F5EA00A3F595 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F8AFC6102021F5EA00A3F595 /* Main.storyboard */; };
 		F8AFC6142021F5EA00A3F595 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F8AFC6132021F5EA00A3F595 /* Assets.xcassets */; };
 		F8AFC6172021F5EA00A3F595 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F8AFC6152021F5EA00A3F595 /* LaunchScreen.storyboard */; };
-		F8AFC6202021F68200A3F595 /* SLNetwork.png in Resources */ = {isa = PBXBuildFile; fileRef = F8AFC61E2021F68100A3F595 /* SLNetwork.png */; };
-		F8AFC6212021F68200A3F595 /* github.cer in Resources */ = {isa = PBXBuildFile; fileRef = F8AFC61F2021F68100A3F595 /* github.cer */; };
 		F8AFC6392021F6A100A3F595 /* HTTPBin.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8AFC6232021F6A100A3F595 /* HTTPBin.swift */; };
 		F8AFC63B2021F6A100A3F595 /* HTTPBinVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8AFC6252021F6A100A3F595 /* HTTPBinVC.swift */; };
 		F8AFC6482021F6A100A3F595 /* GitHubVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8AFC6332021F6A100A3F595 /* GitHubVC.swift */; };
@@ -58,14 +58,14 @@
 		F892D9FF20220433007536ED /* HTTPBinPATCHRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPBinPATCHRequest.swift; sourceTree = "<group>"; };
 		F892DA0020220433007536ED /* HTTPBinPOSTRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPBinPOSTRequest.swift; sourceTree = "<group>"; };
 		F892DA0120220433007536ED /* HTTPBinDELETERequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPBinDELETERequest.swift; sourceTree = "<group>"; };
+		F892DA0D2022A616007536ED /* github.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = github.cer; sourceTree = "<group>"; };
+		F892DA0F2022A622007536ED /* SLNetwork.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = SLNetwork.png; path = ../SLNetwork.png; sourceTree = "<group>"; };
 		F8AFC6092021F5EA00A3F595 /* SolarNetworkExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SolarNetworkExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F8AFC60C2021F5EA00A3F595 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F8AFC6112021F5EA00A3F595 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		F8AFC6132021F5EA00A3F595 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F8AFC6162021F5EA00A3F595 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F8AFC6182021F5EA00A3F595 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		F8AFC61E2021F68100A3F595 /* SLNetwork.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = SLNetwork.png; path = ../SLNetwork.png; sourceTree = "<group>"; };
-		F8AFC61F2021F68100A3F595 /* github.cer */ = {isa = PBXFileReference; lastKnownFileType = file; name = github.cer; path = ../github.cer; sourceTree = "<group>"; };
 		F8AFC6232021F6A100A3F595 /* HTTPBin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPBin.swift; sourceTree = "<group>"; };
 		F8AFC6252021F6A100A3F595 /* HTTPBinVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPBinVC.swift; sourceTree = "<group>"; };
 		F8AFC6332021F6A100A3F595 /* GitHubVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GitHubVC.swift; sourceTree = "<group>"; };
@@ -160,11 +160,18 @@
 			path = Request;
 			sourceTree = "<group>";
 		};
+		F892DA0C2022A616007536ED /* Cer */ = {
+			isa = PBXGroup;
+			children = (
+				F892DA0D2022A616007536ED /* github.cer */,
+			);
+			path = Cer;
+			sourceTree = "<group>";
+		};
 		F8AFC6002021F5EA00A3F595 = {
 			isa = PBXGroup;
 			children = (
-				F8AFC61F2021F68100A3F595 /* github.cer */,
-				F8AFC61E2021F68100A3F595 /* SLNetwork.png */,
+				F892DA0F2022A622007536ED /* SLNetwork.png */,
 				F8AFC60B2021F5EA00A3F595 /* SolarNetworkExample */,
 				F8AFC60A2021F5EA00A3F595 /* Products */,
 				0E8E12D516B5CE50080579DE /* Pods */,
@@ -183,6 +190,7 @@
 		F8AFC60B2021F5EA00A3F595 /* SolarNetworkExample */ = {
 			isa = PBXGroup;
 			children = (
+				F892DA0C2022A616007536ED /* Cer */,
 				F8AFC62D2021F6A100A3F595 /* GitHub */,
 				F8AFC6222021F6A100A3F595 /* HTTPBin */,
 				F8AFC60C2021F5EA00A3F595 /* AppDelegate.swift */,
@@ -281,10 +289,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				F8AFC6172021F5EA00A3F595 /* LaunchScreen.storyboard in Resources */,
-				F8AFC6212021F68200A3F595 /* github.cer in Resources */,
-				F8AFC6202021F68200A3F595 /* SLNetwork.png in Resources */,
+				F892DA0E2022A616007536ED /* github.cer in Resources */,
 				F8AFC6142021F5EA00A3F595 /* Assets.xcassets in Resources */,
 				F8AFC6122021F5EA00A3F595 /* Main.storyboard in Resources */,
+				F892DA102022A622007536ED /* SLNetwork.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
