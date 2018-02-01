@@ -19,7 +19,7 @@ class GitHubPlugin: SLPlugin {
     
     func didReceive(response: SLResponse) {
         debugPrint("didReceive response: \(response.request?.URLString ?? "")")
-        
+
         //Do whatever you want after response.
     }
     

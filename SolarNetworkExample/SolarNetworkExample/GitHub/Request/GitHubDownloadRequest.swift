@@ -15,10 +15,6 @@ class GitHubDownloadRequest: SLDownloadRequest {
         self.URLString = "http://cdnvue.com/video/rzGHzRA19L/64tBZo"
     }
     
-//GitHub is not support resume download
-//    "https://codeload.github.com/raywenderlich/swift-algorithm-club/zip/master"
-    
-    
 //    "https://video.cdnvue.com/uploads/1746405174696532785/video/asBF81t"
 //    "https://video.cdnvue.com/uploads/812734077666566393/video/ar9RkFL"
 //    "http://cdnvue.com/video/rzGHzRA19L/64tBZo"
