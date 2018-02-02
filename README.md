@@ -16,14 +16,14 @@ Elegant network abstraction layer in Swift.
 - [Communication](#communication)
 - [Installation](#installation)
 - [Usage](#usage)
-  - **[Base Usage](##base-usage) -** [Target](###target) - [Request](###request) - [Download](###download) - [Upload](###upload) - [Decode](###decode)
-  - **[Target](##target)** - Configuration of a Host.
-  - **[Request](##request)** - Configuration of a DataRequest.
-  - **[Download](##download)** - Configuration of a DownloadRequest or ResumeDownloadRequest.
-  - **[Upload](##upload)** - Configuration of a UploadRequest(Data - File - InputStream - FormData).
-  - **[Progress](##progress)** - Progress
-  - **[Response](##response)** - Decode - Error
-  - **[Plugin](##plugin)** - WillSend - DidReceive
+  - **[Base Usage](#base-usage) -** [Target](#target-usage) - [Request](#request-usage) - [Download](#download-usage) - [Upload](#upload-usage) - [Decode](#decode-usage)
+  - **[Target](#target)** - Configuration of a Host.
+  - **[Request](#request)** - Configuration of a DataRequest.
+  - **[Download](#download)** - Configuration of a DownloadRequest or ResumeDownloadRequest.
+  - **[Upload](#upload)** - Configuration of a UploadRequest(Data - File - InputStream - FormData).
+  - **[Progress](#progress)** - Progress
+  - **[Response](#response)** - Decode - Error
+  - **[Plugin](#plugin)** - WillSend - DidReceive
 
 ---
 
@@ -151,7 +151,7 @@ If this is your first time using Carthage in the project, you'll need to go thro
 
 ## Base Usage
 
-### Target
+### Target Usage
 
 ```swift
 import SolarNetwork
@@ -163,7 +163,7 @@ struct HTTPBinTarget: SLTarget {
 let HTTPBinNetwork = SLNetwork(target: HTTPBinTarget())
 ```
 
-### Request
+### Request Usage
 
 ```swift
 import SolarNetwork
@@ -218,7 +218,7 @@ HTTPBinNetwork.request(HTTPBinPOSTRequest()) { (response) in
 }
 ```
 
-### Download
+### Download Usage
 
 ```swift
 import SolarNetwork
@@ -241,7 +241,7 @@ HTTPBinNetwork.download(HTTPBinDownLoadRequest(), progressClosure: { (progress) 
 
 ```
 
-### Upload
+### Upload Usage
 
 ```swift
 import SolarNetwork
@@ -265,7 +265,7 @@ HTTPBinNetwork.upload(uploadRequest, progressClosure: { (progress) in
 }
 ```
 
-### Decode
+### Decode Usage
 
 ```swift
 import SolarNetwork
