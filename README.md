@@ -10,20 +10,20 @@ Elegant network abstraction layer in Swift.
 
 
 
-- [Design](#Design)
-- [Features](#Features)
+- [Design](#design)
+- [Features](#features)
 - [Requirements](#requirements)
 - [Communication](#communication)
 - [Installation](#installation)
-- [Usage](#installation)
-  - **[BaseUsage](##BaseUsage) -** [Target](###Target) - [Request](###Request) - [Download](###Download) - [Upload](###Upload) - [Decode](###Decode)
-  - **[Target](##Target)** - Configuration of a Host.
-  - **[Request](##Request)** - Configuration of a DataRequest.
-  - **[Download](##Download)** - Configuration of a DownloadRequest or ResumeDownloadRequest.
-  - **[Upload](##Upload)** - Configuration of a UploadRequest(Data - File - InputStream - FormData).
-  - **[Progress](##Progress)** - Progress
-  - **[Response](##Response)** - Decode - Error
-  - **[Plugin](##Plugin)** - WillSend - DidReceive
+- [Usage](#usage)
+  - **[Base Usage](##base-usage) -** [Target](###target) - [Request](###request) - [Download](###download) - [Upload](###upload) - [Decode](###decode)
+  - **[Target](##target)** - Configuration of a Host.
+  - **[Request](##request)** - Configuration of a DataRequest.
+  - **[Download](##download)** - Configuration of a DownloadRequest or ResumeDownloadRequest.
+  - **[Upload](##upload)** - Configuration of a UploadRequest(Data - File - InputStream - FormData).
+  - **[Progress](##progress)** - Progress
+  - **[Response](##response)** - Decode - Error
+  - **[Plugin](##plugin)** - WillSend - DidReceive
 
 ---
 
