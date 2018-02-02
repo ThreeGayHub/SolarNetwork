@@ -1,10 +1,6 @@
 # ![SLNetwork](SLNetwork.png)
 
-![Build Status](https://travis-ci.org/Alamofire/Alamofire.svg?branch=master)
-
-![Carthage Compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)
-
-![Platform](https://img.shields.io/cocoapods/p/Alamofire.svg?style=flat)
+![Build Status](https://travis-ci.org/Alamofire/Alamofire.svg?branch=master)  ![Carthage Compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)  ![Platform](https://img.shields.io/cocoapods/p/Alamofire.svg?style=flat)
 
 Elegant network abstraction layer in Swift.
 
