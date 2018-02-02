@@ -149,7 +149,7 @@ If this is your first time using Carthage in the project, you'll need to go thro
 
 # Usage
 
-## BaseUsage
+## Base Usage
 
 ### Target
 
