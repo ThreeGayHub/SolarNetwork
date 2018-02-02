@@ -271,9 +271,9 @@ HTTPBinNetwork.upload(uploadRequest, progressClosure: { (progress) in
 import SolarNetwork
 
 struct User: Decodable {
-	var id: Int
-	var name: String
-	var token: String
+    var id: Int
+    var name: String
+    var token: String
 }
 
 HTTPBinNetwork.request(UserRequest()) { (response) in
