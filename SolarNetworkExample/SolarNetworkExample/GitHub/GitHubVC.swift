@@ -100,6 +100,9 @@ class GitHubVC: UITableViewController {
                                 }
                                 
                             }
+                            else if let error = response.error {
+                                //show error
+                            }
                             
                         }
                     }
