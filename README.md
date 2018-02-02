@@ -47,19 +47,19 @@ So a complete request process is:
 
 ```swift
 SLNetwork(SLTarget).request(SLRequest).willSend(SLRequest)
-				   .progressClosure(SLProgress)
-				   .reponseData(OriginalResponse)
-				   .didReceive(SLResponse).decodeTo(Dictionary)
-				   .completionClosure(SLResponse)
-				   .decodeTo(Model: Decodable).dealWithError
+                   .progressClosure(SLProgress)
+                   .reponseData(OriginalResponse)
+                   .didReceive(SLResponse).decodeTo(Dictionary)
+                   .completionClosure(SLResponse)
+                   .decodeTo(Model: Decodable).dealWithError
 ```
 
 In most cases, what you need to concerned about is:
 
 ```swift
 SLNetwork(SLTarget).request(SLRequest)
-				   .progressClosure(SLProgress)
-				   .completionClosure(SLResponse)
+                   .progressClosure(SLProgress)
+                   .completionClosure(SLResponse)
 ```
 
 ---
