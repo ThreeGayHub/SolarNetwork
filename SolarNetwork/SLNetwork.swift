@@ -393,7 +393,7 @@ extension SLNetwork {
         didReceive(response: response)
         
         if let _ = response.data {
-            toDictionary(response: response)
+            toJsonObject(response: response)
             
             decode(request: request, response: response)
         }
@@ -429,7 +429,7 @@ extension SLNetwork {
         }
     }
     
-    private func toDictionary(response: SLResponse) {
+    private func toJsonObject(response: SLResponse) {
         var tempData: Data?
         if let string = response.data as? String {
             tempData = string.data(using: .utf8)
@@ -448,13 +448,11 @@ extension SLNetwork {
     }
     
     private func decode(request:SLRequest, response: SLResponse) {
-        if let status = target.status, let dictionary = response.data as? Dictionary<String, Any> {
-            let statusValue: Int = dictionary[status.codeKey] as! Int
-            var message: String = ""
+        if let status = target.status, let dictionary = response.data as? [String: Any] {
+            let statusValue = dictionary[status.codeKey] as! Int
             if let messageKey = status.messageKey {
-                message = dictionary[messageKey] as! String
+                response.message = dictionary[messageKey] as? String
             }
-            response.message = message
             if statusValue == status.successCode {
                 if let dataKeyPath = request.dataKeyPath {
                     if let dataObject = (dictionary as AnyObject).value(forKeyPath: dataKeyPath) {
@@ -463,7 +461,7 @@ extension SLNetwork {
                 }
             }
             else {
-                let error = NSError(domain: target.host, code: statusValue, userInfo: [NSLocalizedDescriptionKey : message])
+                let error = NSError(domain: target.host, code: statusValue, userInfo: [NSLocalizedDescriptionKey : response.message ?? ""])
                 response.error = error
             }
         }

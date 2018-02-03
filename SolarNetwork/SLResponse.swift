@@ -47,6 +47,20 @@ public class SLResponse {
         self.httpURLResponse = httpURLResponse
     }
     
+    public var dataDictionary: [String: Any]? {
+        if let dataDictionary = data as? [String: Any] {
+            return dataDictionary
+        }
+        return nil
+    }
+    
+    public var dataArray: [[String: Any]]? {
+        if let dataArray = data as? [[String: Any]] {
+            return dataArray
+        }
+        return nil
+    }
+    
     
     /// JsonObject to Model
     ///
