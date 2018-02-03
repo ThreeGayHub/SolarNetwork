@@ -12,14 +12,14 @@ Elegant network abstraction layer in Swift.
 - [Communication](#communication)
 - [Installation](#installation)
 - [Usage](#usage)
-  - **[Base Usage](#base-usage) -** [Target](#target-usage) - [Request](#request-usage) - [Download](#download-usage) - [Upload](#upload-usage) - [Decode](#decode-usage)
-  - **[Target](#target)** - Configuration of a Host.
-  - **[Request](#request)** - Configuration of a DataRequest.
-  - **[Download](#download)** - Configuration of a DownloadRequest or ResumeDownloadRequest.
-  - **[Upload](#upload)** - Configuration of a UploadRequest(Data - File - InputStream - FormData).
-  - **[Progress](#progress)** - Progress
-  - **[Response](#response)** - Decode - Error
-  - **[Plugin](#plugin)** - WillSend - DidReceive
+  - [Base Usage](#base-usage) - [Target](#target-usage) - [Request](#request-usage) - [Download](#download-usage) - [Upload](#upload-usage) - [Decode](#decode-usage)
+  - [Target](#target) - Configuration of a Host.
+  - [Request](#request) - Configuration of a DataRequest.
+  - [Download](#download) - Configuration of a DownloadRequest or ResumeDownloadRequest.
+  - [Upload](#upload) - Configuration of a UploadRequest(Data - File - InputStream - FormData).
+  - [Progress](#progress) - Progress
+  - [Response](#response) - Decode - Error
+  - [Plugin](#plugin) - WillSend - DidReceive
 
 ---
 
@@ -176,7 +176,7 @@ class HTTPBinGETRequest: SLRequest {
 }
 
 HTTPBinNetwork.request(HTTPBinGETRequest()) { (response) in
-    if let dictionary = response.data as? [String: Any] {
+    if let dictionary = response.dataDictionary {
                         
     }
     else if let error = response.error {
@@ -205,7 +205,7 @@ class HTTPBinPOSTRequest: SLRequest {
 }
 
 HTTPBinNetwork.request(HTTPBinPOSTRequest()) { (response) in
-    if let dictionary = response.data as? [String: Any] {
+    if let dictionary = response.dataDictionary {
                         
     }
     else if let error = response.error {
