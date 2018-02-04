@@ -169,10 +169,11 @@ class HTTPBinVC: UITableViewController {
                 let resourcePath = bundle.path(forResource: "SLNetwork", ofType: "png")
                 if let path = resourcePath {
                     let uploadRequest = HTTPBinUploadRequest()
-                    uploadRequest.multipartFormDataClosure = { (multipartFormData) in
+                    uploadRequest.multipartFormDataClosure { (multipartFormData) in
                         let url = URL(fileURLWithPath: path)
                         multipartFormData.append(url, withName: "SLNetwork")
                     }
+                    
                     HTTPBinNetwork.upload(uploadRequest, progressClosure: { (progress) in
                         
                     }) { (response) in
