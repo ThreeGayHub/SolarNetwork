@@ -14,7 +14,7 @@ Elegant network abstraction layer in Swift.
 - [Usage](#usage)
   - [Base Usage](#base-usage) - [Target](#target) - [Request](#request) - [Download](#download) - [Upload](#upload) - [Decode](#decode)
   - [Target](Documentation/Target.md) - Configuration of a Host.
-  - [Request](#request) - Configuration of a DataRequest.
+  - [Request](Documentation/Request.md) - Configuration of a DataRequest.
   - [Download](#download) - Configuration of a DownloadRequest or ResumeDownloadRequest.
   - [Upload](#upload) - Configuration of a UploadRequest(Data - File - InputStream - FormData).
   - [Progress](#progress) - Progress

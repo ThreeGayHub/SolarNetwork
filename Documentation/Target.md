@@ -1,8 +1,9 @@
 ## Target
 
-A target corresponds to a Host, or a set of requests for the same configuration.
+You can use Target to Configuration of a Host or a set of Requests for the same configuration.
 
 ```swift
+import SolarNetwork
 import Alamofire
 
 struct GitHubTarget: SLTarget {
