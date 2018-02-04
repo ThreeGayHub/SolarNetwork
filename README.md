@@ -291,5 +291,5 @@ HTTPBinNetwork.request(UserRequest()) { (response) in
 
 ## License
 
-Alamofire is released under the MIT license. [See LICENSE](#LICENSE) for details.
+Alamofire is released under the MIT license. [See LICENSE](https://github.com/ThreeGayHub/SolarNetwork/blob/master/LICENSE) for details.
 
