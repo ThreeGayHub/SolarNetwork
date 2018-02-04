@@ -12,7 +12,7 @@ class GitHubDownloadRequest: SLDownloadRequest {
     override func loadRequest() {
         super.loadRequest()
 		
-		self.URLString = "http://cdnvue.com/video/rzGHzRA19L/64tBZo"
+        self.URLString = "http://cdnvue.com/video/rzGHzRA19L/64tBZo"
     }
 }
 ```
