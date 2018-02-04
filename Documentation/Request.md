@@ -2,7 +2,7 @@
 
 Configuration of a DataRequest.
 
-override the SLRequest
+Override the SLRequest
 
 ```swift
 import SolarNetwork
