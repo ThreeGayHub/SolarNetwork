@@ -62,7 +62,7 @@ public class SLNetwork {
     
     
     // MARK: - Lifecycle
-    public init(target: SLTarget) {
+    public init(_ target: SLTarget) {
         self.target = target
         
         let configuration = target.configuration

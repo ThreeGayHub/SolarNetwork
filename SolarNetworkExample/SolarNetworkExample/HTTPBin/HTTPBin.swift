@@ -9,4 +9,4 @@
 import Foundation
 import SolarNetwork
 
-let HTTPBinNetwork = SLNetwork(target: HTTPBinTarget())
+let HTTPBinNetwork = SLNetwork(HTTPBinTarget())
