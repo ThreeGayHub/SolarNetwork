@@ -5,8 +5,6 @@ A target corresponds to a Host, or a set of requests for the same configuration.
 ```swift
 import Alamofire
 
-let GitHubNetwork = SLNetwork(target: GitHubTarget())
-
 struct GitHubTarget: SLTarget {
     /// Required: You have to specify baseURLString.
     var baseURLString: String { return "https://api.github.com" }
@@ -114,4 +112,12 @@ struct GitHubTarget: SLTarget {
     
     var storeHeader: [String : String]? = ["TestHeaderKey": "TestHeaderValue"]
 }
+```
+
+Usage
+
+```swift
+
+let GitHubNetwork = SLNetwork(target: GitHubTarget())
+
 ```
