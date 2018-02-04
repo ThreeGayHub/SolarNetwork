@@ -28,7 +28,18 @@ struct GitHubTarget: SLTarget {
     /// Optional: You can specify the URLSessionConfiguration of the host. The default is this.
     var configuration: URLSessionConfiguration { return URLSessionConfiguration.default }
 
-    /// Optional: You can specify the ServerTrustPolicy of the host. This can improve the difficulty of Charles view all of the HTTP and SSL / HTTPS traffic between machine and the Internet. The default is nil.
+    /// Optional: 
+    /**
+    Optional: The default is nil.
+     
+    You can specify the ServerTrustPolicy of the host. This can improve the difficulty of Charles view all of the HTTP and SSL / HTTPS traffic between machine and the Internet. 
+     
+    First get the Certificates of Host:
+    openssl s_client -connect test.example.com:443 </dev/null 2>/dev/null | openssl x509 -outform DER > example.cer
+     
+    Then put the Certificates of Host in Bundle.
+    Last, specify ServerTrustPolicy like this.
+    */
     var policies: [String : ServerTrustPolicy]? {
         
         #if DEBUG
