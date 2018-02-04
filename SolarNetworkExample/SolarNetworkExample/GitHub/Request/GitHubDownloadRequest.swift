@@ -12,6 +12,8 @@ import SolarNetwork
 class GitHubDownloadRequest: SLDownloadRequest {
     
     override func loadRequest() {
+        super.loadRequest()
+        
         self.URLString = "http://cdnvue.com/video/rzGHzRA19L/64tBZo"
     }
     
