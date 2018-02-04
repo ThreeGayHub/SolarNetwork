@@ -243,10 +243,13 @@ open class SLUploadRequest: SLRequest {
     /// uploading the `inputStream`.
     public var inputStream: (intputStream: InputStream, length: Int)?
     
-    
     /// uploading the `formData`.
-    public var multipartFormDataClosure: MultipartFormDataClosure?
+    internal var multipartFormDataClosure: MultipartFormDataClosure?
     
     public var encodingMemoryThreshold: UInt64 = SessionManager.multipartFormDataEncodingMemoryThreshold
+    
+    public func multipartFormDataClosure(_ formDataClosure: @escaping MultipartFormDataClosure) {
+        multipartFormDataClosure = formDataClosure
+    }
     
 }
