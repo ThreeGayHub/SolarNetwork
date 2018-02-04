@@ -217,7 +217,7 @@ open class SLDownloadRequest: SLRequest {
     
     var hasResume: Bool = false
     
-    /// Specifies the destination URL to receive the file. default: "/Library/Caches/SLNetwork/Destination/\(requestID)"
+    /// Specify the destination URL to receive the file. default: "/Library/Caches/SLNetwork/Destination/\(requestID)"
     public var destinationURL: URL?
     
     public var downloadOptions: DownloadRequest.DownloadOptions = [.removePreviousFile, .createIntermediateDirectories]
