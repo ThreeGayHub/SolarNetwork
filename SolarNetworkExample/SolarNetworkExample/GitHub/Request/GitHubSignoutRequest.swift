@@ -8,6 +8,7 @@
 
 import Foundation
 import SolarNetwork
+import Alamofire
 
 class GitHubSignoutRequest: SLRequest {
     
@@ -16,5 +17,6 @@ class GitHubSignoutRequest: SLRequest {
         self.method = .delete
         self.path = "/applications" + "/\(GitHubAppClientID)" + "/tokens/"
         self.basicAuthentication = (GitHubAppClientID, GitHubAppClientSecret)
+        
     }
 }
