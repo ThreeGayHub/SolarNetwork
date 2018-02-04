@@ -157,7 +157,7 @@ struct HTTPBinTarget: SLTarget {
     var baseURLString: String { return "https://httpbin.org" }
 }
 
-let HTTPBinNetwork = SLNetwork(target: HTTPBinTarget())
+let HTTPBinNetwork = SLNetwork(HTTPBinTarget())
 ```
 
 ### Request

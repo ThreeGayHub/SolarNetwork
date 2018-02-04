@@ -9,7 +9,7 @@
 import Foundation
 import SolarNetwork
 
-let GitHubNetwork = SLNetwork(target: GitHubTarget())
+let GitHubNetwork = SLNetwork(GitHubTarget())
 
 let GitHubAppClientID = "e02a05e02e13bc1d1e51"
 let GitHubAppClientSecret = "48c3229b79302d818fe7c4fd2310d58996297aca"

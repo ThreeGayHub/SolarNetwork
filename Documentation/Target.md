@@ -118,6 +118,6 @@ Usage
 
 ```swift
 
-let GitHubNetwork = SLNetwork(target: GitHubTarget())
+let GitHubNetwork = SLNetwork(GitHubTarget())
 
 ```
