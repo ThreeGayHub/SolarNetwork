@@ -71,6 +71,7 @@ SLNetwork(SLTarget).request(SLRequest)
 -[x] Dynamically Adapt and Retry Requests
 -[x] TLS Certificate and Public Key Pinning
 -[x] Network Reachability
+-[x] Complete Log
 
 ---
 
