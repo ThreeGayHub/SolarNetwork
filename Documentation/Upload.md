@@ -2,7 +2,7 @@
 
 Configuration of a UploadRequest(Data - File - InputStream - FormData).
 
-Override the SLUploadRequest
+#### Override the SLUploadRequest
 
 ```swift
 import SolarNetwork
@@ -18,7 +18,7 @@ class HTTPBinUploadRequest: SLUploadRequest {
 }
 ```
 
-Upload Data
+#### Upload Data
 
 ```swift
 let bundle = Bundle.main
@@ -40,7 +40,7 @@ catch {
 }
 ```
 
-Upload File
+#### Upload File
 
 ```swift
 if let path = resourcePath {
@@ -54,7 +54,7 @@ if let path = resourcePath {
 }
 ```
 
-Upload InputStream
+#### Upload InputStream
 
 ```swift
 do {
@@ -76,7 +76,7 @@ catch {
 }
 ```
 
-Upload FormData
+#### Upload FormData
 
 ```swift
 if let path = resourcePath {

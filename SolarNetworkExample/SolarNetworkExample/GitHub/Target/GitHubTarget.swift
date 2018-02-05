@@ -37,4 +37,8 @@ struct GitHubTarget: SLTarget {
         
     }
     
+    var plugins: [SLPlugin]? {
+        return [GitHubPlugin()]
+    }
+    
 }

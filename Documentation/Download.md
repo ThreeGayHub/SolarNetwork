@@ -2,7 +2,7 @@
 
 Configuration of a DownloadRequest or ResumeDownloadRequest.
 
-Override the SLDownloadRequest
+#### Override the SLDownloadRequest
 
 ```swift
 import SolarNetwork
@@ -17,7 +17,7 @@ class GitHubDownloadRequest: SLDownloadRequest {
 }
 ```
 
-Usage
+#### Usage
 
 ```swift
 let downloadRequest = GitHubDownloadRequest()
@@ -34,8 +34,7 @@ downloadRequest.isResume = true
 downloadRequest.destinationURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
 ```
 
-
-**Why can resume download work.**
+#### Why can resume download work.
 
 1.Every time begin a resume download request, SolarNetwork cancel the request and save the `Alamofire.Response.resumeData` to cache path when data is first received.  And then send the request again. So it can resume download when the app restart. 
 
