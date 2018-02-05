@@ -1,4 +1,4 @@
-## Download
+## Upload
 
 Configuration of a UploadRequest(Data - File - InputStream - FormData).
 
