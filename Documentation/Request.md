@@ -2,7 +2,7 @@
 
 Configuration of a DataRequest.
 
-Override the SLRequest
+#### Override the SLRequest
 
 ```swift
 import SolarNetwork
@@ -34,7 +34,7 @@ class GitHubSigninRequest: SLRequest {
 }
 ```
 
-Usage
+#### Usage
 
 ```swift
 //When you click the Signin button.
@@ -60,7 +60,7 @@ if let userName = userName, let password = password {
     }
 }
 ```
-You can also specify the following properties if you need.
+#### You can also specify the following properties if you need.
 
 ```swift
 public var method: HTTPMethod
@@ -86,7 +86,7 @@ public var basicAuthentication: (user: String, password: String)?
 public var dataKeyPath: String?
 ```
 
-Control the state of Request 
+#### Control the state of Request 
 
 ```swift
 let request = SubSLRequest()

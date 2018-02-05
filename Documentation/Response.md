@@ -2,7 +2,7 @@
 
 Response of a request which you can decode to JsonObject or Model.
 
-Decode to Dictionary
+#### Decode to Dictionary
 
 ```swift
 HTTPBinNetwork.request(GetDictionaryRequest()) { (response) in
@@ -15,7 +15,7 @@ HTTPBinNetwork.request(GetDictionaryRequest()) { (response) in
 }
 ```
 
-Decode to Array
+#### Decode to Array
 
 ```swift
 HTTPBinNetwork.request(GetArrayRequest()) { (response) in
@@ -28,7 +28,7 @@ HTTPBinNetwork.request(GetArrayRequest()) { (response) in
 }
 ```
 
-Decode to Model
+#### Decode to Model
 
 ```swift
 struct User: Decodable { //Swift 4 Codable

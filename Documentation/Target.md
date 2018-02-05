@@ -48,14 +48,12 @@ struct GitHubTarget: SLTarget {
 }
 ```
 
-Usage
+#### Usage
 
 ```swift
-
 let GitHubNetwork = SLNetwork(GitHubTarget())
-
 ```
-You can also specify the following properties if you need.
+#### You can also specify the following properties if you need.
 
 ```swift
 struct GitHubTarget: SLTarget {
@@ -80,8 +78,10 @@ struct GitHubTarget: SLTarget {
     var responseQueue: DispatchQueue? { return nil }
 
     /// Optional: You can specify the Plugins of the host. The default is nil.
-    var plugins: [SLPlugin]? { return nil }
+    var plugins: [SLPlugin]? {
     
+        return [GitHubPlugin(), OtherPligin()]
+    }
         /// Optional: You can observe the reachability of the host. The default is nil.
     var reachability: NetworkReachabilityManager.Listener? {
         return { (status) in

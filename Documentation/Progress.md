@@ -2,7 +2,7 @@
 
 Return progress when download or upload.
 
-Download Progress
+#### Download Progress
 
 ```swift
 HTTPBinNetwork.download(HTTPBinDownLoadRequest(), progressClosure: { (progress) in
@@ -13,7 +13,7 @@ HTTPBinNetwork.download(HTTPBinDownLoadRequest(), progressClosure: { (progress) 
 }
 ```
 
-Upload Progress
+#### Upload Progress
 
 ```swift
 HTTPBinNetwork.upload(uploadRequest, progressClosure: { (progress) in
