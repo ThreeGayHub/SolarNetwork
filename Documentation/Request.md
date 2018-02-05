@@ -45,7 +45,6 @@ if let userName = userName, let password = password {
     signinRequest.basicAuthentication = (userName, password)
     
     GitHubNetwork.request(signinRequest) { [weak self] (response) in
-        guard let strongSelf = self else { return }
         
         if let model = response.decode(to: GitHubAuthenticationModel.self) {
             
