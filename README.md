@@ -36,7 +36,7 @@ Elegant network abstraction layer in Swift.
 
 **SLProgress** return progress when download or upload.
 
-**SLResponse** response of a request which you can decode to Dictionary or Model.
+**SLResponse** response of a request which you can decode to JsonObject or Model.
 
 **SLPlugin** you can modify SLRequest in `willSend` and modify SLResponse in `didReceive`.
 
