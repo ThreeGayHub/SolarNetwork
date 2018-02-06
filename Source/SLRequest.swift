@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-import Alamofire
+import Foundation
 
 /// A type that can inspect and optionally adapt a `URLRequest` in some manner if necessary.
 open class SLRequest: SLReflection {
@@ -45,7 +45,7 @@ open class SLRequest: SLReflection {
     
     open func loadRequest() {}
     
-    public var originalRequest: Request?
+    internal var originalRequest: Request?
     
     /// Base64 string of the request's URLString
     public var requestID: String {
@@ -215,12 +215,12 @@ open class SLDownloadRequest: SLRequest {
     /// Specifies whether the download request is resume or not.
     public var isResume: Bool = false
     
-    var hasResume: Bool = false
+    internal var hasResume: Bool = false
     
     /// Specify the destination URL to receive the file. default: "/Library/Caches/SLNetwork/Destination/\(requestID)"
     public var destinationURL: URL?
     
-    public var downloadOptions: DownloadRequest.DownloadOptions = [.removePreviousFile, .createIntermediateDirectories]
+    public var downloadOptions: DownloadOptions = [.removePreviousFile, .createIntermediateDirectories]
     
 }
 

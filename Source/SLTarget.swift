@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-import Alamofire
+import Foundation
 
 public protocol SLTarget {
     
@@ -52,7 +52,7 @@ public protocol SLTarget {
     var plugins: [SLPlugin]? { get }
     
     /// The target's Reachability
-    var reachability: NetworkReachabilityManager.Listener? { get }
+    var reachability: Listener? { get }
     
     /// The target's Host.
     var host: String { get }
@@ -112,7 +112,7 @@ public extension SLTarget {
     
     var plugins: [SLPlugin]? { return nil }
 
-    var reachability: NetworkReachabilityManager.Listener? { return nil }
+    var reachability: Listener? { return nil }
     
     var host: String {
         var host: String = baseURLString

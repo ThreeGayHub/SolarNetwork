@@ -24,7 +24,6 @@
 //
 
 import Foundation
-import Alamofire
 
 private let SLNetworkResponseQueue: String          = "com.SLNetwork.ResponseQueue"
 

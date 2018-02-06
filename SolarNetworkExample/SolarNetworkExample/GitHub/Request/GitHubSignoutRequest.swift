@@ -8,7 +8,6 @@
 
 import Foundation
 import SolarNetwork
-import Alamofire
 
 class GitHubSignoutRequest: SLRequest {
     

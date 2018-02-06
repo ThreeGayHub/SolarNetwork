@@ -6,7 +6,6 @@ Configuration of a DataRequest.
 
 ```swift
 import SolarNetwork
-import Alamofire
 
 class GitHubSigninRequest: SLRequest {
     

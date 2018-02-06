@@ -4,7 +4,6 @@ You can use Target to Configuration of a Host or a set of Requests for the same 
 
 ```swift
 import SolarNetwork
-import Alamofire
 
 struct GitHubTarget: SLTarget {
     /// Required: You have to specify baseURLString.

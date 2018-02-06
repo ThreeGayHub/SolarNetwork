@@ -8,7 +8,6 @@
 
 import Foundation
 import SolarNetwork
-import Alamofire
 
 struct GitHubTarget: SLTarget {
 

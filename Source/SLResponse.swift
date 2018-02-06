@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-import Alamofire
+import Foundation
 
 public class SLResponse {
     
