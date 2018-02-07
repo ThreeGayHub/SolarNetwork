@@ -1,6 +1,6 @@
 # ![SLNetwork](SLNetwork.png)
 
-![Build Status](https://travis-ci.org/Alamofire/Alamofire.svg?branch=master) ![CocoaPods Compatible](https://img.shields.io/cocoapods/v/SolarNetwork.svg) ![Carthage Compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)  ![Platform](https://img.shields.io/cocoapods/p/Alamofire.svg?style=flat)
+![Build Status](https://travis-ci.org/Alamofire/Alamofire.svg?branch=master) ![CocoaPods Compatible](https://img.shields.io/cocoapods/v/SolarNetwork.svg) ![Carthage Compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)  ![Platform](https://img.shields.io/cocoapods/p/SolarNetwork.svg?style=flat)
 
 Elegant network abstraction layer in Swift.
 
@@ -63,15 +63,15 @@ SLNetwork(SLTarget).request(SLRequest)
 
 # Features
 
--[x] URL / JSON / plist Parameter Encoding
--[x] Upload File / Data / Stream / MultipartFormData
--[x] Download File using Request or Resume Data
--[x] Authentication with URLCredential
--[x] Upload and Download Progress Closures with Progress
--[x] Dynamically Adapt and Retry Requests
--[x] TLS Certificate and Public Key Pinning
--[x] Network Reachability
--[x] Complete Log
+- [x] URL / JSON / plist Parameter Encoding
+- [x] Upload File / Data / Stream / MultipartFormData
+- [x] Download File using Request or Resume Data
+- [x] Authentication with URLCredential
+- [x] Upload and Download Progress Closures with Progress
+- [x] Dynamically Adapt and Retry Requests
+- [x] TLS Certificate and Public Key Pinning
+- [x] Network Reachability
+- [x] Complete Logger
 
 ---
 
