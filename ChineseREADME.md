@@ -6,7 +6,6 @@ Elegant network abstraction layer in Swift.
 
 
 
-- [中文](ChineseREADME.md)
 - [Design](#design)
 - [Features](#features)
 - [Requirements](#requirements)
@@ -27,21 +26,21 @@ Elegant network abstraction layer in Swift.
 
 # Design
 
-**Alamofire** and **Moya** are elegant Swift network frames. They each have their own advantages. When I use them, I always want to combine the advantages of both, make them easy to use and retain their original features. So I wrote the **SolarNetwork**.
+**Alamofire**和**Moya**都是优雅的网络框架，他们各有其优点。刚开始用Swift做项目时，两个框架都有用过，但慢慢地项目逐渐增大，使用Alamofire时，各种接口和参数难以管理，后来用了Moya，Moya是基于Alamofire的封装，十分优秀。接口和参数很乱的情况稍微好了点，但随着TargetType慢慢增大时，每次看一个接口的信息都感觉很不清晰，太多Switch，case，case，case了……所以一直在想，应该如何结合两者的优点，所以在Alamofire的基础上进行了封装，借鉴了Moya的TargetType和Plugin的设计思想，并保留了Alamofire的部分API。形成了**SolarNetwork**。
 
-**SLNetwork** corresponds to a SessionManager.
+**SLNetwork** 对应一个SessionManager，负责Request的发送，Progress和Response的对调。
 
-**SLTarget** corresponds to a Host, or a set of requests for the same configuration.
+**SLTarget** 对应一个Host或者一系列具有相同配置请求的配置。
 
-**SLRequest**, **SLDownloadRequest**, **SLUploadRequest** corresponds to Request of Data, Download, Upload.
+**SLRequest**, **SLDownloadRequest**, **SLUploadRequest** 分别对应Data, Download和Upload，是这3中请求的配置。
 
-**SLProgress** return progress when download or upload.
+**SLProgress** 下载和上传进度的回调。
 
-**SLResponse** response of a request which you can decode to JsonObject or Model.
+**SLResponse** 是一个已处理过的Response，你可以进一步选择转换为JsonObject或者Model。
 
-**SLPlugin** you can modify SLRequest in `willSend` and modify SLResponse in `didReceive`.
+**SLPlugin** 提供了两个切入点，用来在请求发送前修改请求的`willSend` 和 接收到网络回调后修改回调内容的 `didReceive`。
 
-So a complete request process is:
+所以整个网络请求的流程为：
 
 ```swift
 SLNetwork(SLTarget).request(SLRequest).willSend(SLRequest)
@@ -52,7 +51,7 @@ SLNetwork(SLTarget).request(SLRequest).willSend(SLRequest)
                    .decodeTo(Model: Decodable).dealWithError
 ```
 
-In most cases, what you need to concerned about is:
+大多数情况下，你只需要关心的是：
 
 ```swift
 SLNetwork(SLTarget).request(SLRequest)
@@ -198,7 +197,7 @@ class HTTPBinPOSTRequest: SLRequest {
     }
     
     /**
-     properties will encode to parameters by Reflection
+     利用反射，将属性自动转换为Parameters，不需要自己组装了
      ["userName": "myUserName",
       "password": "myPassword"]
      */
