@@ -29,17 +29,13 @@ Elegant network abstraction layer in Swift.
 
 **Alamofire** and **Moya** are elegant Swift network frames. They each have their own advantages. When I use them, I always want to combine the advantages of both, make them easy to use and retain their original features. So I wrote the **SolarNetwork**.
 
-**SLNetwork** corresponds to a SessionManager.
-
-**SLTarget** corresponds to a Host, or a set of requests for the same configuration.
-
-**SLRequest**, **SLDownloadRequest**, **SLUploadRequest** corresponds to Request of Data, Download, Upload.
-
-**SLProgress** return progress when download or upload.
-
-**SLResponse** response of a request which you can decode to JsonObject or Model.
-
-**SLPlugin** you can modify SLRequest in `willSend` and modify SLResponse in `didReceive`.
+- **SLNetwork** corresponds to a SessionManager.
+- **SLTarget** corresponds to a Host, or a set of requests for the same configuration.
+- **SLRequest**, **SLDownloadRequest**, **SLUploadRequest** corresponds to Request of Data, Download, Upload.
+- **SLProgress** return progress when download or upload.
+- **SLResponse** response of a request which you can decode to JsonObject or Model.
+- **SLPlugin** you can modify SLRequest in `willSend` and modify SLResponse in `didReceive`.
+- **SLReflection** reflex properties of SubSLRequest to Alamofire.Parameters.
 
 So a complete request process is:
 
