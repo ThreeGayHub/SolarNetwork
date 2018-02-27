@@ -106,7 +106,20 @@ open class SLRequest: SLReflection {
                 storeMethod = newValue?.method
             }
             if storeURLString == nil {
-                storeURLString = (newValue?.baseURLString)! + path
+                if let IPURLString = newValue?.IPURLString {
+                    storeURLString = IPURLString + path
+                    if let host = newValue?.host {
+                        if headers == nil {
+                            headers = [SLHostKey : host]
+                        }
+                        else {
+                            headers![SLHostKey] = host
+                        }
+                    }
+                }
+                else if let baseURLString = newValue?.baseURLString {
+                    storeURLString = baseURLString + path
+                }
             }
             if storeParameterEncoding == nil {
                 storeParameterEncoding = newValue?.parameterEncoding

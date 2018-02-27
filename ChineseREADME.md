@@ -68,6 +68,7 @@ SLNetwork(SLTarget).request(SLRequest)
 - [x] 保留Alamofire的对外API
 - [x] 修改Request和Response的Plugin
 - [x] Swift4下利用Decodable将JSON转为Model
+- [x] HTTPS IP直连
 - [x] 完整的日志打印
 
 ---

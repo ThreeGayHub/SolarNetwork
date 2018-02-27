@@ -68,6 +68,7 @@ SLNetwork(SLTarget).request(SLRequest)
 - [x] Dynamically Adapt and Retry Requests
 - [x] TLS Certificate and Public Key Pinning
 - [x] Network Reachability
+- [x] Pre-populate the DNS cache
 - [x] Complete Logger
 
 ---

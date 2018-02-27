@@ -13,6 +13,15 @@ struct GitHubTarget: SLTarget {
 
     var baseURLString: String { return "https://api.github.com" }
     
+    var IPURLString: String? {
+        get {
+            return storeIPURLString
+        }
+        set {
+            storeIPURLString = newValue
+        }
+    }
+    
     var parameterEncoding: ParameterEncoding { return JSONEncoding.default }
     
     var policies: [String : ServerTrustPolicy]? {
@@ -40,4 +49,10 @@ struct GitHubTarget: SLTarget {
         return [GitHubPlugin()]
     }
     
+    var storeIPURLString: String?
+    
 }
+
+//"api.github.com"
+//"https://192.30.255.117"
+

@@ -30,6 +30,8 @@ public protocol SLTarget {
     /// The target's baseURLString.
     var baseURLString: String { get }
     
+    var IPURLString: String? { get set }
+    
     /// The target's HTTPMethod.
     var method: HTTPMethod { get }
     
@@ -66,6 +68,15 @@ public protocol SLTarget {
 }
 
 public extension SLTarget {
+    var IPURLString: String? {
+        get {
+            return nil
+        }
+        set {
+            
+        }
+    }
+    
     var method: HTTPMethod { return .get }
     
     var headers: [String: String]? {
@@ -115,14 +126,10 @@ public extension SLTarget {
     var reachability: Listener? { return nil }
     
     var host: String {
-        var host: String = baseURLString
-        if host.hasPrefix("https://") {
-            host = host.replacingOccurrences(of: "https://", with: "")
+        if let URL = URL(string: baseURLString), let host = URL.host {
+            return host
         }
-        else if host.hasPrefix("http://") {
-            host = host.replacingOccurrences(of: "http://", with: "")
-        }
-        return host
+        return ""
     }
     
     var status: (codeKey: String, successCode: Int, messageKey: String?, dataKeyPath: String?)? { return nil }

@@ -125,3 +125,23 @@ struct GitHubTarget: SLTarget {
 }
 ```
 
+#### [Pre-populate the DNS cache(HTTPS直连IP、防止DNS劫持)](https://github.com/AFNetworking/AFNetworking/issues/2954)
+
+```swift
+struct GitHubTarget: SLTarget {
+
+    var baseURLString: String { return "https://api.github.com" }
+    
+    var IPURLString: String? {
+        get {
+            return storeIPURLString
+        }
+        set {
+            storeIPURLString = newValue
+        }
+    }
+}
+
+//after get ip of domain Such as the use HTTPDNS，then
+GitHubNetwork.IPURLString = "https://IP"
+```

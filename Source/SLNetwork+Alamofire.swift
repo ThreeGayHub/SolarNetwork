@@ -14,6 +14,7 @@ internal typealias DownloadRequest = Alamofire.DownloadRequest
 internal typealias UploadRequest = Alamofire.UploadRequest
 internal typealias DataRequest = Alamofire.DataRequest
 internal typealias DataResponse = Alamofire.DataResponse
+internal typealias SessionDelegate = Alamofire.SessionDelegate
 
 public typealias HTTPMethod = Alamofire.HTTPMethod
 public typealias Parameters = Alamofire.Parameters
@@ -26,8 +27,10 @@ public typealias PropertyListEncoding = Alamofire.PropertyListEncoding
 public typealias DownloadOptions = Alamofire.DownloadRequest.DownloadOptions
 public typealias MultipartFormData = Alamofire.MultipartFormData
 
-internal typealias ServerTrustPolicyManager = Alamofire.ServerTrustPolicyManager
+public typealias ServerTrustPolicyManager = Alamofire.ServerTrustPolicyManager
 public typealias ServerTrustPolicy = Alamofire.ServerTrustPolicy
 
 internal typealias NetworkReachabilityManager = Alamofire.NetworkReachabilityManager
 public typealias Listener = Alamofire.NetworkReachabilityManager.Listener
+
+public let SLHostKey = "Host"

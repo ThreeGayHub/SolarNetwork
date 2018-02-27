@@ -24,6 +24,7 @@
 //
 
 import Foundation
+import Alamofire
 
 private let SLNetworkResponseQueue: String          = "com.SLNetwork.ResponseQueue"
 
@@ -44,13 +45,14 @@ public class SLNetwork {
     
     /// The target's SessionManager
     public let sessionManager: SessionManager
+    public var serverTrustPolicyManager: ServerTrustPolicyManager?
     
     /// The target of a host
     public var target: SLTarget
     
     private lazy var responseQueue = { return DispatchQueue(label: SLNetworkResponseQueue) }()
     private lazy var reachabilityManager: NetworkReachabilityManager? = {
-        let reachabilityManager = NetworkReachabilityManager(host: target.host)
+        let reachabilityManager = NetworkReachabilityManager(host: self.target.host)
         return reachabilityManager
     }()
     
@@ -67,19 +69,59 @@ public class SLNetwork {
         let configuration = target.configuration
         configuration.httpAdditionalHeaders = SessionManager.defaultHTTPHeaders
         
-        var serverTrustPolicyManager: ServerTrustPolicyManager?
+        var policyManager: ServerTrustPolicyManager?
         if let policies = target.policies {
-            serverTrustPolicyManager = ServerTrustPolicyManager(policies: policies)
+            policyManager = ServerTrustPolicyManager(policies: policies)
+            self.serverTrustPolicyManager = policyManager
         }
         
-        self.sessionManager = SessionManager(configuration: configuration, serverTrustPolicyManager:serverTrustPolicyManager)
+        self.sessionManager = SessionManager(configuration: configuration, serverTrustPolicyManager:policyManager)
         
         if let reachability = target.reachability {
-            reachabilityManager?.listener = reachability
-            reachabilityManager?.startListening()
+            self.reachabilityManager?.listener = reachability
+            self.reachabilityManager?.startListening()
         }
         
     }
+}
+
+extension SLNetwork {
+    
+    public var IPURLString: String {
+        get {
+            return target.IPURLString ?? ""
+        }
+        set {
+            target.IPURLString = newValue
+            if let policyManager = serverTrustPolicyManager {
+                sessionManager.delegate.taskDidReceiveChallenge = { (session, task, challenge) in
+                    var disposition: URLSession.AuthChallengeDisposition = .performDefaultHandling
+                    var credential: URLCredential?
+                    
+                    if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust {
+                        var host = task.currentRequest?.allHTTPHeaderFields![SLHostKey]
+                        if host == nil {
+                            host = challenge.protectionSpace.host
+                        }
+                        
+                        if
+                            let serverTrustPolicy = policyManager.serverTrustPolicy(forHost: host!),
+                            let serverTrust = challenge.protectionSpace.serverTrust
+                        {
+                            if serverTrustPolicy.evaluate(serverTrust, forHost: host!) {
+                                disposition = .useCredential
+                                credential = URLCredential(trust: serverTrust)
+                            } else {
+                                disposition = .cancelAuthenticationChallenge
+                            }
+                        }
+                    }
+                    return (disposition, credential)
+                }
+            }
+        }
+    }
+    
 }
 
 extension SLNetwork {
@@ -114,7 +156,6 @@ extension SLNetwork {
             strongSelf.dealResponseOfDataRequest(request: request, originalResponse: originalResponse, completionClosure: completionClosure)
             
         }
-        
         request.originalRequest = dataRequest
     }
     
