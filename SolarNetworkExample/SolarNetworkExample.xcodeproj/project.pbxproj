@@ -239,6 +239,7 @@
 				F8AFC6072021F5EA00A3F595 /* Resources */,
 				D8E94A426470D99834E0D7E8 /* [CP] Embed Pods Frameworks */,
 				A3BB45B691556CEF735E4934 /* [CP] Copy Pods Resources */,
+				F87CA505205BC1170037DFC1 /* TODO- */,
 			);
 			buildRules = (
 			);
@@ -343,6 +344,20 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SolarNetworkExample/Pods-SolarNetworkExample-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		F87CA505205BC1170037DFC1 /* TODO- */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "TODO-";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "KEYWORDS=\"TODO-|FIXME-|DevTeam-|XXX-\"\nfind \"${SRCROOT}\" \\( -name \"*.swift\" \\) -print0 | xargs -0 egrep --with-filename --line-number --only-matching \"($KEYWORDS).*\\$\" | perl -p -e \"s/($KEYWORDS)/ warning: \\$1/\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 

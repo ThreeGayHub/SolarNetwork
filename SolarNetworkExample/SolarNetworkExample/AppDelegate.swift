@@ -8,6 +8,10 @@
 
 import UIKit
 
+//TODO-1.0.4-requestID拼接入Method String
+//TODO-1.0.4-动态切换BaseURL, IP, policies
+//TODO-1.0.4-自动验证沙盒中存在HTTPS证书，不存在则不验证
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
