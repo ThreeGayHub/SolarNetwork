@@ -254,7 +254,7 @@ extension SLNetwork {
                                 URL:\(request.URLString)
                                 resumeData has been writed to:
                                 \(resumeDataURL.absoluteString)
-                                ------------------------ SLResponse ----------------------
+                                ----------------------------------------------------------
                                 
                                 """)
                         }
