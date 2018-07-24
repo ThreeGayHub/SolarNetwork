@@ -216,7 +216,7 @@ extension SLRequest: CustomDebugStringConvertible {
         URL:\(URLString)
         Headers:\(String(describing: headers))
         Parameters:\(String(describing: parameters))
-        ------------------------ SLRequest -----------------------
+        ----------------------------------------------------------
         
         """
     }

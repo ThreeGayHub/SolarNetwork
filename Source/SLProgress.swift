@@ -58,7 +58,7 @@ extension SLProgress: CustomDebugStringConvertible {
         ------------------------ SLProgress ----------------------
         URL:\(request?.URLString ?? "")
         Progress:\(currentProgressString)
-        ------------------------ SLProgress ----------------------
+        ----------------------------------------------------------
         
         """
     }

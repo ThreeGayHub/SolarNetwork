@@ -93,14 +93,25 @@ public class SLResponse {
 extension SLResponse: CustomDebugStringConvertible {
     
     public var debugDescription: String {
-        let dataString = destinationURL == nil ? "data:\(data ?? "")" : "destinationURL:\(destinationURL?.absoluteString ?? "")"
+        
+        var dataString: String?
+        
+        let d = data ?? Data()
+        let isJson = JSONSerialization.isValidJSONObject(d)
+        if isJson {
+            let jsonData = try? JSONSerialization.data(withJSONObject: d, options: [.prettyPrinted])
+            let str = String(data: jsonData ?? Data(), encoding: .utf8)
+            dataString = str
+        }else {
+            dataString = destinationURL == nil ? "\(data ?? "")" : "destinationURL:\(destinationURL?.absoluteString ?? "")"
+        }
         
         return """
         ------------------------ SLResponse ----------------------
         URL:\(request?.URLString ?? "")
-        \(dataString)
+        \(dataString ?? "")
         error:\(String(describing: error))
-        ------------------------ SLResponse ----------------------
+        ----------------------------------------------------------
         
         """
     }

@@ -7,7 +7,7 @@ DEPENDENCIES:
   - SolarNetwork (from `../`)
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  https://github.com/cocoapods/specs.git:
     - Alamofire
 
 EXTERNAL SOURCES:
@@ -20,4 +20,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 6654e6e2f969e7637ec02d3250628b7292327129
 
-COCOAPODS: 1.5.0
+COCOAPODS: 1.5.3
