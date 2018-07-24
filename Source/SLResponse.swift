@@ -96,13 +96,13 @@ extension SLResponse: CustomDebugStringConvertible {
         
         var dataString: String?
         
-        let d = data ?? Data()
-        let isJson = JSONSerialization.isValidJSONObject(d)
+        let aData = data ?? Data()
+        let isJson = JSONSerialization.isValidJSONObject(aData)
         if isJson {
-            let jsonData = try? JSONSerialization.data(withJSONObject: d, options: [.prettyPrinted])
-            let str = String(data: jsonData ?? Data(), encoding: .utf8)
-            dataString = str
-        }else {
+            let jsonData = try? JSONSerialization.data(withJSONObject: aData, options: [.prettyPrinted])
+            dataString = String(data: jsonData ?? Data(), encoding: .utf8)
+        }
+        else {
             dataString = destinationURL == nil ? "\(data ?? "")" : "destinationURL:\(destinationURL?.absoluteString ?? "")"
         }
         

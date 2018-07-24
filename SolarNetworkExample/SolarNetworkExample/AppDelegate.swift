@@ -8,9 +8,9 @@
 
 import UIKit
 
-//TODO-1.0.4-requestID拼接入Method String
-//TODO-1.0.4-动态切换BaseURL, IP, policies
-//TODO-1.0.4-自动验证沙盒中存在HTTPS证书，不存在则不验证。存在的设置一个免验证白名单，因为可能存在某些域名前缀证书验证不通过的坑(跟运维HTTPS配置有关)
+//TODO-1.0.5-log开关
+//TODO-1.0.5-动态切换BaseURL, IP, policies
+//TODO-1.0.5-自动验证沙盒中存在HTTPS证书，不存在则不验证。存在的设置一个免验证白名单，因为可能存在某些域名前缀证书验证不通过的坑(跟运维HTTPS配置有关)
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {

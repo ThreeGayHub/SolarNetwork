@@ -47,9 +47,10 @@ open class SLRequest: SLReflection {
     
     internal var originalRequest: Request?
     
-    /// Base64 string of the request's URLString
+    /// Base64 string of the request's URLString + method
     public var requestID: String {
-        return URLString.data(using: .utf8)?.base64EncodedString() ?? ""
+        let string = URLString + method.rawValue
+        return string.data(using: .utf8)?.base64EncodedString() ?? ""
     }
     
     public var method: HTTPMethod {
