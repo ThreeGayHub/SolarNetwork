@@ -136,7 +136,7 @@ extension SLNetwork {
     public func request(_ request: SLRequest, completionClosure: @escaping CompletionClosure) {
         request.target = target
         
-        debugPrint(request)
+        if target.enableLog { debugPrint(request) }
         
         willSend(request: request)
         
@@ -174,7 +174,7 @@ extension SLNetwork {
     public func download(_ request: SLDownloadRequest, progressClosure: ProgressClosure? = nil,  completionClosure: @escaping CompletionClosure) {
         request.target = target
         
-        debugPrint(request)
+        if target.enableLog { debugPrint(request) }
         
         willSend(request: request)
         
@@ -210,7 +210,9 @@ extension SLNetwork {
         if let _ = progressClosure {
             progress = SLProgress(request: request)
         }
-        downloadRequest.downloadProgress { (originalProgress) in
+        downloadRequest.downloadProgress { [weak self] (originalProgress) in
+            guard let strongSelf = self else { return }
+
             if request.isResume && !FileManager.fileExists(at: resumeDataURL) {
                 request.cancel()
             }
@@ -220,7 +222,7 @@ extension SLNetwork {
             }
             if let progressClosure = progressClosure, let progress = progress {
                 progress.originalProgress = originalProgress
-                debugPrint(progress)
+                if strongSelf.target.enableLog { debugPrint(progress) }
                 progressClosure(progress)
             }
         }
@@ -249,14 +251,16 @@ extension SLNetwork {
                             }
                             
                             try originalResponse.resumeData?.write(to: resumeDataURL)
-                            debugPrint("""
-                                ------------------------ SLResponse ----------------------
-                                URL:\(request.URLString)
-                                resumeData has been writed to:
-                                \(resumeDataURL.absoluteString)
-                                ----------------------------------------------------------
-                                
-                                """)
+                            if strongSelf.target.enableLog {
+                                debugPrint("""
+                                    ------------------------ SLResponse ----------------------
+                                    URL:\(request.URLString)
+                                    resumeData has been writed to:
+                                    \(resumeDataURL.absoluteString)
+                                    ----------------------------------------------------------
+                                    
+                                    """)
+                            }
                         }
                         catch {
                             debugPrint("ResumeDataWriteError:\(error)")
@@ -303,7 +307,7 @@ extension SLNetwork {
             
             strongSelf.didReceive(response: response)
 
-            debugPrint(response)
+            if strongSelf.target.enableLog { debugPrint(response) }
             
             DispatchQueue.main.async {
                 completionClosure(response)
@@ -332,7 +336,7 @@ extension SLNetwork {
     public func upload(_ request: SLUploadRequest, progressClosure: ProgressClosure? = nil,  completionClosure: @escaping CompletionClosure) {
         request.target = target
         
-        debugPrint(request)
+        if target.enableLog { debugPrint(request) }
         
         willSend(request: request)
         
@@ -395,10 +399,12 @@ extension SLNetwork {
         if let _ = progressClosure {
             progress = SLProgress(request: request)
         }
-        uploadRequest.uploadProgress(closure: { (originalProgress) in
+        uploadRequest.uploadProgress(closure: { [weak self] (originalProgress) in
+            guard let strongSelf = self else { return }
+
             if let progressClosure = progressClosure, let progress = progress {
                 progress.originalProgress = originalProgress
-                debugPrint(progress)
+                if strongSelf.target.enableLog { debugPrint(progress) }
                 progressClosure(progress)
             }
         })
@@ -438,7 +444,7 @@ extension SLNetwork {
             decode(request: request, response: response)
         }
         
-        debugPrint(response)
+        if target.enableLog { debugPrint(response) }
         
         DispatchQueue.main.async {
             completionClosure(response)

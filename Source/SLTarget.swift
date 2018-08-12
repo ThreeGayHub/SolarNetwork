@@ -65,6 +65,9 @@ public protocol SLTarget {
     /// The target's Response JSONDecoder
     var decoder: JSONDecoder { get }
     
+    /// The target's debugPrint Switch, default is on.
+    var enableLog: Bool { get }
+    
 }
 
 public extension SLTarget {
@@ -140,4 +143,5 @@ public extension SLTarget {
         return decoder
     }
     
+    var enableLog: Bool { return true }
 }
