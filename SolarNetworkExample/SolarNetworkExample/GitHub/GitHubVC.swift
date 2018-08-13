@@ -47,7 +47,7 @@ class GitHubVC: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         //First you should get the IP of the domain name.
-        GitHubNetwork.target.IPURLString = "https://13.250.94.254"
+//        GitHubNetwork.target.IPURLString = "https://13.250.94.254"
         
         token = UserDefaults.standard.string(forKey: GitHubTokenKey)
         

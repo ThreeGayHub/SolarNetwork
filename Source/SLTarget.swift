@@ -103,7 +103,7 @@ public extension SLTarget {
      First get the Certificates of Host:
      openssl s_client -connect test.example.com:443 </dev/null 2>/dev/null | openssl x509 -outform DER > example.cer
      
-     then put the Certificates of Host in Bundle.
+     then put the Certificates of Host in MainBundle.
      
      Example:
      ---------------------------------------------------------
@@ -127,7 +127,7 @@ public extension SLTarget {
     
     /**
      how to use?
-     First put the Certificates of Host in Bundle.
+     First put the p12 of client in MainBundle.
      
      var clentTrustPolicy: (secPKCS12Name: String, secPKCS12Password: String)? {
         return (secPKCS12Name: "example", secPKCS12Password: "123456")

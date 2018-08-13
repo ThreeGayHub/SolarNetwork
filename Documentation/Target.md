@@ -21,10 +21,10 @@ struct GitHubTarget: SLTarget {
     First get the Certificates of Host:
     openssl s_client -connect api.github.com:443 </dev/null 2>/dev/null | openssl x509 -outform DER > github.cer
      
-    Then put the Certificates of Host in Bundle.
+    Then put the Certificates of Host in MainBundle.
     Last, specify ServerTrustPolicy like this.
     */
-    var policies: [String : ServerTrustPolicy]? {
+    var serverTrustPolicies: [String : ServerTrustPolicy]? {
         
         #if DEBUG
             let validateCertificateChain = false
@@ -34,15 +34,23 @@ struct GitHubTarget: SLTarget {
             let validateHost = true
         #endif
         
-        let serverTrustPolicies: [String: ServerTrustPolicy] = [
+        let policies: [String: ServerTrustPolicy] = [
             host: .pinCertificates(
                 certificates: ServerTrustPolicy.certificates(),
                 validateCertificateChain: validateCertificateChain,
                 validateHost: validateHost
             )
         ]
-        return serverTrustPolicies
+        return policies
         
+    }
+    
+    /** Optional: 
+     how to use?
+     First put the p12 of client in MainBundle.
+     */
+   	var clentTrustPolicy: (secPKCS12Name: String, secPKCS12Password: String)? {
+        return (secPKCS12Name: "github", secPKCS12Password: "123456")
     }
 }
 ```
@@ -122,6 +130,9 @@ struct GitHubTarget: SLTarget {
         decoder.dateDecodingStrategy = .secondsSince1970
         return decoder
     }
+    
+    /// Optional: The target's debugPrint Switch, default is on.
+    var enableLog: Bool { return true }
 }
 ```
 
@@ -143,5 +154,5 @@ struct GitHubTarget: SLTarget {
 }
 
 //after get ip of domain Such as the use HTTPDNS，then
-GitHubNetwork.IPURLString = "https://IP"
+GitHubNetwork.target.IPURLString = "https://IP"
 ```
