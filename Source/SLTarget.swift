@@ -45,7 +45,10 @@ public protocol SLTarget {
     var configuration: URLSessionConfiguration { get }
     
     /// The target's serverTrustPolicies
-    var policies: [String : ServerTrustPolicy]? { get }
+    var serverTrustPolicies: [String : ServerTrustPolicy]? { get }
+    
+    /// The target's clentTrustPolicy
+    var clentTrustPolicy: (secPKCS12Name: String, secPKCS12Password: String)? { get }
     
     /// The target's ResponseQueue
     var responseQueue: DispatchQueue? { get }
@@ -120,7 +123,17 @@ public extension SLTarget {
      validateCertificateChain: false
      validateHost: false
      */
-    var policies: [String : ServerTrustPolicy]? { return nil }
+    var serverTrustPolicies: [String : ServerTrustPolicy]? { return nil }
+    
+    /**
+     how to use?
+     First put the Certificates of Host in Bundle.
+     
+     var clentTrustPolicy: (secPKCS12Name: String, secPKCS12Password: String)? {
+        return (secPKCS12Name: "example", secPKCS12Password: "123456")
+     }
+     */
+    var clentTrustPolicy: (secPKCS12Name: String, secPKCS12Password: String)? { return nil }
         
     var responseQueue: DispatchQueue? { return nil }
     

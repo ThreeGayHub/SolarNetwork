@@ -70,14 +70,14 @@ public class SLNetwork {
         configuration.httpAdditionalHeaders = SessionManager.defaultHTTPHeaders
         
         var policyManager: ServerTrustPolicyManager?
-        if let policies = target.policies {
-            policyManager = ServerTrustPolicyManager(policies: policies)
+        if let serverTrustPolicies = target.serverTrustPolicies {
+            policyManager = ServerTrustPolicyManager(policies: serverTrustPolicies)
             self.serverTrustPolicyManager = policyManager
         }
         
         self.sessionManager = SessionManager(configuration: configuration, serverTrustPolicyManager:policyManager)
         
-        self.customTaskDidReceiveChallenge()
+        self.handleChallenge()
         
         if let reachability = target.reachability {
             self.reachabilityManager?.listener = reachability
@@ -89,35 +89,70 @@ public class SLNetwork {
 
 extension SLNetwork {
     
-    private func customTaskDidReceiveChallenge () {
-        if let policyManager = serverTrustPolicyManager {
-            sessionManager.delegate.taskDidReceiveChallenge = { (session, task, challenge) in
-                var disposition: URLSession.AuthChallengeDisposition = .performDefaultHandling
-                var credential: URLCredential?
-                
-                if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust {
-                    var host = task.currentRequest?.allHTTPHeaderFields![SLHostKey]
-                    if host == nil {
-                        host = challenge.protectionSpace.host
-                    }
-                    
-                    if
-                        let serverTrustPolicy = policyManager.serverTrustPolicy(forHost: host!),
-                        let serverTrust = challenge.protectionSpace.serverTrust
-                    {
-                        if serverTrustPolicy.evaluate(serverTrust, forHost: host!) {
-                            disposition = .useCredential
-                            credential = URLCredential(trust: serverTrust)
-                        } else {
-                            disposition = .cancelAuthenticationChallenge
-                        }
-                    }
-                }
-                return (disposition, credential)
+    private func handleChallenge () {
+        sessionManager.delegate.sessionDidReceiveChallenge = { [weak self] (session, challenge) in
+            guard let strongSelf = self else { return (.performDefaultHandling, nil) }
+            
+            if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust {
+                return strongSelf.serverTrust(session: session, challenge: challenge)
             }
+            else if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodClientCertificate {
+                return strongSelf.clientTrust(session: session, challenge: challenge)
+            }
+            
+            return (.performDefaultHandling, nil)
         }
     }
     
+    private func serverTrust(session: URLSession, challenge: URLAuthenticationChallenge) -> (URLSession.AuthChallengeDisposition, URLCredential?) {
+        var disposition: URLSession.AuthChallengeDisposition = .performDefaultHandling
+        var credential: URLCredential?
+        
+        if let policyManager = self.serverTrustPolicyManager {
+            let host = challenge.protectionSpace.host.isIP ? self.target.host : challenge.protectionSpace.host
+            
+            if let serverTrustPolicy = policyManager.serverTrustPolicy(forHost: host), let serverTrust = challenge.protectionSpace.serverTrust {
+                if serverTrustPolicy.evaluate(serverTrust, forHost: host) {
+                    disposition = .useCredential
+                    credential = URLCredential(trust: serverTrust)
+                } else {
+                    disposition = .cancelAuthenticationChallenge
+                }
+            }
+        }
+        
+        return (disposition, credential)
+    }
+    
+    private func clientTrust(session: URLSession, challenge: URLAuthenticationChallenge) -> (URLSession.AuthChallengeDisposition, URLCredential?) {
+        var disposition = URLSession.AuthChallengeDisposition.performDefaultHandling
+        var credential: URLCredential?
+        
+        if let (secPKCS12Name, secPKCS12Password) = self.target.clentTrustPolicy {
+            let path: String = Bundle.main.path(forResource: secPKCS12Name, ofType: "p12")!
+            let PKCS12Data = NSData(contentsOfFile:path)!
+            let key : NSString = kSecImportExportPassphrase as NSString
+            let options : NSDictionary = [key : secPKCS12Password]
+            
+            var items: CFArray?
+            let error = SecPKCS12Import(PKCS12Data, options, &items)
+            
+            if error == errSecSuccess {
+                if let itemArr = items as NSArray?, let item = itemArr.firstObject as? Dictionary<String, AnyObject> {
+                    let identityPointer = item["identity"];
+                    let secIdentityRef = identityPointer as! SecIdentity
+                    
+                    let chainPointer = item["chain"]
+                    let chainRef = chainPointer as? [Any]
+                    
+                    disposition = .useCredential
+                    credential = URLCredential(identity: secIdentityRef, certificates: chainRef, persistence: URLCredential.Persistence.forSession)
+                }
+            }
+        }
+        
+        return (disposition, credential)
+    }
 }
 
 extension SLNetwork {
@@ -664,6 +699,22 @@ extension FileManager {
     static func fileExists(at URL: URL) -> Bool {
         let path = URL.absoluteString.replacingOccurrences(of: "file://", with: "")
         return FileManager.default.fileExists(atPath: path)
+    }
+    
+}
+
+extension String {
+    
+    var isIP: Bool {
+        if let char = self.first {
+            let zero: Character = "0"
+            let nine: Character = "9"
+            if char >= zero && char <= nine {
+                return true
+            }
+        }
+        
+        return false;
     }
     
 }

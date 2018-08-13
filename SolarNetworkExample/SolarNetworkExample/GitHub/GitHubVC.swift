@@ -47,7 +47,7 @@ class GitHubVC: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         //First you should get the IP of the domain name.
-//        GitHubNetwork.target.IPURLString = "https://13.250.94.254"
+        GitHubNetwork.target.IPURLString = "https://13.250.94.254"
         
         token = UserDefaults.standard.string(forKey: GitHubTokenKey)
         
@@ -102,7 +102,7 @@ class GitHubVC: UITableViewController {
                                 }
                                 
                             }
-                            else if let error = response.error {
+                            else if let _ = response.error {
                                 //show error
                             }
                             
@@ -151,7 +151,7 @@ class GitHubVC: UITableViewController {
             switch row {
             case .API:
                 GitHubNetwork.request(GitHubAPIRequest()) { (response) in
-                    
+
                 }
                 
             case .UserInfo:

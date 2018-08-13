@@ -24,7 +24,7 @@ struct GitHubTarget: SLTarget {
     
     var parameterEncoding: ParameterEncoding { return JSONEncoding.default }
     
-    var policies: [String : ServerTrustPolicy]? {
+    var serverTrustPolicies: [String : ServerTrustPolicy]? {
         
         #if DEBUG
             let validateCertificateChain = false
@@ -34,16 +34,20 @@ struct GitHubTarget: SLTarget {
             let validateHost = true
         #endif
         
-        let serverTrustPolicies: [String: ServerTrustPolicy] = [
+        let policies: [String: ServerTrustPolicy] = [
             host: .pinCertificates(
                 certificates: ServerTrustPolicy.certificates(),
                 validateCertificateChain: validateCertificateChain,
                 validateHost: validateHost
             )
         ]
-        return serverTrustPolicies
+        return policies
         
     }
+    
+//    var clentTrustPolicy: (secPKCS12Name: String, secPKCS12Password: String)? {
+//        return (secPKCS12Name: "github", secPKCS12Password: "123456")
+//    }
     
     var plugins: [SLPlugin]? {
         return [GitHubPlugin()]
