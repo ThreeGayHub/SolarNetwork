@@ -77,6 +77,8 @@ public class SLNetwork {
         
         self.sessionManager = SessionManager(configuration: configuration, serverTrustPolicyManager:policyManager)
         
+        self.customTaskDidReceiveChallenge()
+        
         if let reachability = target.reachability {
             self.reachabilityManager?.listener = reachability
             self.reachabilityManager?.startListening()
@@ -87,37 +89,31 @@ public class SLNetwork {
 
 extension SLNetwork {
     
-    public var IPURLString: String {
-        get {
-            return target.IPURLString ?? ""
-        }
-        set {
-            target.IPURLString = newValue
-            if let policyManager = serverTrustPolicyManager {
-                sessionManager.delegate.taskDidReceiveChallenge = { (session, task, challenge) in
-                    var disposition: URLSession.AuthChallengeDisposition = .performDefaultHandling
-                    var credential: URLCredential?
+    private func customTaskDidReceiveChallenge () {
+        if let policyManager = serverTrustPolicyManager {
+            sessionManager.delegate.taskDidReceiveChallenge = { (session, task, challenge) in
+                var disposition: URLSession.AuthChallengeDisposition = .performDefaultHandling
+                var credential: URLCredential?
+                
+                if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust {
+                    var host = task.currentRequest?.allHTTPHeaderFields![SLHostKey]
+                    if host == nil {
+                        host = challenge.protectionSpace.host
+                    }
                     
-                    if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust {
-                        var host = task.currentRequest?.allHTTPHeaderFields![SLHostKey]
-                        if host == nil {
-                            host = challenge.protectionSpace.host
-                        }
-                        
-                        if
-                            let serverTrustPolicy = policyManager.serverTrustPolicy(forHost: host!),
-                            let serverTrust = challenge.protectionSpace.serverTrust
-                        {
-                            if serverTrustPolicy.evaluate(serverTrust, forHost: host!) {
-                                disposition = .useCredential
-                                credential = URLCredential(trust: serverTrust)
-                            } else {
-                                disposition = .cancelAuthenticationChallenge
-                            }
+                    if
+                        let serverTrustPolicy = policyManager.serverTrustPolicy(forHost: host!),
+                        let serverTrust = challenge.protectionSpace.serverTrust
+                    {
+                        if serverTrustPolicy.evaluate(serverTrust, forHost: host!) {
+                            disposition = .useCredential
+                            credential = URLCredential(trust: serverTrust)
+                        } else {
+                            disposition = .cancelAuthenticationChallenge
                         }
                     }
-                    return (disposition, credential)
                 }
+                return (disposition, credential)
             }
         }
     }
