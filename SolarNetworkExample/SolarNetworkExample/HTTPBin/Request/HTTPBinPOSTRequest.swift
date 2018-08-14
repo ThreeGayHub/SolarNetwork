@@ -19,5 +19,7 @@ class HTTPBinPOSTRequest: SLRequest {
     }
     
     let testPOSTProperty = "testPOSTProperty"
+    
+    var name: String?
 
 }

@@ -197,14 +197,18 @@ class HTTPBinPOSTRequest: SLRequest {
     /**
      properties will encode to parameters by Reflection
      ["userName": "myUserName",
-      "password": "myPassword"]
+      "password": "myPassword",
+	  "name" : "youName"]
      */
     let userName = "myUserName"
     let password = "myPassword"
-
+	
+    var name: String?
 }
 
-HTTPBinNetwork.request(HTTPBinPOSTRequest()) { (response) in
+let postReq = HTTPBinPOSTRequest()
+postReq.name = "yourName"
+HTTPBinNetwork.request(postReq) { (response) in
     if let dictionary = response.dataDictionary {
                         
     }

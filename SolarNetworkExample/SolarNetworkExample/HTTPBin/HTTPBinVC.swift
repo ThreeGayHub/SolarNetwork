@@ -63,7 +63,9 @@ class HTTPBinVC: UITableViewController {
                 }
                 
             case .POST:
-                HTTPBinNetwork.request(HTTPBinPOSTRequest()) { (response) in
+                let postReq = HTTPBinPOSTRequest()
+                postReq.name = "yourName"
+                HTTPBinNetwork.request(postReq) { (response) in
                     
                 }
                 
