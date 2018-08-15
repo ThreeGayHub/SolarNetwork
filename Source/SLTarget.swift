@@ -48,7 +48,7 @@ public protocol SLTarget {
     var serverTrustPolicies: [String : ServerTrustPolicy]? { get }
     
     /// The target's clentTrustPolicy
-    var clentTrustPolicy: (secPKCS12Name: String, secPKCS12Password: String)? { get }
+    var clientTrustPolicy: (secPKCS12Name: String, password: String)? { get }
     
     /// The target's ResponseQueue
     var responseQueue: DispatchQueue? { get }

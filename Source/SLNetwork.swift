@@ -128,11 +128,11 @@ extension SLNetwork {
         var disposition = URLSession.AuthChallengeDisposition.performDefaultHandling
         var credential: URLCredential?
         
-        if let (secPKCS12Name, secPKCS12Password) = self.target.clentTrustPolicy {
+        if let (secPKCS12Name, password) = self.target.clientTrustPolicy {
             let path: String = Bundle.main.path(forResource: secPKCS12Name, ofType: "p12")!
             let PKCS12Data = NSData(contentsOfFile:path)!
             let key : NSString = kSecImportExportPassphrase as NSString
-            let options : NSDictionary = [key : secPKCS12Password]
+            let options : NSDictionary = [key : password]
             
             var items: CFArray?
             let error = SecPKCS12Import(PKCS12Data, options, &items)
