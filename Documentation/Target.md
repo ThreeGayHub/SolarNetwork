@@ -49,7 +49,7 @@ struct GitHubTarget: SLTarget {
      how to use?
      First put the p12 of client in MainBundle.
      */
-    var clentTrustPolicy: (secPKCS12Name: String, secPKCS12Password: String)? {
+    var clientTrustPolicy: (secPKCS12Name: String, secPKCS12Password: String)? {
         return (secPKCS12Name: "github", secPKCS12Password: "123456")
     }
 }
