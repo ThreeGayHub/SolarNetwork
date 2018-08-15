@@ -129,24 +129,26 @@ extension SLNetwork {
         var credential: URLCredential?
         
         if let (secPKCS12Name, password) = self.target.clientTrustPolicy {
-            let path: String = Bundle.main.path(forResource: secPKCS12Name, ofType: "p12")!
-            let PKCS12Data = NSData(contentsOfFile:path)!
-            let key : NSString = kSecImportExportPassphrase as NSString
-            let options : NSDictionary = [key : password]
-            
-            var items: CFArray?
-            let error = SecPKCS12Import(PKCS12Data, options, &items)
-            
-            if error == errSecSuccess {
-                if let itemArr = items as NSArray?, let item = itemArr.firstObject as? Dictionary<String, AnyObject> {
-                    let identityPointer = item["identity"];
-                    let secIdentityRef = identityPointer as! SecIdentity
-                    
-                    let chainPointer = item["chain"]
-                    let chainRef = chainPointer as? [Any]
-                    
-                    disposition = .useCredential
-                    credential = URLCredential(identity: secIdentityRef, certificates: chainRef, persistence: URLCredential.Persistence.forSession)
+            if let path = Bundle.main.path(forResource: secPKCS12Name, ofType: "p12") {
+                let PKCS12Data = NSData(contentsOfFile:path)!
+                let key = kSecImportExportPassphrase as NSString
+                let options : NSDictionary = [key : password]
+                
+                var items: CFArray?
+                let error = SecPKCS12Import(PKCS12Data, options, &items)
+                
+                if error == errSecSuccess {
+                    if CFArrayGetCount(items) > 0 {
+                        let item = CFArrayGetValueAtIndex(items, 0) as! CFDictionary
+                        let secIdentityRef = CFDictionaryGetValue(item, unsafeBitCast(kSecImportItemIdentity, to: UnsafeRawPointer.self)) as! SecIdentity
+                        
+                        let chainRef = CFDictionaryGetValue(item, unsafeBitCast(kSecImportItemCertChain, to: UnsafeRawPointer.self)) as! CFArray
+                        if let chains = chainRef as NSArray? {
+                            let certificates = chains as? [Any]
+                            disposition = .useCredential
+                            credential = URLCredential(identity: secIdentityRef, certificates: certificates, persistence: URLCredential.Persistence.forSession)
+                        }
+                    }
                 }
             }
         }
