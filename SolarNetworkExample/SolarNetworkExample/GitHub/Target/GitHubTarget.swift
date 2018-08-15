@@ -45,8 +45,8 @@ struct GitHubTarget: SLTarget {
         
     }
     
-//    var clentTrustPolicy: (secPKCS12Name: String, secPKCS12Password: String)? {
-//        return (secPKCS12Name: "github", secPKCS12Password: "123456")
+//    var clientTrustPolicy: (secPKCS12Name: String, password: String)? {
+//        return (secPKCS12Name: "github", password: "123456")
 //    }
     
     var plugins: [SLPlugin]? {

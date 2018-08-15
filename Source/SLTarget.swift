@@ -129,11 +129,11 @@ public extension SLTarget {
      how to use?
      First put the p12 of client in MainBundle.
      
-     var clientTrustPolicy: (secPKCS12Name: String, secPKCS12Password: String)? {
-        return (secPKCS12Name: "example", secPKCS12Password: "123456")
+     var clientTrustPolicy: (secPKCS12Name: String, password: String)? {
+        return (secPKCS12Name: "example", password: "123456")
      }
      */
-    var clientTrustPolicy: (secPKCS12Name: String, secPKCS12Password: String)? { return nil }
+    var clientTrustPolicy: (secPKCS12Name: String, password: String)? { return nil }
         
     var responseQueue: DispatchQueue? { return nil }
     
