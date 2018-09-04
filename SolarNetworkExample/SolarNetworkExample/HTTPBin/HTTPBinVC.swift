@@ -14,6 +14,7 @@ class HTTPBinVC: UITableViewController {
         case Data
         case Download
         case Upload
+        case Custom
     }
     
     enum DataRow: Int {
@@ -34,6 +35,11 @@ class HTTPBinVC: UITableViewController {
         case File
         case InputStrame
         case FormData
+    }
+    
+    enum CustomRow: Int {
+        case StringParameters
+        case ArrayParameters
     }
 
     override func viewDidLoad() {
@@ -184,6 +190,26 @@ class HTTPBinVC: UITableViewController {
                 }
                 
             }
+            
+        case .Custom:
+            guard let row = CustomRow(rawValue: indexPath.row) else { return }
+            
+            switch row {
+                
+            case .StringParameters:
+                
+                HTTPBinNetwork.request(HTTPBinStringParametersRequest()) { (response) in
+                    
+                }
+                                
+            case .ArrayParameters: 
+                
+                HTTPBinNetwork.request(HTTPBinArrayParametersRequest()) { (response) in
+                
+                }
+                
+            }
+        
         }
         
     }

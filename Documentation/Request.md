@@ -98,3 +98,52 @@ request.resume()
 request.cancel()
 ```
 
+####Custom ParameterEncoding
+
+Alamofire not support String & Array parameters, if you wan to set String & Array parameters, you can use **SLParameterValueJSONEncoding**.
+
+```swift
+import Foundation
+import SolarNetwork
+
+class HTTPBinStringParametersRequest: SLRequest {
+    
+    override func loadRequest() {
+        super.loadRequest()
+        
+        method = .post
+        path = "/post"
+        parameterEncoding = SLParameterValueJSONEncoding.default
+    }
+    
+    let anyKey = "anyString"
+}
+
+HTTPBinNetwork.request(HTTPBinStringParametersRequest()) { (response) in 
+
+}
+```
+
+or **SLParameterValuePropertyListEncoding**
+
+```swift
+import Foundation
+import SolarNetwork
+
+class HTTPBinArrayParametersRequest: SLRequest {
+
+    override func loadRequest() {
+        super.loadRequest()
+        
+        method = .post
+        path = "/post"
+        parameterEncoding = SLParameterValueJSONEncoding.default
+    }
+    
+    let anyKey: [Any] = ["anyObj0", 1]
+}
+
+HTTPBinNetwork.request(HTTPBinArrayParametersRequest()) { (response) in
+
+}
+```

@@ -9,12 +9,16 @@ import Foundation
 import Alamofire
 
 public typealias SessionManager = Alamofire.SessionManager
+public typealias URLRequestConvertible = Alamofire.URLRequestConvertible
+
 internal typealias Request = Alamofire.Request
 internal typealias DownloadRequest = Alamofire.DownloadRequest
 internal typealias UploadRequest = Alamofire.UploadRequest
 internal typealias DataRequest = Alamofire.DataRequest
 internal typealias DataResponse = Alamofire.DataResponse
 internal typealias SessionDelegate = Alamofire.SessionDelegate
+internal typealias MultipartFormDataEncodingResult = SessionManager.MultipartFormDataEncodingResult
+internal typealias AFError = Alamofire.AFError
 
 public typealias HTTPMethod = Alamofire.HTTPMethod
 public typealias Parameters = Alamofire.Parameters

@@ -14,8 +14,9 @@ class HTTPBinPOSTRequest: SLRequest {
     override func loadRequest() {
         super.loadRequest()
         
-        self.method = .post
-        self.path = "/post"
+        method = .post
+        path = "/post"
+//        parameterEncoding = JSONEncoding.default
     }
     
     let testPOSTProperty = "testPOSTProperty"

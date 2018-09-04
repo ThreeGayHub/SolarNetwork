@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3B4170FC213E55C5005302F4 /* HTTPBinStringParametersRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4170FB213E55C5005302F4 /* HTTPBinStringParametersRequest.swift */; };
+		3B4170FE213E634D005302F4 /* HTTPBinArrayParametersRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4170FD213E634D005302F4 /* HTTPBinArrayParametersRequest.swift */; };
 		A6921FFADB2B69B3AF6389F6 /* Pods_SolarNetworkExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91171F28195C0598BA46A1B7 /* Pods_SolarNetworkExample.framework */; };
 		F892D9EF202203D7007536ED /* GitHubTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = F892D9E3202203D7007536ED /* GitHubTarget.swift */; };
 		F892D9F0202203D7007536ED /* GitHubSignoutRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F892D9E5202203D7007536ED /* GitHubSignoutRequest.swift */; };
@@ -39,6 +41,8 @@
 
 /* Begin PBXFileReference section */
 		1AAC6A72AF16BEE0789C1E0C /* Pods-SolarNetworkExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SolarNetworkExample.release.xcconfig"; path = "Pods/Target Support Files/Pods-SolarNetworkExample/Pods-SolarNetworkExample.release.xcconfig"; sourceTree = "<group>"; };
+		3B4170FB213E55C5005302F4 /* HTTPBinStringParametersRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPBinStringParametersRequest.swift; sourceTree = "<group>"; };
+		3B4170FD213E634D005302F4 /* HTTPBinArrayParametersRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPBinArrayParametersRequest.swift; sourceTree = "<group>"; };
 		5DF05302839F7017B47EC21C /* Pods-SolarNetworkExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SolarNetworkExample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SolarNetworkExample/Pods-SolarNetworkExample.debug.xcconfig"; sourceTree = "<group>"; };
 		91171F28195C0598BA46A1B7 /* Pods_SolarNetworkExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SolarNetworkExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F892D9E3202203D7007536ED /* GitHubTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GitHubTarget.swift; sourceTree = "<group>"; };
@@ -156,6 +160,8 @@
 				F892D9FF20220433007536ED /* HTTPBinPATCHRequest.swift */,
 				F892DA0020220433007536ED /* HTTPBinPOSTRequest.swift */,
 				F892DA0120220433007536ED /* HTTPBinDELETERequest.swift */,
+				3B4170FB213E55C5005302F4 /* HTTPBinStringParametersRequest.swift */,
+				3B4170FD213E634D005302F4 /* HTTPBinArrayParametersRequest.swift */,
 			);
 			path = Request;
 			sourceTree = "<group>";
@@ -361,6 +367,7 @@
 				F8AFC63B2021F6A100A3F595 /* HTTPBinVC.swift in Sources */,
 				F892D9F5202203D7007536ED /* GitHubUserInfoRequest.swift in Sources */,
 				F8AFC6482021F6A100A3F595 /* GitHubVC.swift in Sources */,
+				3B4170FE213E634D005302F4 /* HTTPBinArrayParametersRequest.swift in Sources */,
 				F8AFC64B2021F6A100A3F595 /* GitHub.swift in Sources */,
 				F892DA0320220433007536ED /* HTTPBinGETRequest.swift in Sources */,
 				F892DA0520220433007536ED /* HTTPBinPUTRequest.swift in Sources */,
@@ -370,6 +377,7 @@
 				F892D9F6202203D7007536ED /* GitHubPlugin.swift in Sources */,
 				F892D9F3202203D7007536ED /* GitHubMyInfoRequest.swift in Sources */,
 				F8AFC60D2021F5EA00A3F595 /* AppDelegate.swift in Sources */,
+				3B4170FC213E55C5005302F4 /* HTTPBinStringParametersRequest.swift in Sources */,
 				F892DA0820220433007536ED /* HTTPBinPOSTRequest.swift in Sources */,
 				F892D9F4202203D7007536ED /* GitHubSigninRequest.swift in Sources */,
 				F8AFC6392021F6A100A3F595 /* HTTPBin.swift in Sources */,
