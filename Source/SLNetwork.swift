@@ -173,11 +173,18 @@ extension SLNetwork {
         
         willSend(request: request)
         
-        let dataRequest = sessionManager.request(request.URLString,
+        let dataRequest: DataRequest
+        
+        if let urlRequest = request.urlRequest {
+            dataRequest = sessionManager.request(urlRequest)
+        }
+        else {
+            dataRequest = sessionManager.request(request.URLString,
                                                  method: request.method,
                                                  parameters: request.parameters,
                                                  encoding: request.parameterEncoding,
                                                  headers: request.headers)
+        }
         
         if let credential = request.credential {
             dataRequest.authenticate(usingCredential: credential)
@@ -216,16 +223,25 @@ extension SLNetwork {
             return (destinationURL, request.downloadOptions)
         }
 
-        var downloadRequest: DownloadRequest
+        let downloadRequest: DownloadRequest
+        
+        if let urlRequest = request.urlRequest {
+            downloadRequest = sessionManager.download(urlRequest)
+            downloadResponse(with: request, downloadRequest: downloadRequest, progressClosure: progressClosure, completionClosure: completionClosure)
+            
+            return;
+        }
+        
         if request.isResume {
             let resumeDataURL = SLNetworkResumeFolderURL.appendingPathComponent(request.requestID)
             if let resumeData = resumeData(of: resumeDataURL) {
                 downloadRequest = sessionManager.download(resumingWith: resumeData, to: destination)
                 downloadResponse(with: request, downloadRequest: downloadRequest, progressClosure: progressClosure, completionClosure: completionClosure)
+                
                 return
             }
         }
-                
+        
         downloadRequest = sessionManager.download(request.URLString, method: request.method, parameters: request.parameters, encoding: request.parameterEncoding, headers: request.headers, to: destination)
         downloadResponse(with: request, downloadRequest: downloadRequest, progressClosure: progressClosure, completionClosure: completionClosure)
     }
@@ -347,13 +363,10 @@ extension SLNetwork {
                 
                 request.originalRequest = nil
             }
-            
         }
         
         request.originalRequest = downloadRequest
-        
     }
-
 }
 
 extension SLNetwork {
@@ -373,52 +386,86 @@ extension SLNetwork {
         
         willSend(request: request)
         
-        var uploadRequest: UploadRequest
-        
         if let multipartFormDataClosure = request.multipartFormDataClosure {
-            sessionManager.upload(multipartFormData: multipartFormDataClosure, usingThreshold: request.encodingMemoryThreshold, to: request.URLString, method: request.method, headers: request.headers, encodingCompletion: { [weak self] (encodingResult) in
-                guard let strongSelf = self else { return }
-                
-                switch encodingResult {
-                case .success(let uploadRequest, _, _):
-                    strongSelf.uploadResponse(with: request, uploadRequest: uploadRequest, progressClosure:progressClosure, completionClosure: completionClosure)
+            
+            if let urlRequest = request.urlRequest {
+                sessionManager.upload(multipartFormData: multipartFormDataClosure, usingThreshold: request.encodingMemoryThreshold, with: urlRequest) { [weak self] (encodingResult) in
+                    guard let strongSelf = self else { return }
                     
-                case .failure(let error):
-                    let response = SLResponse(request: request, urlRequest: nil, httpURLResponse: nil)
-                    response.error = error as NSError
-                    completionClosure(response)
+                    strongSelf.encodeCompletion(with: encodingResult, request: request, progressClosure: progressClosure, completionClosure: completionClosure)
                 }
-            })
+            }
+            else {
+                sessionManager.upload(multipartFormData: multipartFormDataClosure, usingThreshold: request.encodingMemoryThreshold, to: request.URLString, method: request.method, headers: request.headers, encodingCompletion: { [weak self] (encodingResult) in
+                    guard let strongSelf = self else { return }
+                    
+                    strongSelf.encodeCompletion(with: encodingResult, request: request, progressClosure: progressClosure, completionClosure: completionClosure)
+                })
+            }
+            
         }
-        else {
-            if let filePath = request.filePath, let fileURL = URL(string: filePath) {
+        
+        let uploadRequest: UploadRequest
+        
+        if let filePath = request.filePath, let fileURL = URL(string: filePath) {
+            
+            if let urlRequest = request.urlRequest {
+                uploadRequest = sessionManager.upload(fileURL, with: urlRequest)
+            }
+            else {
                 uploadRequest = sessionManager.upload(fileURL,
                                                       to: request.URLString,
                                                       method: request.method,
                                                       headers: request.headers)
             }
-            else if let data = request.data {
+            
+        }
+        else if let data = request.data {
+            
+            if let urlRequest = request.urlRequest {
+                uploadRequest = sessionManager.upload(data, with: urlRequest)
+            }
+            else {
                 uploadRequest = sessionManager.upload(data,
                                                       to: request.URLString,
                                                       method: request.method,
                                                       headers: request.headers)
             }
-            else if let inputStream = request.inputStream {
-                
-                if request.headers == nil {
-                    request.headers = ["Content-Length" : "\(inputStream.length)"]
-                }
-                else {
-                    request.headers!["Content-Length"] = "\(inputStream.length)"
-                }
-                
+            
+        }
+        else if let inputStream = request.inputStream {
+            
+            if request.headers == nil {
+                request.headers = ["Content-Length" : "\(inputStream.length)"]
+            }
+            else {
+                request.headers!["Content-Length"] = "\(inputStream.length)"
+            }
+            
+            if let urlRequest = request.urlRequest {
+                uploadRequest = sessionManager.upload(inputStream.intputStream, with: urlRequest)
+            }
+            else {
                 uploadRequest = sessionManager.upload(inputStream.intputStream,
                                                       to: request.URLString,
                                                       method: request.method,
                                                       headers: request.headers)
             }
-            else { return }
+            
+        }
+        else { return }
+        uploadResponse(with: request, uploadRequest: uploadRequest, progressClosure:progressClosure, completionClosure: completionClosure)
+    }
+    
+    private func encodeCompletion(with encodingResult: MultipartFormDataEncodingResult, request: SLUploadRequest, progressClosure: ProgressClosure? = nil,  completionClosure: @escaping CompletionClosure) {
+        switch encodingResult {
+        case .success(let uploadRequest, _, _):
             uploadResponse(with: request, uploadRequest: uploadRequest, progressClosure:progressClosure, completionClosure: completionClosure)
+
+        case .failure(let error):
+            let response = SLResponse(request: request, urlRequest: nil, httpURLResponse: nil)
+            response.error = error as NSError
+            completionClosure(response)
         }
     }
     

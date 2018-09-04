@@ -166,6 +166,8 @@ open class SLRequest: SLReflection {
         }
     }
     
+    ///custom Request
+    public var urlRequest: URLRequestConvertible?
     
     /// The response's dataKey of the request
     public var dataKeyPath: String?
