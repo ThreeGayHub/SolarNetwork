@@ -98,7 +98,7 @@ request.resume()
 request.cancel()
 ```
 
-####Custom ParameterEncoding
+#### Custom ParameterEncoding
 
 Alamofire not support String & Array parameters, if you wan to set String & Array parameters, you can use **SLParameterValueJSONEncoding**.
 
