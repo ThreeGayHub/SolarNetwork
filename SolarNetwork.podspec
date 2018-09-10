@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name = "SolarNetwork"
-  s.version = "1.0.7"
+  s.version = "1.0.8"
   s.summary = "Elegant network abstraction layer in Swift."
   s.homepage = "https://github.com/ThreeGayHub/SolarNetwork"
   s.license = 'MIT'
