@@ -8,7 +8,7 @@
 
 import UIKit
 
-//TODO-1.0.8更灵活的ResponseData？
+//TODO-更灵活的ResponseData？
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
