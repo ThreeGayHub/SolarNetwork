@@ -214,11 +214,27 @@ extension SLRequest {
 extension SLRequest: CustomDebugStringConvertible {
     
     public var debugDescription: String {
+        
+        var headersString: String? = "nil"
+        var parametersString: String? = "nil"
+
+        if let headers = headers {
+            let headersData = try? JSONSerialization.data(withJSONObject: headers, options: [.prettyPrinted])
+            if let data = headersData {
+                headersString = String(data: data, encoding: .utf8)
+            }
+        }
+        if let parameters = parameters {
+            let parametersData = try? JSONSerialization.data(withJSONObject: parameters, options: [.prettyPrinted])
+            parametersString = String(data: parametersData ?? Data(), encoding: .utf8)
+        }
+        
         return """
+        
         ------------------------ SLRequest -----------------------
         URL:\(URLString)
-        Headers:\(String(describing: headers))
-        Parameters:\(String(describing: parameters))
+        Headers:\(headersString!)
+        Parameters:\(parametersString!)
         ----------------------------------------------------------
         
         """

@@ -15,7 +15,7 @@ class HTTPBinUploadRequest: SLUploadRequest {
     override func loadRequest() {
         super.loadRequest()
         
-        self.path = "/post"
+        path = "/post"
     }
     
 }

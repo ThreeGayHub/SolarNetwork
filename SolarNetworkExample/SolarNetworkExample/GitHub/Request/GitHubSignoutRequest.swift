@@ -13,9 +13,9 @@ class GitHubSignoutRequest: SLRequest {
     
     override func loadRequest() {
         super.loadRequest()
-        self.method = .delete
-        self.path = "/applications" + "/\(GitHubAppClientID)" + "/tokens/"
-        self.basicAuthentication = (GitHubAppClientID, GitHubAppClientSecret)
         
+        method = .delete
+        path = "/applications" + "/\(GitHubAppClientID)" + "/tokens/"
+        basicAuthentication = (GitHubAppClientID, GitHubAppClientSecret)
     }
 }

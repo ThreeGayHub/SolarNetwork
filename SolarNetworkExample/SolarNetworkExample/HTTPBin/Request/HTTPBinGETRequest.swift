@@ -14,7 +14,7 @@ class HTTPBinGETRequest: SLRequest {
     override func loadRequest() {
         super.loadRequest()
         
-        self.path = "/get"
+        path = "/get"
     }
     
     let testGETProperty = "testGETProperty"

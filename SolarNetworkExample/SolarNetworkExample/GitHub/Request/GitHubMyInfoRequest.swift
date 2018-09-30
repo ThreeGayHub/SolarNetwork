@@ -14,6 +14,6 @@ class GitHubMyInfoRequest: SLRequest {
     override func loadRequest() {
         super.loadRequest()
         
-        self.path = "/user"
+        path = "/user"
     }
 }

@@ -1,6 +1,6 @@
 PODS:
   - Alamofire (4.6.0)
-  - SolarNetwork (1.0.7):
+  - SolarNetwork (1.0.9):
     - Alamofire
 
 DEPENDENCIES:
@@ -16,7 +16,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Alamofire: f41a599bd63041760b26d393ec1069d9d7b917f4
-  SolarNetwork: a0832bcc71708e42b810fbecca51e23d98edb14b
+  SolarNetwork: c53be64d5149c0a6948040cb488cdb730affc677
 
 PODFILE CHECKSUM: 6654e6e2f969e7637ec02d3250628b7292327129
 

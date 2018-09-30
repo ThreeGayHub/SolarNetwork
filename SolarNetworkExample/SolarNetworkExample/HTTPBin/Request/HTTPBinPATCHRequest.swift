@@ -14,8 +14,8 @@ class HTTPBinPATCHRequest: SLRequest {
     override func loadRequest() {
         super.loadRequest()
         
-        self.method = .patch
-        self.path = "/patch"
+        method = .patch
+        path = "/patch"
     }
     
     let testPATCHProperty = "testPATCHProperty"

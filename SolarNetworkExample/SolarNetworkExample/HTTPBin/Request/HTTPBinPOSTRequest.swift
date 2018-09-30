@@ -17,6 +17,8 @@ class HTTPBinPOSTRequest: SLRequest {
         method = .post
         path = "/post"
 //        parameterEncoding = JSONEncoding.default
+        
+        headers = ["test": "testValue"]
     }
     
     let testPOSTProperty = "testPOSTProperty"

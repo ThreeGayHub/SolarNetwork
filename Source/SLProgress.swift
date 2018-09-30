@@ -55,6 +55,7 @@ extension SLProgress: CustomDebugStringConvertible {
     
     public var debugDescription: String {
         return """
+        
         ------------------------ SLProgress ----------------------
         URL:\(request?.URLString ?? "")
         Progress:\(currentProgressString)

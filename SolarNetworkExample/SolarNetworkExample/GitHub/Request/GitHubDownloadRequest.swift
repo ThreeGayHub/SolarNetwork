@@ -14,7 +14,7 @@ class GitHubDownloadRequest: SLDownloadRequest {
     override func loadRequest() {
         super.loadRequest()
         
-        self.URLString = "https://video.cdnvue.com/uploads/1746405174696532785/video/asBF81t"
+        URLString = "https://video.cdnvue.com/uploads/1746405174696532785/video/asBF81t"
     }
     
 //    "https://video.cdnvue.com/uploads/1746405174696532785/video/asBF81t"

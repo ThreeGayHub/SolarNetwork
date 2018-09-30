@@ -14,8 +14,8 @@ class HTTPBinPUTRequest: SLRequest {
     override func loadRequest() {
         super.loadRequest()
         
-        self.method = .put
-        self.path = "/put"
+        method = .put
+        path = "/put"
     }
     
     let testPUTProperty = "testPUTProperty"

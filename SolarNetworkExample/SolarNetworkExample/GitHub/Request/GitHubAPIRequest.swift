@@ -11,4 +11,13 @@ import SolarNetwork
 
 class GitHubAPIRequest: SLRequest {
     
+    override func loadRequest() {
+        super.loadRequest()
+        
+        parameterEncoding = URLEncoding.default
+    }
+    
+    let client_id: String = GitHubAppClientID
+    let client_secret: String = GitHubAppClientSecret
+
 }

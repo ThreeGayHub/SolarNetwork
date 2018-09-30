@@ -14,6 +14,6 @@ class HTTPBinDownLoadRequest: SLDownloadRequest {
     override func loadRequest() {
         super.loadRequest()
         
-        self.path = "/image/png"
+        path = "/image/png"
     }
 }

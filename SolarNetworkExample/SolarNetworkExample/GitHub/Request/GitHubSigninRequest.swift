@@ -14,8 +14,8 @@ class GitHubSigninRequest: SLRequest {
     override func loadRequest() {
         super.loadRequest()
         
-        self.method = .put
-        self.path = "/authorizations/clients/\(GitHubAppClientID)"
+        method = .put
+        path = "/authorizations/clients/\(GitHubAppClientID)"
     }
     
     var client_secret = GitHubAppClientSecret
