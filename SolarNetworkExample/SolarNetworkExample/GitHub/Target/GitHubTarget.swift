@@ -55,6 +55,11 @@ struct GitHubTarget: SLTarget {
     
     var storeIPURLString: String?
     
+    var configuration: URLSessionConfiguration {
+        let configuration = URLSessionConfiguration.default
+        configuration.timeoutIntervalForRequest = 30
+        return configuration
+    }
 }
 
 //"api.github.com"
