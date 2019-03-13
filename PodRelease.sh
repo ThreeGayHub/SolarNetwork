@@ -40,7 +40,7 @@ read -n 1 -p "pod trunk?(1: yes，anyotherkey: no): " isRelease
 if [ ${isRelease} = 1 ]; then
 echo -e "\n"
 
-pod trunk push ${podspecName}
+pod trunk push ${podspecName} --verbose --allow-warnings
 carthage build --no-skip-current
 
 fi
