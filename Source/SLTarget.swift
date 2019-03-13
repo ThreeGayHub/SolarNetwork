@@ -74,6 +74,9 @@ public protocol SLTarget {
 }
 
 public extension SLTarget {
+    
+    var baseURLString: String { return "" }
+    
     var IPURLString: String? {
         get {
             return nil

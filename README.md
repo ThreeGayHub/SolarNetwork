@@ -22,6 +22,7 @@ Elegant network abstraction layer in Swift.
   - [Response](Documentation/Response.md) - Decode - Error
   - [Plugin](Documentation/Plugin.md) - WillSend - DidReceive
 - [License](#license)
+- [UpdateLog](Documentation/UpdateLog.md)
 
 ---
 

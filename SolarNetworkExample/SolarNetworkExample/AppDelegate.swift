@@ -8,8 +8,6 @@
 
 import UIKit
 
-//TODO-更灵活的ResponseData？
-
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 

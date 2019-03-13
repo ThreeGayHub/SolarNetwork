@@ -45,7 +45,7 @@ open class SLRequest: SLReflection {
     
     open func loadRequest() {}
     
-    internal var originalRequest: Request?
+    public var originalRequest: Request?
     
     /// Base64 string of the request's URLString + method
     public var requestID: String {
@@ -171,6 +171,17 @@ open class SLRequest: SLReflection {
     
     /// The response's dataKey of the request
     public var dataKeyPath: String?
+    
+    public var enableLog: Bool {
+        get {
+            return storeEnableLog ?? target?.enableLog ?? true
+        }
+        set {
+            storeEnableLog = newValue
+        }
+    }
+    
+    public var userInfo: Parameters?
 
     //MARK: - Private
     private var storeMethod: HTTPMethod?
@@ -182,14 +193,9 @@ open class SLRequest: SLReflection {
     private var storeParameterEncoding: ParameterEncoding?
 
     private var storeTarget: SLTarget?
-}
+    
+    private var storeEnableLog: Bool?
 
-extension SLRequest {
-    
-    public func blackList() -> [String]? {
-        return ["isResume", "hasResume", "hasSaveResumeData"]
-    }
-    
 }
 
 extension SLRequest {

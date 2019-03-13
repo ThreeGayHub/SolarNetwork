@@ -33,6 +33,8 @@ public class SLResponse {
     
     public let httpURLResponse: HTTPURLResponse?
     
+    public var originData: Data?
+    
     public var data: Any?
     
     public var error: NSError?
@@ -47,6 +49,22 @@ public class SLResponse {
         self.httpURLResponse = httpURLResponse
     }
     
+}
+
+extension SLResponse {
+    
+    public var statusCode: Int {
+        return httpURLResponse?.statusCode ?? Int.min
+    }
+    
+    public var header: [AnyHashable : Any] {
+        return httpURLResponse?.allHeaderFields ?? [:]
+    }
+    
+}
+
+extension SLResponse {
+    
     public var dataDictionary: [String: Any]? {
         if let dataDictionary = data as? [String: Any] {
             return dataDictionary
@@ -57,6 +75,13 @@ public class SLResponse {
     public var dataArray: [[String: Any]]? {
         if let dataArray = data as? [[String: Any]] {
             return dataArray
+        }
+        return nil
+    }
+    
+    public var dataString: String? {
+        if let data = originData, let dataString = String(data: data, encoding: .utf8) {
+            return dataString
         }
         return nil
     }
@@ -96,20 +121,11 @@ extension SLResponse: CustomDebugStringConvertible {
         
         var dataString: String? = "nil"
         
-        if let data = data {
-            let isJson = JSONSerialization.isValidJSONObject(data)
-            if isJson {
-                let jsonData = try? JSONSerialization.data(withJSONObject: data, options: [.prettyPrinted])
-                dataString = String(data: jsonData ?? Data(), encoding: .utf8)
-            }
-            else {
-                if let url = destinationURL {
-                    dataString = url.absoluteString
-                }
-                else {
-                    dataString = "\(data)"
-                }
-            }
+        if let url = destinationURL {
+            dataString = url.absoluteString
+        }
+        else {
+            dataString = (originData == nil) ? "nil" : String(data: originData!, encoding: .utf8)
         }
         
         return """

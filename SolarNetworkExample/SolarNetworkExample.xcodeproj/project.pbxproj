@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		3B4170FC213E55C5005302F4 /* HTTPBinStringParametersRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4170FB213E55C5005302F4 /* HTTPBinStringParametersRequest.swift */; };
 		3B4170FE213E634D005302F4 /* HTTPBinArrayParametersRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4170FD213E634D005302F4 /* HTTPBinArrayParametersRequest.swift */; };
+		3B85FCE62238E306003E1590 /* PodRelease.sh in Resources */ = {isa = PBXBuildFile; fileRef = 3B85FCE52238E305003E1590 /* PodRelease.sh */; };
 		3BAE9C002145FEBB006731B1 /* github.p12 in Resources */ = {isa = PBXBuildFile; fileRef = 3BAE9BFF2145FEBB006731B1 /* github.p12 */; };
 		A6921FFADB2B69B3AF6389F6 /* Pods_SolarNetworkExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91171F28195C0598BA46A1B7 /* Pods_SolarNetworkExample.framework */; };
 		F892D9EF202203D7007536ED /* GitHubTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = F892D9E3202203D7007536ED /* GitHubTarget.swift */; };
@@ -44,6 +45,7 @@
 		1AAC6A72AF16BEE0789C1E0C /* Pods-SolarNetworkExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SolarNetworkExample.release.xcconfig"; path = "Pods/Target Support Files/Pods-SolarNetworkExample/Pods-SolarNetworkExample.release.xcconfig"; sourceTree = "<group>"; };
 		3B4170FB213E55C5005302F4 /* HTTPBinStringParametersRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPBinStringParametersRequest.swift; sourceTree = "<group>"; };
 		3B4170FD213E634D005302F4 /* HTTPBinArrayParametersRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPBinArrayParametersRequest.swift; sourceTree = "<group>"; };
+		3B85FCE52238E305003E1590 /* PodRelease.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = PodRelease.sh; path = ../PodRelease.sh; sourceTree = "<group>"; };
 		3BAE9BFF2145FEBB006731B1 /* github.p12 */ = {isa = PBXFileReference; lastKnownFileType = file; path = github.p12; sourceTree = "<group>"; };
 		5DF05302839F7017B47EC21C /* Pods-SolarNetworkExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SolarNetworkExample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SolarNetworkExample/Pods-SolarNetworkExample.debug.xcconfig"; sourceTree = "<group>"; };
 		91171F28195C0598BA46A1B7 /* Pods_SolarNetworkExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SolarNetworkExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -180,6 +182,7 @@
 		F8AFC6002021F5EA00A3F595 = {
 			isa = PBXGroup;
 			children = (
+				3B85FCE52238E305003E1590 /* PodRelease.sh */,
 				F892DA0F2022A622007536ED /* SLNetwork.png */,
 				F8AFC60B2021F5EA00A3F595 /* SolarNetworkExample */,
 				F8AFC60A2021F5EA00A3F595 /* Products */,
@@ -300,6 +303,7 @@
 				F8AFC6172021F5EA00A3F595 /* LaunchScreen.storyboard in Resources */,
 				F892DA0E2022A616007536ED /* github.cer in Resources */,
 				F8AFC6142021F5EA00A3F595 /* Assets.xcassets in Resources */,
+				3B85FCE62238E306003E1590 /* PodRelease.sh in Resources */,
 				F8AFC6122021F5EA00A3F595 /* Main.storyboard in Resources */,
 				3BAE9C002145FEBB006731B1 /* github.p12 in Resources */,
 				F892DA102022A622007536ED /* SLNetwork.png in Resources */,
@@ -359,7 +363,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "KEYWORDS=\"TODO-|FIXME-|DevTeam-|XXX-\"\nfind \"${SRCROOT}\" \\( -name \"*.swift\" \\) -print0 | xargs -0 egrep --with-filename --line-number --only-matching \"($KEYWORDS).*\\$\" | perl -p -e \"s/($KEYWORDS)/ warning: \\$1/\"";
+			shellScript = "KEYWORDS=\"TODO-|FIXME-|DevTeam-|XXX-\"\nfind \"${SRCROOT}\" \\( -name \"*.swift\" \\) -print0 | xargs -0 egrep --with-filename --line-number --only-matching \"($KEYWORDS).*\\$\" | perl -p -e \"s/($KEYWORDS)/ warning: \\$1/\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

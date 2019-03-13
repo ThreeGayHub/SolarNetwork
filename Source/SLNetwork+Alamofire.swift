@@ -11,14 +11,14 @@ import Alamofire
 public typealias SessionManager = Alamofire.SessionManager
 public typealias URLRequestConvertible = Alamofire.URLRequestConvertible
 
-internal typealias Request = Alamofire.Request
-internal typealias DownloadRequest = Alamofire.DownloadRequest
-internal typealias UploadRequest = Alamofire.UploadRequest
-internal typealias DataRequest = Alamofire.DataRequest
-internal typealias DataResponse = Alamofire.DataResponse
-internal typealias SessionDelegate = Alamofire.SessionDelegate
-internal typealias MultipartFormDataEncodingResult = SessionManager.MultipartFormDataEncodingResult
-internal typealias AFError = Alamofire.AFError
+public typealias Request = Alamofire.Request
+public typealias DownloadRequest = Alamofire.DownloadRequest
+public typealias UploadRequest = Alamofire.UploadRequest
+public typealias DataRequest = Alamofire.DataRequest
+public typealias DataResponse = Alamofire.DataResponse
+public typealias SessionDelegate = Alamofire.SessionDelegate
+public typealias MultipartFormDataEncodingResult = SessionManager.MultipartFormDataEncodingResult
+public typealias AFError = Alamofire.AFError
 
 public typealias HTTPMethod = Alamofire.HTTPMethod
 public typealias Parameters = Alamofire.Parameters
@@ -34,7 +34,7 @@ public typealias MultipartFormData = Alamofire.MultipartFormData
 public typealias ServerTrustPolicyManager = Alamofire.ServerTrustPolicyManager
 public typealias ServerTrustPolicy = Alamofire.ServerTrustPolicy
 
-internal typealias NetworkReachabilityManager = Alamofire.NetworkReachabilityManager
+public typealias NetworkReachabilityManager = Alamofire.NetworkReachabilityManager
 public typealias Listener = Alamofire.NetworkReachabilityManager.Listener
 
 public let SLHostKey = "Host"

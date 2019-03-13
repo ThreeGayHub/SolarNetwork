@@ -19,7 +19,20 @@ HTTPBinNetwork.request(GetDictionaryRequest()) { (response) in
 
 ```swift
 HTTPBinNetwork.request(GetArrayRequest()) { (response) in
-    if let dictionary = response.dataArray {
+    if let array = response.dataArray {
+                        
+    }
+    else if let error = response.error {
+        //show error
+    }
+}
+```
+
+#### Decode to String
+
+```swift
+HTTPBinNetwork.request(GetStringRequest()) { (response) in
+    if let string = response.dataString {
                         
     }
     else if let error = response.error {

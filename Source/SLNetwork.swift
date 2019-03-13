@@ -173,7 +173,7 @@ extension SLNetwork {
     public func request(_ request: SLRequest, completionClosure: @escaping CompletionClosure) {
         request.target = target
         
-        if target.enableLog { debugPrint(request) }
+        if request.enableLog { debugPrint(request) }
         
         willSend(request: request)
         
@@ -218,7 +218,7 @@ extension SLNetwork {
     public func download(_ request: SLDownloadRequest, progressClosure: ProgressClosure? = nil,  completionClosure: @escaping CompletionClosure) {
         request.target = target
         
-        if target.enableLog { debugPrint(request) }
+        if request.enableLog { debugPrint(request) }
         
         willSend(request: request)
         
@@ -263,9 +263,7 @@ extension SLNetwork {
         if let _ = progressClosure {
             progress = SLProgress(request: request)
         }
-        downloadRequest.downloadProgress { [weak self] (originalProgress) in
-            guard let strongSelf = self else { return }
-
+        downloadRequest.downloadProgress { (originalProgress) in
             if request.isResume && !FileManager.fileExists(at: resumeDataURL) {
                 request.cancel()
             }
@@ -275,7 +273,7 @@ extension SLNetwork {
             }
             if let progressClosure = progressClosure, let progress = progress {
                 progress.originalProgress = originalProgress
-                if strongSelf.target.enableLog { debugPrint(progress) }
+                if request.enableLog { debugPrint(progress) }
                 progressClosure(progress)
             }
         }
@@ -304,7 +302,7 @@ extension SLNetwork {
                             }
                             
                             try originalResponse.resumeData?.write(to: resumeDataURL)
-                            if strongSelf.target.enableLog {
+                            if request.enableLog {
                                 debugPrint("""
                                     ------------------------ SLResponse ----------------------
                                     URL:\(request.URLString)
@@ -339,7 +337,7 @@ extension SLNetwork {
             case .success(let data):
                 if request.isResume {
                     if Int64(data.count) == totalUnitCount || totalUnitCount == 0 {
-                        response.data = data
+                        response.originData = data
                         response.destinationURL = originalResponse.destinationURL
                     }
                     else {
@@ -352,7 +350,7 @@ extension SLNetwork {
                     }
                 }
                 else {
-                    response.data = data
+                    response.originData = data
                     response.destinationURL = originalResponse.destinationURL
                 }
                 
@@ -360,7 +358,7 @@ extension SLNetwork {
             
             strongSelf.didReceive(response: response)
 
-            if strongSelf.target.enableLog { debugPrint(response) }
+            if request.enableLog { debugPrint(response) }
             
             DispatchQueue.main.async {
                 completionClosure(response)
@@ -386,7 +384,7 @@ extension SLNetwork {
     public func upload(_ request: SLUploadRequest, progressClosure: ProgressClosure? = nil,  completionClosure: @escaping CompletionClosure) {
         request.target = target
         
-        if target.enableLog { debugPrint(request) }
+        if request.enableLog { debugPrint(request) }
         
         willSend(request: request)
         
@@ -483,12 +481,10 @@ extension SLNetwork {
         if let _ = progressClosure {
             progress = SLProgress(request: request)
         }
-        uploadRequest.uploadProgress(closure: { [weak self] (originalProgress) in
-            guard let strongSelf = self else { return }
-
+        uploadRequest.uploadProgress(closure: { (originalProgress) in
             if let progressClosure = progressClosure, let progress = progress {
                 progress.originalProgress = originalProgress
-                if strongSelf.target.enableLog { debugPrint(progress) }
+                if request.enableLog { debugPrint(progress) }
                 progressClosure(progress)
             }
         })
@@ -517,18 +513,16 @@ extension SLNetwork {
             response.error = error as NSError
             
         case .success(let data):
-            response.data = data
+            response.originData = data
         }
         
         didReceive(response: response)
         
-        if let _ = response.data {
-            toJsonObject(response: response)
-            
-            decode(request: request, response: response)
-        }
+        toJsonObject(response: response)
         
-        if target.enableLog { debugPrint(response) }
+        decode(request: request, response: response)
+        
+        if request.enableLog { debugPrint(response) }
         
         DispatchQueue.main.async {
             completionClosure(response)
@@ -560,40 +554,37 @@ extension SLNetwork {
     }
     
     private func toJsonObject(response: SLResponse) {
-        var tempData: Data?
-        if let string = response.data as? String {
-            tempData = string.data(using: .utf8)
+        guard let data = response.originData else { return }
+        
+        do {
+            response.data = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
         }
-        else if let data = response.data as? Data {
-            tempData = data
-        }
-        if let data = tempData, data.count > 0 {
-            do {
-                response.data = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+        catch {
+            if let dataString = String(data: data, encoding: .utf8) {
+                response.data = dataString
+                return
             }
-            catch {
-                response.error = error as NSError
-            }
+            response.error = error as NSError
         }
     }
     
     private func decode(request:SLRequest, response: SLResponse) {
-        if let status = target.status, let dictionary = response.data as? [String: Any] {
-            let statusValue = dictionary[status.codeKey] as! Int
-            if let messageKey = status.messageKey {
-                response.message = dictionary[messageKey] as? String
-            }
-            if statusValue == status.successCode {
-                if let dataKeyPath = request.dataKeyPath {
-                    if let dataObject = (dictionary as AnyObject).value(forKeyPath: dataKeyPath) {
-                        response.data = dataObject
-                    }
+        guard let status = target.status, let dictionary = response.data as? [String: Any] else { return }
+        
+        let statusValue = dictionary[status.codeKey] as! Int
+        if let messageKey = status.messageKey {
+            response.message = dictionary[messageKey] as? String
+        }
+        if statusValue == status.successCode {
+            if let dataKeyPath = request.dataKeyPath {
+                if let dataObject = (dictionary as AnyObject).value(forKeyPath: dataKeyPath) {
+                    response.data = dataObject
                 }
             }
-            else {
-                let error = NSError(domain: target.host, code: statusValue, userInfo: [NSLocalizedDescriptionKey : response.message ?? ""])
-                response.error = error
-            }
+        }
+        else {
+            let error = NSError(domain: target.host, code: statusValue, userInfo: [NSLocalizedDescriptionKey : response.message ?? ""])
+            response.error = error
         }
     }
 
