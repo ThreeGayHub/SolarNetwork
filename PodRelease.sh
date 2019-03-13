@@ -5,7 +5,7 @@ podspecName=`find *.podspec -maxdepth 0`
 
 read -n 1 -p "Is pod lib lint?(1: yes，anyotherkey: no): " isNativeVertify
 
-pod repo update
+pod repo update master
 
 if [ ${isNativeVertify} = 1 ]; then
 echo -e "\n"
