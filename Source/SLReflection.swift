@@ -27,33 +27,31 @@ import Foundation
 
 public protocol SLReflection {
     
-    /// Model to JsonObject
-    ///
-    /// - Returns: JsonObject
-    func toJSONObject() -> Any?
+    /// model to jsonObject
+    var jsonObject: Any? { get }
     
     
-    /// properties of Model which don't encode to JsonObject
-    ///
-    /// - Returns: Array of blackList
-    func blackList() -> [String]?
+    /// properties of model which don't encode to jsonObject
+    var blackList: [String] { get }
 }
 
 extension SLReflection {
-    public func blackList() -> [String]? { return nil }
+    
+    public var blackList: [String] { return [] }
+
 }
 
 extension SLReflection {
-    public func toJSONObject() -> Any? {
+    public var jsonObject: Any? {
         let mirror = Mirror(reflecting: self)
         if mirror.children.count > 0, let _ = mirror.displayStyle {
             var dict: [String: Any] = [:]
             for (optionalKey, value) in mirror.children {
                 if let propertyNameString = optionalKey, let reflectionValue = value as? SLReflection {
-                    if let blackList = blackList(), blackList.contains(propertyNameString) {
+                    if blackList.contains(propertyNameString) {
                         continue
                     }
-                    dict[propertyNameString] = reflectionValue.toJSONObject()
+                    dict[propertyNameString] = reflectionValue.jsonObject
                 }
             }
             return dict.count > 0 ? dict : nil
@@ -63,10 +61,10 @@ extension SLReflection {
 }
 
 extension Optional: SLReflection {
-    public func toJSONObject() -> Any? {
+    public var jsonObject: Any? {
         if let x = self {
             if let value = x as? SLReflection {
-                return value.toJSONObject()
+                return value.jsonObject
             }
         }
         return nil
@@ -74,12 +72,12 @@ extension Optional: SLReflection {
 }
 
 extension Array: SLReflection {
-    public func toJSONObject() -> Any? {
+    public var jsonObject: Any? {
         let mirror = Mirror(reflecting: self)
         if mirror.children.count > 0 {
             var array: [Any] = []
             for (_, value) in mirror.children {
-                if let reflectionValue = value as? SLReflection, let obj = reflectionValue.toJSONObject() {
+                if let reflectionValue = value as? SLReflection, let obj = reflectionValue.jsonObject {
                     array.append(obj)
                 }
             }
@@ -90,12 +88,12 @@ extension Array: SLReflection {
 }
 
 extension Dictionary: SLReflection {
-    public func toJSONObject() -> Any? {
+    public var jsonObject: Any? {
         if self.count > 0 {
             var dict: [String: Any] = [:]
             for (key, obj) in self {
                 if let keyString = key as? String, let reflectionValue = obj as? SLReflection {
-                    dict[keyString] = reflectionValue.toJSONObject()
+                    dict[keyString] = reflectionValue.jsonObject
                 }
             }
             return dict.count > 0 ? dict : nil

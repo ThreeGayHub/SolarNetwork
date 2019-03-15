@@ -85,6 +85,37 @@ public var basicAuthentication: (user: String, password: String)?
 public var dataKeyPath: String?
 ```
 
+#### Set BlackList of Request
+
+```swift
+import Foundation
+import SolarNetwork
+
+class HTTPBinPOSTRequest: SLRequest {
+    
+    override func loadRequest() {
+        super.loadRequest()
+        
+        method = .post
+        path = "/post"
+//        parameterEncoding = JSONEncoding.default
+        
+        headers = ["test": "testValue"]
+    }
+    
+    let testPOSTProperty = "testPOSTProperty"
+    
+    var name: String?
+    
+    let testBlackListProperty = "testBlackListProperty"
+
+    //override the blackList, the parameters will no contain "testBlackListProperty"
+    override var blackList: [String] {
+        return ["testBlackListProperty"]
+    }
+}
+```
+
 #### Control the state of Request 
 
 ```swift

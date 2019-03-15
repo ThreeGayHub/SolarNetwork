@@ -24,5 +24,10 @@ class HTTPBinPOSTRequest: SLRequest {
     let testPOSTProperty = "testPOSTProperty"
     
     var name: String?
+    
+    let testBlackListProperty = "testBlackListProperty"
 
+    override var blackList: [String] {
+        return ["testBlackListProperty"]
+    }
 }

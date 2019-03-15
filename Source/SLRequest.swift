@@ -78,7 +78,7 @@ open class SLRequest: SLReflection {
             if let parameters = storeParameters {
                 return parameters
             }
-            else if let parameters = toJSONObject() as? Parameters {
+            else if let parameters = jsonObject as? Parameters {
                 storeParameters = parameters
                 return parameters
             }
@@ -217,6 +217,12 @@ extension SLRequest {
     
 }
 
+extension SLRequest {
+    @objc open var blackList: [String] {
+        return []
+    }
+}
+
 extension SLRequest: CustomDebugStringConvertible {
     
     public var debugDescription: String {
@@ -259,6 +265,10 @@ open class SLDownloadRequest: SLRequest {
     public var destinationURL: URL?
     
     public var downloadOptions: DownloadOptions = [.removePreviousFile, .createIntermediateDirectories]
+    
+    open override var blackList: [String] {
+        return ["isResume", "hasResume"]
+    }
     
 }
 
