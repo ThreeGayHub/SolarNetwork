@@ -2,7 +2,7 @@
 //  AppDelegate.swift
 //  SolarKit-SwiftExample
 //
-//  Created by wyh on 2018/1/3.
+//  Created by wyhazq on 2018/1/3.
 //  Copyright © 2018年 SolarKit. All rights reserved.
 //
 

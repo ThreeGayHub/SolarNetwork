@@ -2,7 +2,7 @@
 //  HTTPBinArrayParametersRequest.swift
 //  SolarNetworkExample
 //
-//  Created by 温一鸿 on 2018/9/4.
+//  Created by wyhazq on 2018/9/4.
 //  Copyright © 2018年 SolarKit. All rights reserved.
 //
 

@@ -2,7 +2,7 @@
 //  SLNetwork+Alamofire.swift
 //  Alamofire
 //
-//  Created by wyh on 2018/2/6.
+//  Created by wyhazq on 2018/2/6.
 //
 
 import Foundation
