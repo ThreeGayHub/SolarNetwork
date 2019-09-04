@@ -48,7 +48,8 @@ public protocol SLTarget {
     var serverTrustPolicies: [String : ServerTrustPolicy]? { get }
     
     /// The target's clentTrustPolicy
-    var clientTrustPolicy: (secPKCS12Name: String, password: String)? { get }
+    //TODO-改成Path
+    var clientTrustPolicy: (secPKCS12Path: String, password: String)? { get }
     
     /// The target's ResponseQueue
     var responseQueue: DispatchQueue? { get }
@@ -132,11 +133,11 @@ public extension SLTarget {
      how to use?
      First put the p12 of client in MainBundle.
      
-     var clientTrustPolicy: (secPKCS12Name: String, password: String)? {
-        return (secPKCS12Name: "example", password: "123456")
+     var clientTrustPolicy: (secPKCS12Path: String, password: String)? {
+        return (secPKCS12Path: Bundle.main.path(forResource: "secPKCS12Name", ofType: "p12") ?? "", password: "password")
      }
      */
-    var clientTrustPolicy: (secPKCS12Name: String, password: String)? { return nil }
+    var clientTrustPolicy: (secPKCS12Path: String, password: String)? { return nil }
         
     var responseQueue: DispatchQueue? { return nil }
     

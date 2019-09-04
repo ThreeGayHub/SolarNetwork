@@ -128,12 +128,9 @@ extension SLNetwork {
         var disposition = URLSession.AuthChallengeDisposition.performDefaultHandling
         var credential: URLCredential?
         
-        if let (secPKCS12Name, password) = self.target.clientTrustPolicy {
-            guard let path = Bundle.main.path(forResource: secPKCS12Name, ofType: "p12") else {
-                return (disposition, credential)
-            }
+        if let (secPKCS12Path, password) = self.target.clientTrustPolicy {
             
-            guard let PKCS12Data = NSData(contentsOfFile: path) else {
+            guard let PKCS12Data = NSData(contentsOfFile: secPKCS12Path) else {
                 return (disposition, credential)
             }
             

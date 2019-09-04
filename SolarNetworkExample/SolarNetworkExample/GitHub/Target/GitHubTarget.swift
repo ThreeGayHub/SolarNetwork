@@ -45,8 +45,8 @@ struct GitHubTarget: SLTarget {
         
     }
     
-    var clientTrustPolicy: (secPKCS12Name: String, password: String)? {
-        return (secPKCS12Name: "github", password: "123456")
+    var clientTrustPolicy: (secPKCS12Path: String, password: String)? {
+        return (secPKCS12Path: Bundle.main.path(forResource: "github", ofType: "p12") ?? "", password: "123456")
     }
     
     var plugins: [SLPlugin]? {
