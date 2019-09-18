@@ -48,7 +48,6 @@ public protocol SLTarget {
     var serverTrustPolicies: [String : ServerTrustPolicy]? { get }
     
     /// The target's clentTrustPolicy
-    //TODO-改成Path
     var clientTrustPolicy: (secPKCS12Path: String, password: String)? { get }
     
     /// The target's ResponseQueue

@@ -6,6 +6,12 @@
 //  Copyright © 2018年 SolarKit. All rights reserved.
 //
 
+//TODO-1.AF 5.0
+//TODO-2.AFResponse接口
+//TODO-3.SLResponse序列化(加解密等逻辑)
+//TODO-4.序列化完毕后再调用Plugin
+//TODO-5.Decoder to [Model]
+
 import UIKit
 
 @UIApplicationMain

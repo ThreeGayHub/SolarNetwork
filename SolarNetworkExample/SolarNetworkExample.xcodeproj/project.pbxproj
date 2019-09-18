@@ -338,7 +338,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-SolarNetworkExample/Pods-SolarNetworkExample-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-SolarNetworkExample/Pods-SolarNetworkExample-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/SolarNetwork/SolarNetwork.framework",
 			);
@@ -349,7 +349,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SolarNetworkExample/Pods-SolarNetworkExample-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SolarNetworkExample/Pods-SolarNetworkExample-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		F87CA505205BC1170037DFC1 /* TODO- */ = {
