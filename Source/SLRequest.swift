@@ -2,7 +2,7 @@
 //  SLRequest.swift
 //
 //  Created by wyhazq on 2018/1/6.
-//  Copyright © 2018年 SolarKit. All rights reserved.
+//  Copyright © 2018年 SolarNetwork. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,7 @@ open class SLRequest: SLReflection {
                 path: String = "",
                 parameters: Parameters? = nil,
                 parameterEncoding: ParameterEncoding = URLEncoding.default,
-                headers: [String: String]? = nil) {
+                headers: HTTPHeaders? = nil) {
         self.storeMethod = method
         self.storeURLString = URLString
         self.path = path
@@ -125,16 +125,16 @@ open class SLRequest: SLReflection {
             if storeParameterEncoding == nil {
                 storeParameterEncoding = newValue?.parameterEncoding
             }
-            if let targetHeaders = newValue?.headers, targetHeaders.count > 0 {
-                if headers == nil {
-                    headers = targetHeaders
-                }
-                else {
-                    for (key, obj) in targetHeaders {
-                        if !(headers?.keys.contains(key))! {
-                            headers![key] = obj
+            if let targetHeaders = newValue?.headers {
+                if let reqHeaders = headers {
+                    for (key, value) in targetHeaders.dictionary {
+                        if reqHeaders.value(for: key) == nil {
+                            headers?.update(name: key, value: value)
                         }
                     }
+                }
+                else {
+                    headers = targetHeaders
                 }
             }
             if dataKeyPath == nil {
@@ -144,27 +144,9 @@ open class SLRequest: SLReflection {
         }
     }
     
-    public var headers: [String: String]?
+    public var headers: HTTPHeaders?
     
     public var credential: URLCredential?
-    
-    public var basicAuthentication: (user: String, password: String)? {
-        get {
-            return nil
-        }
-        set {
-            if let user = newValue?.user, let password = newValue?.password {
-                if let authorizationHeader = Request.authorizationHeader(user: user, password: password) {
-                    if headers == nil {
-                        headers = [authorizationHeader.key : authorizationHeader.value]
-                    }
-                    else {
-                        headers![authorizationHeader.key] = authorizationHeader.value
-                    }
-                }
-            }
-        }
-    }
     
     ///custom Request
     public var urlRequest: URLRequestConvertible?
@@ -196,10 +178,6 @@ open class SLRequest: SLReflection {
     
     private var storeEnableLog: Bool?
 
-}
-
-extension SLRequest {
-    
     /// Pause the request.
     public func pause() {
         originalRequest?.suspend()
@@ -214,7 +192,6 @@ extension SLRequest {
     public func resume() {
         originalRequest?.resume()
     }
-    
 }
 
 extension SLRequest {
@@ -230,7 +207,7 @@ extension SLRequest: CustomDebugStringConvertible {
         var headersString: String? = "nil"
         var parametersString: String? = "nil"
 
-        if let headers = headers {
+        if let headers = headers?.dictionary {
             let headersData = try? JSONSerialization.data(withJSONObject: headers, options: [.prettyPrinted])
             if let data = headersData {
                 headersString = String(data: data, encoding: .utf8)
@@ -264,10 +241,21 @@ open class SLDownloadRequest: SLRequest {
     /// Specify the destination URL to receive the file. default: "/Library/Caches/SLNetwork/Destination/\(requestID)"
     public var destinationURL: URL?
     
-    public var downloadOptions: DownloadOptions = [.removePreviousFile, .createIntermediateDirectories]
+    public var options: Options = [.removePreviousFile, .createIntermediateDirectories]
     
     open override var blackList: [String] {
         return ["isResume", "hasResume"]
+    }
+        
+    public override func cancel() {
+        if isResume {
+            if let downloadRequest = originalRequest as? DownloadRequest {
+                downloadRequest.cancel(producingResumeData: true)
+                return
+            }
+        }
+        
+        super.cancel()
     }
     
 }
@@ -292,12 +280,8 @@ open class SLUploadRequest: SLRequest {
     public var inputStream: (intputStream: InputStream, length: Int)?
     
     /// uploading the `formData`.
-    internal var multipartFormDataClosure: MultipartFormDataClosure?
+    public var multipartFormData: MultipartFormDataClosure?
     
-    public var encodingMemoryThreshold: UInt64 = SessionManager.multipartFormDataEncodingMemoryThreshold
-    
-    public func multipartFormDataClosure(_ formDataClosure: @escaping MultipartFormDataClosure) {
-        multipartFormDataClosure = formDataClosure
-    }
+    public var encodingMemoryThreshold: UInt64 = MultipartFormData.encodingMemoryThreshold
     
 }

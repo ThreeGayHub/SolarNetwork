@@ -1,6 +1,6 @@
 //
 //  SLParameterValueEncoding.swift
-//  Alamofire
+//  SolarNetwork
 //
 //  Created by wyhazq on 2018/9/4.
 //
@@ -116,7 +116,7 @@ public struct SLParameterValuePropertyListEncoding: ParameterEncoding {
                     )
                     urlRequest.httpBody = data
                 } catch {
-                    throw AFError.parameterEncodingFailed(reason: .propertyListEncodingFailed(error: error))
+                    throw AFError.parameterEncodingFailed(reason: .customEncodingFailed(error: error))
                 }
             }
         }

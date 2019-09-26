@@ -9,6 +9,6 @@
 import Foundation
 import SolarNetwork
 
-struct HTTPBinTarget: SLTarget {
-    var baseURLString: String { return "https://httpbin.org" }
+struct HTTPBinTarget: SLTarget {    
+    var baseURLString: String = "https://httpbin.org"
 }

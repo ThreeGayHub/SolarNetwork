@@ -16,6 +16,9 @@ class GitHubSignoutRequest: SLRequest {
         
         method = .delete
         path = "/applications" + "/\(GitHubAppClientID)" + "/tokens/"
-        basicAuthentication = (GitHubAppClientID, GitHubAppClientSecret)
+        
+        let authorizationHeader = HTTPHeader.authorization(username: GitHubAppClientID, password: GitHubAppClientSecret)
+        headers = HTTPHeaders(arrayLiteral: authorizationHeader)
+        
     }
 }

@@ -2,7 +2,7 @@
 //  SLNetwork.swift
 //
 //  Created by wyhazq on 2018/1/9.
-//  Copyright © 2018年 SolarKit. All rights reserved.
+//  Copyright © 2018年 SolarNetwork. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -32,10 +32,6 @@ private let SLNetworkFolderPath: String             = "SLNetwork"
 private let SLNetworkDestinationFolderPath: String  = "Destination"
 private let SLNetworkResumeFolderPath: String       = "Resume"
 
-private let SLNetworkTempFileNameKey: String        = "NSURLSessionResumeInfoTempFileName"
-private let SLNetworkTempFileDataCountKey: String   = "NSURLSessionResumeBytesReceived"
-private let SLNetworkTempFilePathKey: String        = "NSURLSessionResumeInfoLocalPath"//iOS8 emulator resumeTempFilePath
-
 public class SLNetwork {
     
     public typealias ProgressClosure = (SLProgress) -> Void
@@ -44,22 +40,23 @@ public class SLNetwork {
     // MARK: - Properties
     
     /// The target's SessionManager
-    public let sessionManager: SessionManager
-    public var serverTrustPolicyManager: ServerTrustPolicyManager?
+    public let session: Session
     
     /// The target of a host
     public var target: SLTarget
     
-    private lazy var responseQueue = { return DispatchQueue(label: SLNetworkResponseQueue) }()
-    private lazy var reachabilityManager: NetworkReachabilityManager? = {
+    /// The target's reachabilityManager
+    public lazy var reachabilityManager: NetworkReachabilityManager? = {
         let reachabilityManager = NetworkReachabilityManager(host: self.target.host)
         return reachabilityManager
     }()
+
+    private var serverTrustManager: ServerTrustManager?
+    private lazy var responseQueue = { return DispatchQueue(label: SLNetworkResponseQueue) }()
     
     private lazy var SLNetworkFolderURL: URL = { return FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0].appendingPathComponent(SLNetworkFolderPath) }()
     private lazy var SLNetworkDestinationFolderURL: URL = { return SLNetworkFolderURL.appendingPathComponent(SLNetworkDestinationFolderPath) }()
     private lazy var SLNetworkResumeFolderURL: URL = { return SLNetworkFolderURL.appendingPathComponent(SLNetworkResumeFolderPath) }()
-    private lazy var SLNetworkTempFolderPath: String = { return NSTemporaryDirectory() }()
     
     
     // MARK: - Lifecycle
@@ -67,21 +64,22 @@ public class SLNetwork {
         self.target = target
         
         let configuration = target.configuration
-        configuration.httpAdditionalHeaders = SessionManager.defaultHTTPHeaders
-        
-        var policyManager: ServerTrustPolicyManager?
-        if let serverTrustPolicies = target.serverTrustPolicies {
-            policyManager = ServerTrustPolicyManager(policies: serverTrustPolicies)
-            self.serverTrustPolicyManager = policyManager
+        if configuration.httpAdditionalHeaders == nil {
+            configuration.headers = HTTPHeaders.default
         }
         
-        self.sessionManager = SessionManager(configuration: configuration, serverTrustPolicyManager:policyManager)
+        var trustManager: ServerTrustManager?
+        if let serverEvaluators = target.serverEvaluators {
+            trustManager = ServerTrustManager(allHostsMustBeEvaluated: target.allHostsMustBeEvaluated, evaluators: serverEvaluators)
+            self.serverTrustManager = trustManager
+        }
+        
+        self.session = Session(configuration: configuration, delegate: SLSessionDelegate(), serverTrustManager: serverTrustManager)
         
         self.handleChallenge()
         
-        if let reachability = target.reachability {
-            self.reachabilityManager?.listener = reachability
-            self.reachabilityManager?.startListening()
+        if let reachabilityListener = target.reachabilityListener {
+            self.reachabilityManager?.startListening(onUpdatePerforming: reachabilityListener)
         }
         
     }
@@ -90,17 +88,19 @@ public class SLNetwork {
 extension SLNetwork {
     
     private func handleChallenge () {
-        sessionManager.delegate.sessionDidReceiveChallenge = { [weak self] (session, challenge) in
-            guard let strongSelf = self else { return (.performDefaultHandling, nil) }
-            
-            if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust {
-                return strongSelf.serverTrust(session: session, challenge: challenge)
+        if let delegate = session.delegate as? SLSessionDelegate {
+            delegate.taskDidReceiveChallenge = { [weak self] (session, task, challenge) in
+                guard let strongSelf = self else { return (.performDefaultHandling, nil) }
+                
+                if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust {
+                    return strongSelf.serverTrust(session: session, challenge: challenge)
+                }
+                else if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodClientCertificate {
+                    return strongSelf.clientTrust(session: session, challenge: challenge)
+                }
+                
+                return (.performDefaultHandling, nil)
             }
-            else if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodClientCertificate {
-                return strongSelf.clientTrust(session: session, challenge: challenge)
-            }
-            
-            return (.performDefaultHandling, nil)
         }
     }
     
@@ -108,17 +108,26 @@ extension SLNetwork {
         var disposition: URLSession.AuthChallengeDisposition = .performDefaultHandling
         var credential: URLCredential?
         
-        if let policyManager = self.serverTrustPolicyManager {
-            let host = challenge.protectionSpace.host.isIP ? self.target.host : challenge.protectionSpace.host
-            
-            if let serverTrustPolicy = policyManager.serverTrustPolicy(forHost: host), let serverTrust = challenge.protectionSpace.serverTrust {
-                if serverTrustPolicy.evaluate(serverTrust, forHost: host) {
-                    disposition = .useCredential
-                    credential = URLCredential(trust: serverTrust)
-                } else {
-                    disposition = .cancelAuthenticationChallenge
+        if let trustManager = self.serverTrustManager {
+            let host = challenge.protectionSpace.host.sl.isIP ? self.target.host : challenge.protectionSpace.host
+
+            do {
+                if let serverTrustEvaluator = try trustManager.serverTrustEvaluator(forHost: host), let serverTrust = challenge.protectionSpace.serverTrust {
+                    do {
+                        try serverTrustEvaluator.evaluate(serverTrust, forHost: host)
+                        disposition = .useCredential
+                        credential = URLCredential(trust: serverTrust)
+                    }
+                    catch {
+                        disposition = .cancelAuthenticationChallenge
+                        debugPrint("ServerTrustError:\(error)")
+                    }
                 }
             }
+            catch {
+                debugPrint("ServerTrustError:\(error)")
+            }
+            
         }
         
         return (disposition, credential)
@@ -177,18 +186,14 @@ extension SLNetwork {
         let dataRequest: DataRequest
         
         if let urlRequest = request.urlRequest {
-            dataRequest = sessionManager.request(urlRequest)
+            dataRequest = session.request(urlRequest)
         }
         else {
-            dataRequest = sessionManager.request(request.URLString,
-                                                 method: request.method,
-                                                 parameters: request.parameters,
-                                                 encoding: request.parameterEncoding,
-                                                 headers: request.headers)
+            dataRequest = session.request(request.URLString, method: request.method, parameters: request.parameters, encoding: request.parameterEncoding, headers: request.headers)
         }
         
         if let credential = request.credential {
-            dataRequest.authenticate(usingCredential: credential)
+            dataRequest.authenticate(with: credential)
         }
             
         dataRequest.responseData(queue: target.responseQueue ?? responseQueue) { [weak self] (originalResponse) in
@@ -219,31 +224,40 @@ extension SLNetwork {
         
         willSend(request: request)
         
-        let destinationURL = request.destinationURL ?? SLNetworkDestinationFolderURL.appendingPathComponent(request.requestID)
-        let destination: DownloadRequest.DownloadFileDestination = { _, _ in
-            return (destinationURL, request.downloadOptions)
-        }
-
         let downloadRequest: DownloadRequest
         
         if let urlRequest = request.urlRequest {
-            downloadRequest = sessionManager.download(urlRequest)
+            downloadRequest = session.download(urlRequest)
             downloadResponse(with: request, downloadRequest: downloadRequest, progressClosure: progressClosure, completionClosure: completionClosure)
             
             return;
         }
         
+        let destinationURL = request.destinationURL ?? SLNetworkDestinationFolderURL.appendingPathComponent(request.requestID)
+        let destination: Destination = { _, _ in
+            return (destinationURL, request.options)
+        }
+        
         if request.isResume {
             let resumeDataURL = SLNetworkResumeFolderURL.appendingPathComponent(request.requestID)
-            if let resumeData = resumeData(of: resumeDataURL) {
-                downloadRequest = sessionManager.download(resumingWith: resumeData, to: destination)
+            if let resumeData = SLResumeData.data(of: resumeDataURL) {
+                downloadRequest = session.download(resumingWith: resumeData, to: destination)
                 downloadResponse(with: request, downloadRequest: downloadRequest, progressClosure: progressClosure, completionClosure: completionClosure)
-                
+                guard #available(iOS 10.2, *) else { return }
+                // fix 10.0 - 10.1 resumeData bug:
+                session.requestQueue.async { [weak self] in
+                    guard let strongSelf = self else { return }
+                    strongSelf.session.rootQueue.async {
+                        if let task = downloadRequest.task {
+                            task.sl.fixiOS10Task(with: resumeData)
+                        }
+                    }
+                }
                 return
             }
         }
         
-        downloadRequest = sessionManager.download(request.URLString, method: request.method, parameters: request.parameters, encoding: request.parameterEncoding, headers: request.headers, to: destination)
+        downloadRequest = session.download(request.URLString, method: request.method, parameters: request.parameters, encoding: request.parameterEncoding, headers: request.headers, to: destination)
         downloadResponse(with: request, downloadRequest: downloadRequest, progressClosure: progressClosure, completionClosure: completionClosure)
     }
     
@@ -252,7 +266,7 @@ extension SLNetwork {
         let resumeDataURL = SLNetworkResumeFolderURL.appendingPathComponent(request.requestID)
         
         if let credential = request.credential {
-            downloadRequest.authenticate(usingCredential: credential)
+            downloadRequest.authenticate(with: credential)
         }
         
         var totalUnitCount: Int64 = 0
@@ -261,7 +275,7 @@ extension SLNetwork {
             progress = SLProgress(request: request)
         }
         downloadRequest.downloadProgress { (originalProgress) in
-            if request.isResume && !FileManager.fileExists(at: resumeDataURL) {
+            if request.isResume && !FileManager.sl.fileExists(at: resumeDataURL) && originalProgress.fractionCompleted < 0.99 {
                 request.cancel()
             }
             
@@ -285,12 +299,12 @@ extension SLNetwork {
                 response.error = error as NSError
                 
                 if request.isResume {
-                    if let errorCode = response.error?.code, errorCode == NSURLErrorCancelled {
-                        
-                        FileManager.createDirectory(at: strongSelf.SLNetworkResumeFolderURL, withIntermediateDirectories: true)
+                    
+                    if let errorCode = response.error?.code, errorCode == NSURLErrorCancelled || error.isExplicitlyCancelledError {
+                        FileManager.sl.createDirectory(at: strongSelf.SLNetworkResumeFolderURL, withIntermediateDirectories: true)
                         
                         do {
-                            if !FileManager.fileExists(at: resumeDataURL) {
+                            if !FileManager.sl.fileExists(at: resumeDataURL) {
                                 try originalResponse.resumeData?.write(to: resumeDataURL)
                                 DispatchQueue.main.async {
                                     strongSelf.download(request, progressClosure: progressClosure, completionClosure: completionClosure)
@@ -298,16 +312,10 @@ extension SLNetwork {
                                 return
                             }
                             
+                            FileManager.sl.removeItem(at: resumeDataURL)
                             try originalResponse.resumeData?.write(to: resumeDataURL)
                             if request.enableLog {
-                                debugPrint("""
-                                    ------------------------ SLResponse ----------------------
-                                    URL:\(request.URLString)
-                                    resumeData has been writed to:
-                                    \(resumeDataURL.absoluteString)
-                                    ----------------------------------------------------------
-                                    
-                                    """)
+                                debugPrint("\n------------------------ SLResponse ----------------------\n URL:\(request.URLString) \nresumeData has been writed to: \n\(resumeDataURL.absoluteString)\n ----------------------------------------------------------\n")
                             }
                         }
                         catch {
@@ -315,10 +323,10 @@ extension SLNetwork {
                         }
                     }
                     else {
-                        FileManager.removeItem(at: resumeDataURL)
+                        FileManager.sl.removeItem(at: resumeDataURL)
 
-                        if let resumeData = originalResponse.resumeData, let tempFileURL = strongSelf.tempFileURL(of: resumeData) {
-                            FileManager.removeItem(at: tempFileURL)
+                        if let resumeData = originalResponse.resumeData, let tempFileURL = SLResumeData.tmpFileURL(of: resumeData) {
+                            FileManager.sl.removeItem(at: tempFileURL)
                         }
                         
                         if !request.hasResume {
@@ -333,22 +341,23 @@ extension SLNetwork {
                 
             case .success(let data):
                 if request.isResume {
+                    FileManager.sl.removeItem(at: resumeDataURL)
                     if Int64(data.count) == totalUnitCount || totalUnitCount == 0 {
                         response.originData = data
-                        response.destinationURL = originalResponse.destinationURL
+                        response.fileURL = originalResponse.fileURL
                     }
                     else {
                         let error = NSError(domain: strongSelf.target.host, code: NSURLErrorCannotOpenFile, userInfo: [NSLocalizedDescriptionKey : "File is damaged."])
                         response.error = error
                         
-                        if let destinationURL = originalResponse.destinationURL {
-                            FileManager.removeItem(at: destinationURL)
+                        if let fileURL = originalResponse.fileURL {
+                            FileManager.sl.removeItem(at: fileURL)
                         }
                     }
                 }
                 else {
                     response.originData = data
-                    response.destinationURL = originalResponse.destinationURL
+                    response.fileURL = originalResponse.fileURL
                 }
                 
             }
@@ -385,70 +394,53 @@ extension SLNetwork {
         
         willSend(request: request)
         
-        if let multipartFormDataClosure = request.multipartFormDataClosure {
-            
-            if let urlRequest = request.urlRequest {
-                sessionManager.upload(multipartFormData: multipartFormDataClosure, usingThreshold: request.encodingMemoryThreshold, with: urlRequest) { [weak self] (encodingResult) in
-                    guard let strongSelf = self else { return }
-                    
-                    strongSelf.encodeCompletion(with: encodingResult, request: request, progressClosure: progressClosure, completionClosure: completionClosure)
-                }
-            }
-            else {
-                sessionManager.upload(multipartFormData: multipartFormDataClosure, usingThreshold: request.encodingMemoryThreshold, to: request.URLString, method: request.method, headers: request.headers, encodingCompletion: { [weak self] (encodingResult) in
-                    guard let strongSelf = self else { return }
-                    
-                    strongSelf.encodeCompletion(with: encodingResult, request: request, progressClosure: progressClosure, completionClosure: completionClosure)
-                })
-            }
-            
-        }
-        
         let uploadRequest: UploadRequest
         
         if let filePath = request.filePath, let fileURL = URL(string: filePath) {
             
             if let urlRequest = request.urlRequest {
-                uploadRequest = sessionManager.upload(fileURL, with: urlRequest)
+                uploadRequest = session.upload(fileURL, with: urlRequest)
             }
             else {
-                uploadRequest = sessionManager.upload(fileURL,
-                                                      to: request.URLString,
-                                                      method: request.method,
-                                                      headers: request.headers)
+                uploadRequest = session.upload(fileURL, to: request.URLString, method: request.method, headers: request.headers)
             }
             
         }
         else if let data = request.data {
             
             if let urlRequest = request.urlRequest {
-                uploadRequest = sessionManager.upload(data, with: urlRequest)
+                uploadRequest = session.upload(data, with: urlRequest)
             }
             else {
-                uploadRequest = sessionManager.upload(data,
-                                                      to: request.URLString,
-                                                      method: request.method,
-                                                      headers: request.headers)
+                uploadRequest = session.upload(data, to: request.URLString, method: request.method, headers: request.headers)
             }
             
         }
         else if let inputStream = request.inputStream {
             
             if request.headers == nil {
-                request.headers = ["Content-Length" : "\(inputStream.length)"]
+                request.headers = HTTPHeaders(["Content-Length" : "\(inputStream.length)"])
             }
             else {
-                request.headers!["Content-Length"] = "\(inputStream.length)"
+                request.headers?.update(name: "Content-Length", value: "\(inputStream.length)")
             }
             
             if let urlRequest = request.urlRequest {
-                uploadRequest = sessionManager.upload(inputStream.intputStream, with: urlRequest)
+                uploadRequest = session.upload(inputStream.intputStream, with: urlRequest)
             }
             else {
-                uploadRequest = sessionManager.upload(inputStream.intputStream,
-                                                      to: request.URLString,
-                                                      method: request.method,
-                                                      headers: request.headers)
+                uploadRequest = session.upload(inputStream.intputStream, to: request.URLString, method: request.method, headers: request.headers)
+            }
+            
+        }
+        else if let multipartFormData = request.multipartFormData {
+            
+            if let urlRequest = request.urlRequest {
+                uploadRequest = session.upload(multipartFormData: multipartFormData, with: urlRequest)
+                
+            }
+            else {
+                uploadRequest = session.upload(multipartFormData: multipartFormData, to: request.URLString, usingThreshold: request.encodingMemoryThreshold, method: request.method, headers: request.headers)
             }
             
         }
@@ -456,22 +448,10 @@ extension SLNetwork {
         uploadResponse(with: request, uploadRequest: uploadRequest, progressClosure:progressClosure, completionClosure: completionClosure)
     }
     
-    private func encodeCompletion(with encodingResult: MultipartFormDataEncodingResult, request: SLUploadRequest, progressClosure: ProgressClosure? = nil,  completionClosure: @escaping CompletionClosure) {
-        switch encodingResult {
-        case .success(let uploadRequest, _, _):
-            uploadResponse(with: request, uploadRequest: uploadRequest, progressClosure:progressClosure, completionClosure: completionClosure)
-
-        case .failure(let error):
-            let response = SLResponse(request: request, urlRequest: nil, httpURLResponse: nil)
-            response.error = error as NSError
-            completionClosure(response)
-        }
-    }
-    
     private func uploadResponse(with request:SLRequest, uploadRequest: UploadRequest, progressClosure: ProgressClosure? = nil,  completionClosure: @escaping CompletionClosure) {
         
         if let credential = request.credential {
-            uploadRequest.authenticate(usingCredential: credential)
+            uploadRequest.authenticate(with: credential)
         }
         
         var progress: SLProgress?
@@ -499,9 +479,18 @@ extension SLNetwork {
 }
 
 extension SLNetwork {
+    // MARK: - Convenience Method
+    
+    public func stopReachabilityListening() {
+        reachabilityManager?.stopListening()
+    }
+    
+}
+
+extension SLNetwork {
     
     // MARK: - Response
-    private func dealResponseOfDataRequest(request: SLRequest, originalResponse: DataResponse<Data>, completionClosure: @escaping CompletionClosure) {
+    private func dealResponseOfDataRequest(request: SLRequest, originalResponse: AFDataResponse<Data>, completionClosure: @escaping CompletionClosure) {
         
         let response = SLResponse(request: request, urlRequest: originalResponse.request, httpURLResponse: originalResponse.response)
         
@@ -585,177 +574,4 @@ extension SLNetwork {
         }
     }
 
-}
-
-extension SLNetwork {
-    
-    // MARK: - ResumeData
-
-    private func resumeData(of resumeDataURL: URL) -> Data? {
-        if FileManager.fileExists(at: resumeDataURL) {
-            do {
-                var resumeData = try Data(contentsOf: resumeDataURL)
-                
-                //The path of the iOS8 emulator changes every time it is run.
-                if Platform.isSimulator, var resumeDict = resumeDict(of: resumeData), resumeDict.keys.contains(SLNetworkTempFilePathKey) {
-                    let path = resumeDict[SLNetworkTempFilePathKey] as! NSString
-                    let tempFilePath = SLNetworkTempFolderPath + path.lastPathComponent
-                    resumeDict[SLNetworkTempFilePathKey] = tempFilePath
-                    
-                    do {
-                        let propertyListForamt =  PropertyListSerialization.PropertyListFormat.binary
-                        resumeData = try PropertyListSerialization.data(fromPropertyList: resumeDict, format: propertyListForamt, options: 0)
-                    }
-                    catch {
-                        debugPrint("PropertyListSerialization.dataError:\(error)")
-                    }
-                }
-                
-                if checkValid(of: resumeData) {
-                    return resumeData
-                }
-                else {
-                    // fix the resumeData after App crash or App close
-                    if var resumeDict = resumeDict(of: resumeData), let tempFileURL = tempFileURL(of: resumeData), let tempFileData = tempFileData(of: tempFileURL) {
-                        resumeDict[SLNetworkTempFileDataCountKey] = tempFileData.count
-                        
-                        do {
-                            let propertyListForamt =  PropertyListSerialization.PropertyListFormat.binary
-                            resumeData = try PropertyListSerialization.data(fromPropertyList: resumeDict, format: propertyListForamt, options: 0)
-                            return resumeData
-                        }
-                        catch {
-                            debugPrint("PropertyListSerialization.dataError:\(error)")
-                        }
-                    }
-                }
-                
-            } catch {
-                debugPrint("ResumeDataInitError:\(error)")
-            }
-        }
-        return nil
-    }
-    
-    private func checkValid(of resumeData: Data) -> Bool {
-        let dataCount = tempFileDataCount(of: resumeData)
-        
-        if let tempFileURL = tempFileURL(of: resumeData), let tempFileData = tempFileData(of: tempFileURL) {
-            return tempFileData.count == dataCount
-        }
-        
-        return false
-    }
-    
-    private func tempFileData(of tempFileURL: URL) -> Data? {
-        do {
-            let tempFileData = try Data(contentsOf: tempFileURL)
-            return tempFileData
-        } catch {
-            debugPrint("TempFileDataInitError:\(error)")
-        }
-        return nil
-    }
-    
-    private func tempFileURL(of resumeData: Data) -> URL? {
-        if let resumeDict = resumeDict(of: resumeData) {
-            var tempFileName: String?
-            var tempFilePath: String?
-            if resumeDict.keys.contains(SLNetworkTempFileNameKey) {
-                tempFileName = resumeDict[SLNetworkTempFileNameKey] as? String
-            }
-            else if resumeDict.keys.contains(SLNetworkTempFilePathKey) {
-                let path = resumeDict[SLNetworkTempFilePathKey] as! NSString
-                tempFileName = path.lastPathComponent
-            }
-            if let name = tempFileName {
-                tempFilePath = SLNetworkTempFolderPath + name
-            }
-            if let path = tempFilePath {
-                if FileManager.default.fileExists(atPath: path) {
-                    let tempFileURL = URL(fileURLWithPath: path)
-                    return tempFileURL
-                }
-            }
-        }
-        return nil
-    }
-    
-    private func tempFileDataCount(of resumeData: Data) -> Int {
-        if let resumeDict = resumeDict(of: resumeData) {
-            let tempFileDataCount = resumeDict[SLNetworkTempFileDataCountKey] as! Int
-            return tempFileDataCount
-        }
-        return 0
-    }
-    
-    private func resumeDict(of resumeData: Data) -> [String: Any]? {
-        do {
-            var propertyListForamt =  PropertyListSerialization.PropertyListFormat.xml
-            let resumeDict = try PropertyListSerialization.propertyList(from: resumeData, options: .mutableContainersAndLeaves, format: &propertyListForamt) as? [String: Any]
-            return resumeDict
-            
-        } catch {
-            debugPrint("ResumeDictSerializationError:\(error)")
-        }
-        return nil
-    }
-    
-    struct Platform {
-        static let isSimulator: Bool = {
-            var isSim = false
-            #if arch(i386) || arch(x86_64)
-                isSim = true
-            #endif
-            return isSim
-        }()
-    }
-    
-}
-
-extension FileManager {
-    
-    static func createDirectory(at URL: URL, withIntermediateDirectories createIntermediates: Bool, attributes: [FileAttributeKey : Any]? = nil) {
-        if !FileManager.fileExists(at: URL) {
-            do {
-                try FileManager.default.createDirectory(at: URL, withIntermediateDirectories: createIntermediates, attributes: attributes)
-            }
-            catch {
-                debugPrint("FileManager.createDirectoryError:\(error)")
-            }
-        }
-    }
-    
-    static func removeItem(at URL: URL) {
-        if FileManager.fileExists(at: URL) {
-            do {
-                try FileManager.default.removeItem(at: URL)
-            }
-            catch {
-                debugPrint("FileManager.removeItemError:\(error)")
-            }
-        }
-    }
-    
-    static func fileExists(at URL: URL) -> Bool {
-        let path = URL.absoluteString.replacingOccurrences(of: "file://", with: "")
-        return FileManager.default.fileExists(atPath: path)
-    }
-    
-}
-
-extension String {
-    
-    var isIP: Bool {
-        if let char = self.first {
-            let zero: Character = "0"
-            let nine: Character = "9"
-            if char >= zero && char <= nine {
-                return true
-            }
-        }
-        
-        return false;
-    }
-    
 }

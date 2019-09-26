@@ -1,9 +1,10 @@
 PODS:
-  - Alamofire (4.6.0)
-  - SolarNetwork (1.2.0):
+  - Alamofire (5.0.0-rc.2)
+  - SolarNetwork (2.0.0):
     - Alamofire
 
 DEPENDENCIES:
+  - Alamofire (~> 5.0.0-rc.2)
   - SolarNetwork (from `../`)
 
 SPEC REPOS:
@@ -15,9 +16,9 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  Alamofire: f41a599bd63041760b26d393ec1069d9d7b917f4
-  SolarNetwork: f04b0094e0150b79f2b208a5367a374505ed70b9
+  Alamofire: f9450d3c7f6bea2ad62e7a541c3e9b186c7991d6
+  SolarNetwork: f5c5a825073cb7c99e9b36719cb2a5f7303d6c47
 
-PODFILE CHECKSUM: 6654e6e2f969e7637ec02d3250628b7292327129
+PODFILE CHECKSUM: 3216a036c044dde4e6bd1e1a58928e6f0e7e1efa
 
 COCOAPODS: 1.7.2

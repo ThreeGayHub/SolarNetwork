@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SolarNetwork
 
 private let GitHubTokenKey: String = "GitHubTokenKey"
 //    d12e11ca90b5e30d55b1819e1c099c935b0d5f12
@@ -47,7 +48,7 @@ class GitHubVC: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         //First you should get the IP of the domain name.
-//        GitHubNetwork.target.IPURLString = "https://13.250.94.254"
+//        GitHubNetwork.target.IPURLString = "https://54.169.195.247"
         
         token = UserDefaults.standard.string(forKey: GitHubTokenKey)
         
@@ -86,7 +87,8 @@ class GitHubVC: UITableViewController {
                     if let userName = userName, let password = password {
                         
                         let signinRequest = GitHubSigninRequest()
-                        signinRequest.basicAuthentication = (userName, password)
+                        let authorizationHeader = HTTPHeader.authorization(username: userName, password: password)
+                        signinRequest.headers = HTTPHeaders(arrayLiteral: authorizationHeader)
                         
                         GitHubNetwork.request(signinRequest) { [weak self] (response) in
                             guard let strongSelf = self else { return }
@@ -113,7 +115,8 @@ class GitHubVC: UITableViewController {
             case .MyInfo:
                 if let token = token, token.count > 0 {
                     let myInfoRequest = GitHubMyInfoRequest()
-                    myInfoRequest.basicAuthentication = (token, "x-oauth-basic")
+                    let authorizationHeader = HTTPHeader.authorization(username: token, password: "x-oauth-basic")
+                    myInfoRequest.headers = HTTPHeaders(arrayLiteral: authorizationHeader)
                     
                     GitHubNetwork.request(myInfoRequest) { (response) in
                         

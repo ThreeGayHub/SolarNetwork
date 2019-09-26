@@ -1,9 +1,10 @@
 source 'https://github.com/CocoaPods/Specs.git'
-platform :ios, '8.0'
+platform :ios, '10.0'
 use_frameworks!
 
 target 'SolarNetworkExample' do
   
    pod 'SolarNetwork', :path => '../'
-
+   pod 'Alamofire', '~> 5.0.0-rc.2'
+   
 end
