@@ -12,3 +12,13 @@
    a. func toJSONObject() to var jsonObject
    b. func blackList() to var blackList
 2. fix blackList not work issue
+
+
+
+#### 4.9.0
+
+adapt to Alamofire 4.9.0
+
+1. Change Api: secPKCS12Name to secPKCS12Path 
+2. Change file structure 
+3. Fix Crash: resume download bug >= iOS12
