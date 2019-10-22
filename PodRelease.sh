@@ -3,9 +3,9 @@
 
 podspecName=`find *.podspec -maxdepth 0`
 
-read -n 1 -p "Is pod lib lint?(1: yes，anyotherkey: no): " isNativeVertify
+read -p "is vertify native pod?(1: yes，anyotherkey: no): " isNativeVertify
 
-pod repo update master
+#pod repo update master
 
 if [ ${isNativeVertify} = 1 ]; then
 echo -e "\n"
@@ -14,7 +14,7 @@ pod lib lint ${podspecName} --verbose --allow-warnings --use-libraries --no-clea
 fi
 echo -e "\n"
 
-read -n 1 -p "create git tag?(1: yes，anyotherkey: no): " isTag
+read -p "create git tag?(1: yes，anyotherkey: no): " isTag
 if [ ${isTag} = 1 ]; then
 releaseTagVersion=$(grep -E "s.version.+=" ${podspecName} | awk '{print $3}')
 releaseTagVersionCount=${#releaseTagVersion}
@@ -36,7 +36,7 @@ fi
 fi
 echo -e "\n"
 
-read -n 1 -p "pod trunk?(1: yes，anyotherkey: no): " isRelease
+read -p "pod release?(1: yes，anyotherkey: no): " isRelease
 if [ ${isRelease} = 1 ]; then
 echo -e "\n"
 
