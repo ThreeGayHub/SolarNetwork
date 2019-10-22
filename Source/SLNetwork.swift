@@ -109,7 +109,7 @@ extension SLNetwork {
         var credential: URLCredential?
         
         if let policyManager = self.serverTrustPolicyManager {
-            let host = challenge.protectionSpace.host.isIP ? self.target.host : challenge.protectionSpace.host
+            let host = challenge.protectionSpace.host.sl.isIP ? self.target.host : challenge.protectionSpace.host
             
             if let serverTrustPolicy = policyManager.serverTrustPolicy(forHost: host), let serverTrust = challenge.protectionSpace.serverTrust {
                 if serverTrustPolicy.evaluate(serverTrust, forHost: host) {
@@ -235,10 +235,16 @@ extension SLNetwork {
         
         if request.isResume {
             let resumeDataURL = SLNetworkResumeFolderURL.appendingPathComponent(request.requestID)
-            if let resumeData = resumeData(of: resumeDataURL) {
+            if let resumeData = SLResumeData.data(of: resumeDataURL) {
                 downloadRequest = sessionManager.download(resumingWith: resumeData, to: destination)
                 downloadResponse(with: request, downloadRequest: downloadRequest, progressClosure: progressClosure, completionClosure: completionClosure)
-                
+                // fix 10.0 - 10.1 resumeData bug:
+                if #available(iOS 10.2, *) {}
+                else if #available(iOS 10.0, *) {
+                    if let task = downloadRequest.task {
+                        task.sl.fixiOS10Task(with: resumeData)
+                    }
+                }
                 return
             }
         }
@@ -261,7 +267,7 @@ extension SLNetwork {
             progress = SLProgress(request: request)
         }
         downloadRequest.downloadProgress { (originalProgress) in
-            if request.isResume && !FileManager.fileExists(at: resumeDataURL) {
+            if request.isResume && !FileManager.sl.fileExists(at: resumeDataURL) && originalProgress.fractionCompleted < 0.99 {
                 request.cancel()
             }
             
@@ -287,10 +293,10 @@ extension SLNetwork {
                 if request.isResume {
                     if let errorCode = response.error?.code, errorCode == NSURLErrorCancelled {
                         
-                        FileManager.createDirectory(at: strongSelf.SLNetworkResumeFolderURL, withIntermediateDirectories: true)
-                        
+                        FileManager.sl.createDirectory(at: strongSelf.SLNetworkResumeFolderURL, withIntermediateDirectories: true)
+
                         do {
-                            if !FileManager.fileExists(at: resumeDataURL) {
+                            if !FileManager.sl.fileExists(at: resumeDataURL) {
                                 try originalResponse.resumeData?.write(to: resumeDataURL)
                                 DispatchQueue.main.async {
                                     strongSelf.download(request, progressClosure: progressClosure, completionClosure: completionClosure)
@@ -298,16 +304,10 @@ extension SLNetwork {
                                 return
                             }
                             
+                            FileManager.sl.removeItem(at: resumeDataURL)
                             try originalResponse.resumeData?.write(to: resumeDataURL)
                             if request.enableLog {
-                                debugPrint("""
-                                    ------------------------ SLResponse ----------------------
-                                    URL:\(request.URLString)
-                                    resumeData has been writed to:
-                                    \(resumeDataURL.absoluteString)
-                                    ----------------------------------------------------------
-                                    
-                                    """)
+                                debugPrint("\n------------------------ SLResponse ----------------------\n URL:\(request.URLString) \nresumeData has been writed to: \n\(resumeDataURL.absoluteString)\n ----------------------------------------------------------\n")
                             }
                         }
                         catch {
@@ -315,10 +315,10 @@ extension SLNetwork {
                         }
                     }
                     else {
-                        FileManager.removeItem(at: resumeDataURL)
+                        FileManager.sl.removeItem(at: resumeDataURL)
 
-                        if let resumeData = originalResponse.resumeData, let tempFileURL = strongSelf.tempFileURL(of: resumeData) {
-                            FileManager.removeItem(at: tempFileURL)
+                        if let resumeData = originalResponse.resumeData, let tempFileURL = SLResumeData.tmpFileURL(of: resumeData) {
+                            FileManager.sl.removeItem(at: tempFileURL)
                         }
                         
                         if !request.hasResume {
@@ -333,6 +333,7 @@ extension SLNetwork {
                 
             case .success(let data):
                 if request.isResume {
+                    FileManager.sl.removeItem(at: resumeDataURL)
                     if Int64(data.count) == totalUnitCount || totalUnitCount == 0 {
                         response.originData = data
                         response.destinationURL = originalResponse.destinationURL
@@ -342,7 +343,7 @@ extension SLNetwork {
                         response.error = error
                         
                         if let destinationURL = originalResponse.destinationURL {
-                            FileManager.removeItem(at: destinationURL)
+                            FileManager.sl.removeItem(at: destinationURL)
                         }
                     }
                 }
@@ -589,118 +590,6 @@ extension SLNetwork {
 
 extension SLNetwork {
     
-    // MARK: - ResumeData
-
-    private func resumeData(of resumeDataURL: URL) -> Data? {
-        if FileManager.fileExists(at: resumeDataURL) {
-            do {
-                var resumeData = try Data(contentsOf: resumeDataURL)
-                
-                //The path of the iOS8 emulator changes every time it is run.
-                if Platform.isSimulator, var resumeDict = resumeDict(of: resumeData), resumeDict.keys.contains(SLNetworkTempFilePathKey) {
-                    let path = resumeDict[SLNetworkTempFilePathKey] as! NSString
-                    let tempFilePath = SLNetworkTempFolderPath + path.lastPathComponent
-                    resumeDict[SLNetworkTempFilePathKey] = tempFilePath
-                    
-                    do {
-                        let propertyListForamt =  PropertyListSerialization.PropertyListFormat.binary
-                        resumeData = try PropertyListSerialization.data(fromPropertyList: resumeDict, format: propertyListForamt, options: 0)
-                    }
-                    catch {
-                        debugPrint("PropertyListSerialization.dataError:\(error)")
-                    }
-                }
-                
-                if checkValid(of: resumeData) {
-                    return resumeData
-                }
-                else {
-                    // fix the resumeData after App crash or App close
-                    if var resumeDict = resumeDict(of: resumeData), let tempFileURL = tempFileURL(of: resumeData), let tempFileData = tempFileData(of: tempFileURL) {
-                        resumeDict[SLNetworkTempFileDataCountKey] = tempFileData.count
-                        
-                        do {
-                            let propertyListForamt =  PropertyListSerialization.PropertyListFormat.binary
-                            resumeData = try PropertyListSerialization.data(fromPropertyList: resumeDict, format: propertyListForamt, options: 0)
-                            return resumeData
-                        }
-                        catch {
-                            debugPrint("PropertyListSerialization.dataError:\(error)")
-                        }
-                    }
-                }
-                
-            } catch {
-                debugPrint("ResumeDataInitError:\(error)")
-            }
-        }
-        return nil
-    }
-    
-    private func checkValid(of resumeData: Data) -> Bool {
-        let dataCount = tempFileDataCount(of: resumeData)
-        
-        if let tempFileURL = tempFileURL(of: resumeData), let tempFileData = tempFileData(of: tempFileURL) {
-            return tempFileData.count == dataCount
-        }
-        
-        return false
-    }
-    
-    private func tempFileData(of tempFileURL: URL) -> Data? {
-        do {
-            let tempFileData = try Data(contentsOf: tempFileURL)
-            return tempFileData
-        } catch {
-            debugPrint("TempFileDataInitError:\(error)")
-        }
-        return nil
-    }
-    
-    private func tempFileURL(of resumeData: Data) -> URL? {
-        if let resumeDict = resumeDict(of: resumeData) {
-            var tempFileName: String?
-            var tempFilePath: String?
-            if resumeDict.keys.contains(SLNetworkTempFileNameKey) {
-                tempFileName = resumeDict[SLNetworkTempFileNameKey] as? String
-            }
-            else if resumeDict.keys.contains(SLNetworkTempFilePathKey) {
-                let path = resumeDict[SLNetworkTempFilePathKey] as! NSString
-                tempFileName = path.lastPathComponent
-            }
-            if let name = tempFileName {
-                tempFilePath = SLNetworkTempFolderPath + name
-            }
-            if let path = tempFilePath {
-                if FileManager.default.fileExists(atPath: path) {
-                    let tempFileURL = URL(fileURLWithPath: path)
-                    return tempFileURL
-                }
-            }
-        }
-        return nil
-    }
-    
-    private func tempFileDataCount(of resumeData: Data) -> Int {
-        if let resumeDict = resumeDict(of: resumeData) {
-            let tempFileDataCount = resumeDict[SLNetworkTempFileDataCountKey] as! Int
-            return tempFileDataCount
-        }
-        return 0
-    }
-    
-    private func resumeDict(of resumeData: Data) -> [String: Any]? {
-        do {
-            var propertyListForamt =  PropertyListSerialization.PropertyListFormat.xml
-            let resumeDict = try PropertyListSerialization.propertyList(from: resumeData, options: .mutableContainersAndLeaves, format: &propertyListForamt) as? [String: Any]
-            return resumeDict
-            
-        } catch {
-            debugPrint("ResumeDictSerializationError:\(error)")
-        }
-        return nil
-    }
-    
     struct Platform {
         static let isSimulator: Bool = {
             var isSim = false
@@ -709,53 +598,6 @@ extension SLNetwork {
             #endif
             return isSim
         }()
-    }
-    
-}
-
-extension FileManager {
-    
-    static func createDirectory(at URL: URL, withIntermediateDirectories createIntermediates: Bool, attributes: [FileAttributeKey : Any]? = nil) {
-        if !FileManager.fileExists(at: URL) {
-            do {
-                try FileManager.default.createDirectory(at: URL, withIntermediateDirectories: createIntermediates, attributes: attributes)
-            }
-            catch {
-                debugPrint("FileManager.createDirectoryError:\(error)")
-            }
-        }
-    }
-    
-    static func removeItem(at URL: URL) {
-        if FileManager.fileExists(at: URL) {
-            do {
-                try FileManager.default.removeItem(at: URL)
-            }
-            catch {
-                debugPrint("FileManager.removeItemError:\(error)")
-            }
-        }
-    }
-    
-    static func fileExists(at URL: URL) -> Bool {
-        let path = URL.absoluteString.replacingOccurrences(of: "file://", with: "")
-        return FileManager.default.fileExists(atPath: path)
-    }
-    
-}
-
-extension String {
-    
-    var isIP: Bool {
-        if let char = self.first {
-            let zero: Character = "0"
-            let nine: Character = "9"
-            if char >= zero && char <= nine {
-                return true
-            }
-        }
-        
-        return false;
     }
     
 }

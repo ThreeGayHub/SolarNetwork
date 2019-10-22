@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name = "SolarNetwork"
-  s.version = "1.2.0"
+  s.version = "4.6.0"
   s.summary = "Elegant network abstraction layer in Swift."
   s.homepage = "https://github.com/ThreeGayHub/SolarNetwork"
   s.license = 'MIT'
@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   
   s.ios.deployment_target = '8.0'
 
-  s.source_files = 'Source/*.swift'
+  s.source_files = 'Source/**/*.swift'
 
   s.dependency      "Alamofire"
 
