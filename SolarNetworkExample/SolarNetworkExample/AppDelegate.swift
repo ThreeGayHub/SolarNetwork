@@ -12,6 +12,7 @@
 //TODO-4.序列化完毕后再调用Plugin
 //TODO-5.Decoder to [Model]
 //TODO-6.缓存路径公开
+//TODO-7.multipartFormData支持parameters
 
 import UIKit
 
@@ -51,4 +52,3 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
 }
-
