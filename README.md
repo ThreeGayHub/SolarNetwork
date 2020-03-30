@@ -28,7 +28,7 @@ Elegant network abstraction layer in Swift.
 
 # Design
 
-**Alamofire** and **Moya** are elegant Swift network frames. They each have their own advantages. When I use them, I always want to combine the advantages of both, make them easy to use and retain their original features. So I wrote the **SolarNetwork**.
+**[Alamofire](https://github.com/Alamofire/Alamofire)** and **[Moya](https://github.com/Moya/Moya)** are elegant Swift network frames. They each have their own advantages. When I use them, I always want to combine the advantages of both, make them easy to use and retain their original features. So I wrote the **SolarNetwork**.
 
 - **SLNetwork** corresponds to a SessionManager.
 - **SLTarget** corresponds to a Host, or a set of requests for the same configuration.

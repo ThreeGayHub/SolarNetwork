@@ -2,7 +2,7 @@
 //  SLResponse.swift
 //
 //  Created by wyhazq on 2018/1/11.
-//  Copyright © 2018年 SolarKit. All rights reserved.
+//  Copyright © 2018年 SolarNetwork. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -41,7 +41,7 @@ public class SLResponse {
     
     public var message: String?
     
-    public var destinationURL: URL?
+    public var fileURL: URL?
     
     init(request: SLRequest, urlRequest: URLRequest?, httpURLResponse: HTTPURLResponse?) {
         self.request = request
@@ -121,7 +121,7 @@ extension SLResponse: CustomDebugStringConvertible {
         
         var dataString: String? = "nil"
         
-        if let url = destinationURL {
+        if let url = fileURL {
             dataString = url.absoluteString
         }
         else {

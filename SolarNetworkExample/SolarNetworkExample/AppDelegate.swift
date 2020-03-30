@@ -6,6 +6,14 @@
 //  Copyright © 2018年 SolarKit. All rights reserved.
 //
 
+//1.AF 5.0
+//TODO-2.AFResponse接口
+//TODO-3.SLResponse序列化(加解密等逻辑)
+//TODO-4.序列化完毕后再调用Plugin
+//TODO-5.Decoder to [Model]
+//TODO-6.缓存路径公开
+//TODO-7.multipartFormData支持parameters
+
 import UIKit
 
 @UIApplicationMain
@@ -44,4 +52,3 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
 }
-

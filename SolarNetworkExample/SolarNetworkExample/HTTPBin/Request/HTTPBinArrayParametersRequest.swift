@@ -17,7 +17,6 @@ class HTTPBinArrayParametersRequest: SLRequest {
         method = .post
         path = "/post"
         parameterEncoding = SLParameterValueJSONEncoding.default
-//        parameterEncoding = SLParameterValuePropertyListEncoding.default
 
     }
     

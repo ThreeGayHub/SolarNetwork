@@ -11,7 +11,7 @@ import SolarNetwork
 
 struct GitHubTarget: SLTarget {
 
-    var baseURLString: String { return "https://api.github.com" }
+    var baseURLString: String = "https://api.github.com"
     
     var IPURLString: String? {
         get {
@@ -22,44 +22,54 @@ struct GitHubTarget: SLTarget {
         }
     }
     
-    var parameterEncoding: ParameterEncoding { return JSONEncoding.default }
+    var parameterEncoding: ParameterEncoding = JSONEncoding.default
     
-    var serverTrustPolicies: [String : ServerTrustPolicy]? {
-        
+    var allHostsMustBeEvaluated: Bool = false
+    
+    var serverEvaluators: [String : ServerTrustEvaluating]? {
         #if DEBUG
-            let validateCertificateChain = false
-            let validateHost = false
+        let validateHost = false
         #else
-            let validateCertificateChain = true
-            let validateHost = true
+        let validateHost = true
         #endif
         
-        let policies: [String: ServerTrustPolicy] = [
-            host: .pinCertificates(
-                certificates: ServerTrustPolicy.certificates(),
-                validateCertificateChain: validateCertificateChain,
-                validateHost: validateHost
-            )
+        let evaluators: [String: ServerTrustEvaluating] = [
+            host: PinnedCertificatesTrustEvaluator(validateHost: validateHost)
         ]
-        return policies
         
+        return evaluators
     }
     
-    var clientTrustPolicy: (secPKCS12Path: String, password: String)? {
-        return (secPKCS12Path: Bundle.main.path(forResource: "github", ofType: "p12") ?? "", password: "123456")
-    }
+    var clientTrustPolicy: (secPKCS12Path: String, password: String)? = (secPKCS12Path: Bundle.main.path(forResource: "github", ofType: "p12") ?? "", password: "123456")
     
-    var plugins: [SLPlugin]? {
-        return [GitHubPlugin()]
+    var plugins: [SLPlugin]? = [GitHubPlugin()]
+    
+    var reachabilityListener: ReachabilityListener? {
+        return { (status) in
+            switch status {
+                
+            case .unknown:
+                debugPrint("unknown")
+                
+            case .notReachable:
+                debugPrint("notReachable")
+                
+            case .reachable(let connectionType):
+                switch connectionType {
+                    
+                case .ethernetOrWiFi:
+                    debugPrint("ethernetOrWiFi")
+                    
+                case .cellular:
+                    debugPrint("cellular")
+                    
+                }
+            }
+        }
     }
     
     var storeIPURLString: String?
     
-    var configuration: URLSessionConfiguration {
-        let configuration = URLSessionConfiguration.default
-        configuration.timeoutIntervalForRequest = 30
-        return configuration
-    }
 }
 
 //"api.github.com"

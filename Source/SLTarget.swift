@@ -2,7 +2,7 @@
 //  SLTarget.swift
 //
 //  Created by wyhazq on 2018/1/9.
-//  Copyright © 2018年 SolarKit. All rights reserved.
+//  Copyright © 2018年 SolarNetwork. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,7 @@ public protocol SLTarget {
     var method: HTTPMethod { get }
     
     /// The target's HTTPHeaders.
-    var headers: [String: String]? { get set }
+    var headers: HTTPHeaders? { get }
     
     /// The target's ParameterEncoding.
     var parameterEncoding: ParameterEncoding { get }
@@ -44,8 +44,10 @@ public protocol SLTarget {
     /// The target's URLSessionConfiguration.
     var configuration: URLSessionConfiguration { get }
     
+    var allHostsMustBeEvaluated: Bool { get }
+    
     /// The target's serverTrustPolicies
-    var serverTrustPolicies: [String : ServerTrustPolicy]? { get }
+    var serverEvaluators: [String : ServerTrustEvaluating]? { get }
     
     /// The target's clentTrustPolicy
     var clientTrustPolicy: (secPKCS12Path: String, password: String)? { get }
@@ -57,7 +59,7 @@ public protocol SLTarget {
     var plugins: [SLPlugin]? { get }
     
     /// The target's Reachability
-    var reachability: Listener? { get }
+    var reachabilityListener: ReachabilityListener? { get }
     
     /// The target's Host.
     var host: String { get }
@@ -88,18 +90,17 @@ public extension SLTarget {
     
     var method: HTTPMethod { return .get }
     
-    var headers: [String: String]? {
+    var headers: HTTPHeaders? {
         get {
             return nil
-        }
-        set {
-            
         }
     }
     
     var parameterEncoding: ParameterEncoding { return URLEncoding.default }
     
-    var configuration: URLSessionConfiguration { return URLSessionConfiguration.default }
+    var configuration: URLSessionConfiguration { return URLSessionConfiguration.af.default }
+    
+    var allHostsMustBeEvaluated: Bool { return true }
     
     /**
      how to use?
@@ -110,23 +111,25 @@ public extension SLTarget {
      
      Example:
      ---------------------------------------------------------
-     var policies: [String : ServerTrustPolicy]? {
-     let serverTrustPolicies: [String: ServerTrustPolicy] = [
-     "test.example.com": .pinCertificates(
-     certificates: ServerTrustPolicy.certificates(),
-     validateCertificateChain: true,
-     validateHost: true
-     )
+     var serverEvaluators: [String : ServerTrustEvaluating]? {
+     #if DEBUG
+     let validateHost = false
+     #else
+     let validateHost = true
+     #endif
+     
+     let evaluators: [String: ServerTrustEvaluating] = [
+     host: PinnedCertificatesTrustEvaluator(validateHost: validateHost)
      ]
-     return serverTrustPolicies
+     
+     return evaluators
      }
      ---------------------------------------------------------
      
      if Debug, advice set
-     validateCertificateChain: false
      validateHost: false
      */
-    var serverTrustPolicies: [String : ServerTrustPolicy]? { return nil }
+    var serverEvaluators: [String : ServerTrustEvaluating]? { return nil }
     
     /**
      how to use?
@@ -142,7 +145,7 @@ public extension SLTarget {
     
     var plugins: [SLPlugin]? { return nil }
 
-    var reachability: Listener? { return nil }
+    var reachabilityListener: ReachabilityListener? { return nil }
     
     var host: String {
         if let URL = URL(string: baseURLString), let host = URL.host {

@@ -1,5 +1,5 @@
 #!/bin/bash
-#pod trunk register email@email.com '****'  --verbose
+#pod trunk register email@email.com 'username'  --verbose
 
 podspecName=`find *.podspec -maxdepth 0`
 
